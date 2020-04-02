@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Covid-19</title>
+    <script src="./d3-lasso.min.js"></script>
+    <script src="d3.js"></script>
+</head>
+<body>
+    <div class="body">
+        <div class="container_12">
+            <div class="grid_1">
+                
+            </div>
+            <div class="grid_2">
+
+                <svg id="Map" height="500" width="600"
+            >
+                    <g id="G"></g>
+                </svg>
+                
+            </div>
+            <div class="grid_3">
+                
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+let store={}
+    let x=0
+    let y=0
+    let k=1
+    let deg=0
+    let svg=d3.select("#Map")
+    div = d3
+  .select("body")
+  .append("div")
+  .attr("class", "tooltip")
+  .style("opacity", 0)
+
+
+  function loadData() {
+    return Promise.all([
+    d3.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv', (d, rows, cols) => { 
+  
+  const dates = cols.slice(4, cols.length);
+  const data = [];
+    
+  dates.forEach((dd, i)=> {
+    const match = d['Country/Region'];
+    const country = d['Country/Region'];
+    const short = d['Country/Region'];
+    const region = d['Province/State'];
+    const iso = (match !== undefined)?match.iso:'';
+    const lat = d['Lat'];
+    const lon = d['Long'];
+    const date = dd;
+    const confirmed = +d[dd];
+    const pivot = {
+      country: country, short: short, region: region, lat: lat, lon: lon, date: date, confirmed: confirmed, iso: iso
+    }
+    
+    data.push(pivot)
+    
+  })
+  //console.log(data)
+
+  return data
+ 
+}),
+        d3.json("countries.geo.json")
+    ]).then(datasets => {
+        
+        store.coronadat=datasets[0];
+        store.geoJSON = datasets[1];
+        return store;
+    })
+}
+
+  function showData() { 
+  drawMap(store.geoJSON)
+  drawCircles(groupbyCountry(store.coronadat))
+}
+
+  
+    function getMapConfig(){
+  let width = 600;
+  let height = 500;
+  let container=d3.select("#G")
+  let zoom = d3.zoom()
+       .scaleExtent([1, 40])
+       .translateExtent([[0,0], [width, height]])
+       .extent([[0, 0], [width, height]])
+    .on("zoom",function(){
+        zoomed(container)
+    })
+  
+
+  let containe = d3.select("#Map")
+                  .attr("height",height)
+                  .attr("width",width)
+                  .call(zoom)
+
+  
+  return {width, height, container}
+}
+
+
+function zoomed(container)
+  {
+    x=d3.event.transform.x
+    y=d3.event.transform.y
+    k=d3.event.transform.k
+ 
+container.attr(
+      "transform","translate(" + [d3.event.transform.x, d3.event.transform.y] + ")scale(" + d3.event.transform.k + ")rotate("+deg+",300,150)")
+     console.log(x,y,k)
+  }
+
+function getMapProjection(config) {
+  let {width, height} = config;
+  let projection = d3.geoMercator()
+  projection.scale(95)
+            .translate([width / 2, height / 2 + 30])
+            .rotate([0,0,0])
+            
+  store.mapProjection = projection;
+  return projection;
+}
+
+function drawBaseMap(container, countries, projection){
+  let path =d3.geoPath()
+             .projection(projection)
+   
+
+  container.selectAll("path").data(countries)
+      .enter().append("path")
+      .attr("d",d=>path(d) )
+      .attr("fill", "#eee")
+    .attr("stroke", '#bdbdbd')
+    .attr("stroke-width", .5)
+    .attr("stroke-linejoin", "round")
+      .on("mouseenter", function(d) {
+         // d3.select(this).attr("fill", "#229a5b")
+         
+        })
+      .on("mouseleave",function(){
+       // d3.select(this).attr("fill", "#eee")
+       
+      })
+     
+      
+      
+}
+
+function drawMap(geoJeon) {
+    let config = getMapConfig();
+    let projection = getMapProjection(config)
+    drawBaseMap(config.container, geoJeon.features, projection)
+}
+
+
+function groupbyCountry(data) {
+  console.log(data)
+    confirmedLatest = data.map(d => d[d.length-1]).sort((a,b) => b.confirmed - a.confirmed);
+    console.log(confirmedLatest);
+    let result = confirmedLatest.reduce((result, d) => {
+        //The || sign in the line below means that in case the first option is anything that Javascript consider false (this insclude undefined, null and 0), the second option will be used. Here if result[d.DestAirportID] is false, it means that this is the first time we are seeing the airport, so we will create a new one (second part after ||)
+        
+        let grpbycounty = result[d.country] || {
+            country: d.country,
+            short: d.short,
+            lat: d.lat,
+            lon: d.lon,
+            iso: d.iso,
+            date: d.date,
+            confirmed: 0
+        }
+        grpbycounty.confirmed += d.confirmed
+        result[d.country] = grpbycounty
+
+        return result
+    }, {})
+    result = Object.keys(result).map(key => result[key])
+    console.log(result)
+    return result;
+}
+
+function drawCircles(countrycircle) {
+  let config = getMapConfig(); 
+  let projection = getMapProjection(config)
+  let container = config.container; 
+  radius = d3.scaleSqrt([0,d3.max(countrycircle, d=> d.confirmed)], [.5, config.width/40])
+  let circles = container.selectAll("circle")
+    .data(confirmedLatest)
+    .enter()
+  .append("circle")
+  .attr("class", "confirmed")
+    .attr("fill", "#ff9500")
+    .attr("fill-opacity", ".15")
+    .attr("stroke", "#ff9500")
+    .attr("stroke-width", 1)
+    .join("circle")
+    .attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
+    .attr("r", d => radius(d.confirmed))
+    .on("mouseenter", function(d) {
+         // d3.select(this).attr("fill", "#229a5b")
+         div
+        .transition()
+        .duration(200)
+        .style("opacity", .9);
+      div
+        .html(
+          "<b>COUNTRY: </b>" +
+            d.country +
+            "</br><b>CONFIRMED CASES: </b>" +
+          d.confirmed +
+            "</br>AS OF " +
+          d.date
+        )
+        .style("left", d3.event.pageX + "px")
+        .style("top", d3.event.pageY - 28 + "px");
+         
+        })
+      .on("mouseleave",function(){
+        div
+        .transition()
+        .duration(500)
+        .style("opacity", 0);
+      });
+}
+loadData().then(showData);
+
+
+</script>
+</html>
