@@ -17,7 +17,7 @@ body {
   margin-left: 2px;
   margin-right: 2px;
   width: 25%;
-  height: 500px;
+  height: 600px;
   border:solid 1px blue;
   
 }
@@ -28,7 +28,7 @@ body {
   margin-left: 2px;
   margin-right: 2px;
   width: 40%;
-  height: 500px;
+  height: 600px;
   border:solid 1px blue;
 }
 .grid_3
@@ -38,7 +38,7 @@ body {
   margin-left: 2px;
   margin-right: 2px;
   width: 25%;
-  height: 500px;
+  height: 600px;
   border:solid 1px blue;
 }
 
@@ -47,6 +47,36 @@ body {
     height:500px;
     border:solid 1px blue;
   } */
+
+  #filter_countries{
+    width:30%;
+    padding:10px;
+    float: right;
+  }
+  
+  #countries-list{
+
+    right: 480px;
+    overflow: hidden;
+    overflow-y:scroll;
+    margin:0;
+    padding:5px;
+    position: absolute;
+    height:120px; width:198px;
+    background-color: transparent;
+    color: gray;
+    fill-opacity: .1;
+    
+  }
+  #countries-list li{
+    
+    position: relative; 
+    list-style:none;
+    padding:0px;
+    margin:5px 0;
+    border: 1px solid #e4e4e4;
+   
+  }
 
   circle {
     fill-opacity: .55;
