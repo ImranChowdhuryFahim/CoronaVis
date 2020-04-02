@@ -48,5 +48,46 @@ body {
     border:solid 1px blue;
   } */
 
-  div.tooltip {position: absolute; text-align: left; width: 200px; height: 75px; padding: 15px;font: 14px calibri; background: #d60f23; color: white; border: 2px; border-radius: 8px; pointer-events: none;}
+  circle {
+    fill-opacity: .55;
+    stroke-width: .5;
+}
+
+.lasso path {
+    stroke: rgb(80,80,80);
+    stroke-width:2px;
+}
+
+.lasso .drawn {
+    fill-opacity:.05 ;
+}
+
+.lasso .loop_close {
+    fill:none;
+    stroke-dasharray: 4,4;
+}
+
+.lasso .origin {
+    fill:#3399FF;
+    fill-opacity:.5;
+}
+
+.not_possible {
+    fill:#415679;
+    
+}
+
+.possible {
+    fill: palevioletred;
+}
+
+.selected {
+    fill : black;
+}
+
+.isselected {
+    fill: red;
+}
+
+  div.tooltip {position: absolute; text-align: left; width: 200px; height: 55px; padding: 15px;font: 14px calibri; background: #d60f23; color: white; border: 2px; border-radius: 8px; pointer-events: none;}
   

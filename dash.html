@@ -15,6 +15,7 @@
                 
             </div>
             <div class="grid_2">
+              
 
                 <svg id="Map" height="500" width="600"
             >
@@ -231,7 +232,62 @@ function drawCircles(countrycircle) {
         .duration(500)
         .style("opacity", 0);
       });
+
+      var lasso_start = function() {
+            lasso.items() // reset size
+                .classed("not_possible",true)
+                .classed("selected",false);
+        };
+
+        var lasso_draw = function() {
+        
+            // Style the possible dots
+            lasso.possibleItems()
+                .classed("not_possible",false)
+                .classed("possible",true);
+    
+            // Style the not possible dot
+            lasso.notPossibleItems()
+                .classed("not_possible",true)
+                .classed("possible",false)
+        };
+
+        var lasso_end = function() {
+            // Reset the color of all dots
+            lasso.items()
+                .classed("not_possible",false)
+                .classed("possible",false)
+                .classed("isselected",false);
+
+            // Style the selected dots
+            lasso.selectedItems()
+                .classed("selected",true);
+            
+            
+            
+
+                
+
+        };
+        
+        var lasso = d3.lasso()
+            .closePathSelect(true)
+            .closePathDistance(100)
+            .items(circles)
+            .targetArea(container)
+            .on("start",lasso_start)
+            .on("draw",lasso_draw)
+            .on("end",lasso_end);
+
+        container.call(lasso)
+        lasso.items(container.selectAll('circle'))
+
+
 }
+
+
+
+
 loadData().then(showData);
 
 
