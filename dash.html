@@ -163,11 +163,12 @@ function drawMap(geoJeon) {
     drawBaseMap(config.container, geoJeon.features, projection)
 }
 
-
+let myData;
 function groupbyCountry(data) {
-  console.log(data)
+  //console.log(data)
     confirmedLatest = data.map(d => d[d.length-1]).sort((a,b) => b.confirmed - a.confirmed);
-    console.log(confirmedLatest);
+    myData = confirmedLatest;
+    console.log(myData);
     let result = confirmedLatest.reduce((result, d) => {
         //The || sign in the line below means that in case the first option is anything that Javascript consider false (this insclude undefined, null and 0), the second option will be used. Here if result[d.DestAirportID] is false, it means that this is the first time we are seeing the airport, so we will create a new one (second part after ||)
         
@@ -186,7 +187,7 @@ function groupbyCountry(data) {
         return result
     }, {})
     result = Object.keys(result).map(key => result[key])
-    console.log(result)
+    //console.log(result)
     return result;
 }
 
