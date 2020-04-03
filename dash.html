@@ -21,7 +21,7 @@
 
                  </ul>
 
-                <svg id="Map" height="500" width="600"
+                <svg id="Map" height="500" width="620"
             >
                     <g id="G"></g>
                 </svg>
@@ -87,6 +87,7 @@ let store={}
 
   function showData() { 
 
+ groupbytime(store.coronadat)
   drawMap(store.geoJSON)
   drawCircles(groupbyCountry(store.coronadat))
   generate_country_list(store.geoJSON)
@@ -95,8 +96,8 @@ let store={}
 
   
     function getMapConfig(){
-  let width = 600;
-  let height = 550;
+  let width = 614;
+  let height = 560;
   let container=d3.select("#G")
   let zoom = d3.zoom()
        .scaleExtent([1, 40])
@@ -217,6 +218,19 @@ function groupbyCountry(data) {
     return result;
 }
 
+
+function groupbytime(data)
+{
+  console.log("hello")
+  var databytime = d3.nest()
+    .key(function(d) {
+      return d.country;
+    })
+    .entries(data.flat());
+  console.log(databytime);
+ 
+}
+
 function drawCircles(countrycircle) {
   let config = getMapConfig(); 
   let projection = getMapProjection(config)
@@ -335,6 +349,15 @@ let render_lists = function(lists){
   ul.innerHTML = li;
 }
 
+let li = document.getElementsByTagName("li");
+setTimeout(function(){
+  for(let i = 0;i<li.length;i++){
+    li[i].addEventListener("click", myScript);
+}
+},500);
+
+
+
 render_lists(countries);
 
 // lets filters it
@@ -351,6 +374,12 @@ let filterCountries = function(event){
 }
 
 input.addEventListener('keyup', filterCountries);
+}
+
+
+function myScript(e){
+    console.log(e.target.innerHTML)
+    console.log(store.geoJSON)   
 }
 
 loadData().then(showData);
