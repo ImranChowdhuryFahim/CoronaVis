@@ -66,7 +66,10 @@
                 
             </div>
             <div class="grid_3">
-                
+                <svg id="container" height="500px" width="500px">
+                    <g id="body2" style="transform: translate(50px,10px)"></g>
+                </svg>
+                <div id="tooltip"></div>
             </div>
         </div>
     </div>
@@ -109,7 +112,7 @@ let store={}
     data.push(pivot)
     
   })
-  //console.log(data)
+  
 
   return data
  
@@ -122,6 +125,7 @@ let store={}
         return store;
     })
 }
+//console.log(store)
 
   function showData() { 
 
@@ -180,7 +184,7 @@ function getMapProjection(config) {
 function drawBaseMap(container, countries, projection){
   let path =d3.geoPath()
              .projection(projection)
-   
+   //console.log(countries)
 
   container.selectAll("path").data(countries)
       .enter().append("path")
@@ -232,7 +236,7 @@ function groupbyCountry(data) {
   //console.log(data)
     confirmedLatest = data.map(d => d[d.length-1]).sort((a,b) => b.confirmed - a.confirmed);
     myData = confirmedLatest;
-    console.log(myData);
+    //console.log(myData);
     let result = confirmedLatest.reduce((result, d) => {
         //The || sign in the line below means that in case the first option is anything that Javascript consider false (this insclude undefined, null and 0), the second option will be used. Here if result[d.DestAirportID] is false, it means that this is the first time we are seeing the airport, so we will create a new one (second part after ||)
         
@@ -452,8 +456,11 @@ bars.selectAll("rect")
             .attr("x", function (d) { return xscale(d.country); })
             .attr("y", function (d) { return yscale(d.confirmed); })
             .attr("width", xscale.bandwidth())
-            .attr("height", function (d) { return height - yscale(d.confirmed); });
-
+            .attr("height", function (d) { return height - yscale(d.confirmed); })
+            .on("click", d=>{
+                //console.log(d.country);
+                drawline(d.country, store.coronadat)
+		    });
   
 if (isScrollDisplayed)
 {
@@ -498,7 +505,11 @@ if (isScrollDisplayed)
               .attr("width", Math.round(parseFloat(numBars * width)/data.length))
               .attr("pointer-events", "all")
               .attr("cursor", "ew-resize")
-              .call(d3.drag().on("drag", display));
+              .call(d3.drag().on("drag", display))
+              .on("click", d=>{
+                //console.log(d.country);
+                drawline(d.country, store.coronadat)
+		    });
 }
 function display () {
     var x = parseInt(d3.select(this).attr("x")),
@@ -539,6 +550,76 @@ function display () {
 }
 
 //end bar
+
+
+// draw line chart
+ function drawline(country, olddata)
+ {      console.log(olddata);
+        let data = olddata.filter(function(d){
+         for(x of d){
+            return x.country == country;
+         }})[0]
+         console.log(data)
+
+         // draw line here
+
+         let body = d3.select("#body2")
+document.getElementById("body2").innerHTML="";
+	let height = 300;
+	let width = 400;
+
+	function showtool(data, coord){ console.log(data)
+		d3.select("#tooltip")
+			.html("Price: "+data[0]+"<br> Date: "+data[1])
+			.style('top', coord[1]-15+"px")
+			.style("left", coord[0]+15+"px")
+			.style("display", "block")
+			.style("color", "blue")
+			
+	}
+	
+		data.map(d=> {
+            d.date= new Date(d.date)
+            d.confirmed = +d.confirmed
+		})
+		let max = d3.max(data,d=>d.confirmed)
+		let yscale = d3.scaleLinear()
+		.domain([0,max])
+		.range([height,0])
+		body.append("g")
+		.call(d3.axisLeft(yscale))
+
+		let xscale = d3.scaleTime()
+		.domain(d3.extent(data,d=>d.date))
+		.range([0,width])
+		body.append("g")
+		.attr("transform", "translate(0,"+height+")")
+        .call(d3.axisBottom(xscale)
+          .tickFormat(d3.timeFormat("%d%b")))
+	
+		var valueline = d3.line()
+		.x(d => xscale(d.date))
+		.y(d => yscale(d.confirmed))
+        .defined(d => !!d.confirmed)
+       
+
+	
+		/*body.append("path")
+		.datum(data)
+		.attr("d", valueline)
+        .attr("class", "line")*/
+        body
+        .append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "red")
+        .attr("stroke-width", 1.5)
+        .attr("d", valueline)
+        .attr("class", "line")
+
+         //draw line end
+ }
+//end line chart
 
 
 </script>
