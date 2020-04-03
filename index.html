@@ -49,7 +49,7 @@
 <body>
     <div class="body">
         <div class="container_12">
-            <div class="grid_1" id="body">
+            <div class="grid_1" id="body" style="transform: rotate(90deg)">
                 
             </div>
             <div class="grid_2">
@@ -407,12 +407,12 @@ function drawbar(data){
 var margin =  {top: 20, right: 10, bottom: 20, left: 50};
 var marginOverview = {top: 30, right: 10, bottom: 20, left: 40};
 var selectorHeight = 40;
-var width = 600 - margin.left - margin.right;
+var width = 605 - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom - selectorHeight;
 var heightOverview = 80 - marginOverview.top - marginOverview.bottom;
        
 var maxLength = d3.max(data.map(function(d){ return d.country.length}))
-var barWidth = maxLength * 1.8;
+var barWidth = maxLength * 2;
 var numBars = Math.round(width/barWidth);
 var isScrollDisplayed = barWidth * data.length > width;
        
