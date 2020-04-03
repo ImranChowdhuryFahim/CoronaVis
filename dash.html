@@ -15,7 +15,11 @@
                 
             </div>
             <div class="grid_2">
-              
+              <input type="text" placeholder="Search Countries" id="filter_countries"/>
+
+                 <ul id="countries-list">
+
+                 </ul>
 
                 <svg id="Map" height="500" width="600"
             >
@@ -82,14 +86,17 @@ let store={}
 }
 
   function showData() { 
+
   drawMap(store.geoJSON)
   drawCircles(groupbyCountry(store.coronadat))
+  generate_country_list(store.geoJSON)
+
 }
 
   
     function getMapConfig(){
   let width = 600;
-  let height = 500;
+  let height = 550;
   let container=d3.select("#G")
   let zoom = d3.zoom()
        .scaleExtent([1, 40])
@@ -125,7 +132,7 @@ function getMapProjection(config) {
   let {width, height} = config;
   let projection = d3.geoMercator()
   projection.scale(95)
-            .translate([width / 2, height / 2 + 30])
+            .translate([width / 2, height / 2 + 100])
             .rotate([0,0,0])
             
   store.mapProjection = projection;
@@ -140,18 +147,37 @@ function drawBaseMap(container, countries, projection){
   container.selectAll("path").data(countries)
       .enter().append("path")
       .attr("d",d=>path(d) )
-      .attr("fill", "#eee")
+      .attr("fill", "#fff")
     .attr("stroke", '#bdbdbd')
     .attr("stroke-width", .5)
     .attr("stroke-linejoin", "round")
       .on("mouseenter", function(d) {
          // d3.select(this).attr("fill", "#229a5b")
+         div
+        .transition()
+        .duration(200)
+        .style("opacity", .9);
+      div
+        .html(
+            d.properties.name
+        )
+        .attr("class","tooltip1")
+        .style("left", d3.event.pageX + "px")
+        .style("top", d3.event.pageY - 28 + "px");
          
         })
       .on("mouseleave",function(){
        // d3.select(this).attr("fill", "#eee")
+       div
+       .attr("class","tooltip1")
+        .transition()
+        .duration(500)
+        .style("opacity", 0);
        
       })
+
+
+     
      
       
       
@@ -223,12 +249,14 @@ function drawCircles(countrycircle) {
             "</br>AS OF " +
           d.date
         )
+        .attr("class","tooltip")
         .style("left", d3.event.pageX + "px")
         .style("top", d3.event.pageY - 28 + "px");
          
         })
       .on("mouseleave",function(){
         div
+        .attr("class","tooltip")
         .transition()
         .duration(500)
         .style("opacity", 0);
@@ -286,8 +314,44 @@ function drawCircles(countrycircle) {
 
 }
 
+function generate_country_list(data){
+  
 
+let countries = [
+  
+];
+for(i of data.features)
+{
+  countries.push(i.properties.name);
+}
 
+ul = document.getElementById("countries-list");
+
+let render_lists = function(lists){
+  let li = "";
+  for(index in lists){
+    li += "<li>" + lists[index] + "</li>";
+  }
+  ul.innerHTML = li;
+}
+
+render_lists(countries);
+
+// lets filters it
+input = document.getElementById('filter_countries');
+
+let filterCountries = function(event){
+  keyword = input.value.toLowerCase();
+  filtered_countries = countries.filter(function(country){
+        country = country.toLowerCase();
+       return country.indexOf(keyword) > -1; 
+  });
+  
+  render_lists(filtered_countries);
+}
+
+input.addEventListener('keyup', filterCountries);
+}
 
 loadData().then(showData);
 
