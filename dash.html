@@ -3,13 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style1.css">
     <title>Covid-19</title>
     <script src="./d3-lasso.min.js"></script>
     <script src="d3.js"></script>
 </head>
 <body>
     <div class="body">
+      <div class="print">
+      <div class="tc" ></div>
+     <div class="tc1"></div>
+      <div class="tc2"></div> 
+      <div>
+        <form >
+          <select id="options" name="cars" onchange="ddl()">
+            <option value="Confirmed Cases">Confirmed Cases</option>
+            <option value="Death Cases">Death Cases</option>
+            <option value="Recovered Cases">Recovered Cases</option>
+            <option value="New Cases">New Cases</option>
+          </select>
+        </form>
+      </div>
+    </div>
         <div class="container_12">
             <div class="grid_1">
                 
@@ -20,6 +35,7 @@
                  <ul id="countries-list">
 
                  </ul>
+
 
                 <svg id="Map" height="500" width="620"
             >
@@ -40,6 +56,7 @@ let store={}
     let k=1
     let deg=0
     let svg=d3.select("#Map")
+    let currentvis="";
     div = d3
   .select("body")
   .append("div")
@@ -76,11 +93,62 @@ let store={}
   return data
  
 }),
-        d3.json("countries.geo.json")
+        d3.json("countries.geo.json"),
+        d3.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv', (d, rows, cols) => { 
+  
+  const dates = cols.slice(4, cols.length);
+  const data = [];
+  
+  dates.forEach(dd=> {
+    const match = d['Country/Region']
+    const country = d['Country/Region'];
+    const region = d['Province/State'];
+    const iso = (match !== undefined)?match.iso:'';
+    const lat = d['Lat'];
+    const lon = d['Long'];
+    const date = dd;
+    const deaths = +d[dd];
+    const pivot = {
+      country: country, region: region, lat: lat, lon: lon, date: date, deaths: deaths, iso: iso
+    }
+    
+    data.push(pivot)
+    
+  })
+  
+  return data
+  
+}),d3.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv', (d, rows, cols) => { 
+  
+  const dates = cols.slice(4, cols.length);
+  const data = [];
+  
+  dates.forEach(dd=> {
+    const match = d['Country/Region']
+    const country = d['Country/Region'];
+    const region = d['Province/State'];
+    const iso = (match !== undefined)?match.iso:'';
+    const lat = d['Lat'];
+    const lon = d['Long'];
+    const date = dd;
+    const recovered = +d[dd];
+    const pivot = {
+      country: country, region: region, lat: lat, lon: lon, date: date, recovered: recovered, iso: iso
+    }
+    
+    data.push(pivot)
+    
+  })
+  
+  return data
+  
+})
     ]).then(datasets => {
         
         store.coronadat=datasets[0];
         store.geoJSON = datasets[1];
+        store.death=datasets[2];
+        store.recovered=datasets[3];
         return store;
     })
 }
@@ -89,8 +157,15 @@ let store={}
 
  groupbytime(store.coronadat)
   drawMap(store.geoJSON)
-  drawCircles(groupbyCountry(store.coronadat))
-  generate_country_list(store.geoJSON)
+groupbyCountryDeath(store.death)
+  drawCircles(groupbyCountry(store.coronadat),"#ff9500")
+  generate_country_list(store.coronadat)
+  groupbyCountryDeath(store.death)
+ // drawCirclesdeath(groupbyCountryDeath(store.death),"#ff9500")
+  total_case_print(groupbyCountry(store.coronadat))
+  total_case_print1(groupbyCountryDeath(store.death))
+  total_case_print2(groupbyCountryRecovered(store.recovered))
+  currentvis="confirm";
 
 }
 
@@ -218,32 +293,90 @@ function groupbyCountry(data) {
     return result;
 }
 
+function groupbyCountryDeath(data)
+{
+  confirmedLatestdeath = data.map(d => d[d.length-1]).sort((a,b) => b.deaths - a.deaths);
+    myData = confirmedLatestdeath;
+    //console.log(myData);
+    let result = confirmedLatestdeath.reduce((result, d) => {
+        //The || sign in the line below means that in case the first option is anything that Javascript consider false (this insclude undefined, null and 0), the second option will be used. Here if result[d.DestAirportID] is false, it means that this is the first time we are seeing the airport, so we will create a new one (second part after ||)
+        
+        let grpbycounty = result[d.country] || {
+            country: d.country,
+            lat: d.lat,
+            lon: d.lon,
+            iso: d.iso,
+            date: d.date,
+            deaths: 0
+        }
+        grpbycounty.deaths += d.deaths
+        result[d.country] = grpbycounty
+
+        return result
+    }, {})
+    result = Object.keys(result).map(key => result[key])
+    // console.log("djhk")
+    // console.log(result)
+    return result;
+}
+
+
+function groupbyCountryRecovered(data)
+{
+  confirmedLatestrecovered = data.map(d => d[d.length-1]).sort((a,b) => b.recovered - a.recovered);
+    myData = confirmedLatestrecovered;
+    //console.log(myData);
+    let result = confirmedLatestrecovered.reduce((result, d) => {
+        //The || sign in the line below means that in case the first option is anything that Javascript consider false (this insclude undefined, null and 0), the second option will be used. Here if result[d.DestAirportID] is false, it means that this is the first time we are seeing the airport, so we will create a new one (second part after ||)
+        
+        let grpbycounty = result[d.country] || {
+            country: d.country,
+            lat: d.lat,
+            lon: d.lon,
+            iso: d.iso,
+            date: d.date,
+            recovered: 0
+        }
+        grpbycounty.recovered += d.recovered
+        result[d.country] = grpbycounty
+
+        return result
+    }, {})
+    result = Object.keys(result).map(key => result[key])
+    // console.log("djhk")
+    // console.log(result)
+    return result;
+}
+
 
 function groupbytime(data)
 {
   console.log("hello")
-  var databytime = d3.nest()
+  var byCountry = d3.nest()
     .key(function(d) {
       return d.country;
     })
     .entries(data.flat());
-  console.log(databytime);
+  //console.log(databytime);
+  
+  
  
 }
 
-function drawCircles(countrycircle) {
+function drawCircles(countrycircle,clr) {
   let config = getMapConfig(); 
   let projection = getMapProjection(config)
   let container = config.container; 
+  container.innerHTML=""
   radius = d3.scaleSqrt([0,d3.max(countrycircle, d=> d.confirmed)], [.5, config.width/40])
   let circles = container.selectAll("circle")
-    .data(confirmedLatest)
-    .enter()
+    .data(countrycircle)
+    .enter()               //confiremedlates earlier//
   .append("circle")
   .attr("class", "confirmed")
-    .attr("fill", "#ff9500")
+    .attr("fill", clr)
     .attr("fill-opacity", ".15")
-    .attr("stroke", "#ff9500")
+    .attr("stroke", clr)
     .attr("stroke-width", 1)
     .join("circle")
     .attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
@@ -274,7 +407,17 @@ function drawCircles(countrycircle) {
         .transition()
         .duration(500)
         .style("opacity", 0);
-      });
+      })
+      .on("click",function(d){
+        d3.select(this).transition().duration(1000).attr("r",radius(d.confirmed)+10).attr("fill","red").transition().duration(1000).attr("r",radius(d.confirmed))
+        .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed))
+        .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed))
+        .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed))
+        .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed)).transition().duration(1000).attr("fill","#ff9500")
+      
+      })
+
+
 
       var lasso_start = function() {
             lasso.items() // reset size
@@ -306,10 +449,14 @@ function drawCircles(countrycircle) {
             lasso.selectedItems()
                 .classed("selected",true);
             
-            
-            
-
-                
+            let d=[];
+            for(i of lasso.selectedItems()._groups[0]){
+        if(i.__data__!=null)
+        {
+          d.push(i.__data__)
+        }
+}
+total_case_print(d)
 
         };
         
@@ -328,15 +475,252 @@ function drawCircles(countrycircle) {
 
 }
 
+
+
+function drawCirclesdeath(deathcircle,clr) {
+  let config = getMapConfig(); 
+  let projection = getMapProjection(config)
+  let container = config.container; 
+  container.innerHTML=""
+  radius = d3.scaleSqrt([0,d3.max(deathcircle, d=> d.deaths)], [.5, config.width/40])
+  let circles = container.selectAll("circle")
+    .data(deathcircle)
+    .enter()               //confiremedlates earlier//
+  .append("circle")
+  .attr("class", "confirmed")
+    .attr("fill", clr)
+    .attr("fill-opacity", ".15")
+    .attr("stroke", clr)
+    .attr("stroke-width", 1)
+    .join("circle")
+    .attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
+    .attr("r", d => radius(d.deaths))
+    .on("mouseenter", function(d) {
+         // d3.select(this).attr("fill", "#229a5b")
+         div
+        .transition()
+        .duration(200)
+        .style("opacity", .9);
+      div
+        .html(
+          "<b>COUNTRY: </b>" +
+            d.country +
+            "</br><b>Death CASES: </b>" +
+          d.deaths +
+            "</br>AS OF " +
+          d.date
+        )
+        .attr("class","tooltip")
+        .style("left", d3.event.pageX + "px")
+        .style("top", d3.event.pageY - 28 + "px");
+         
+        })
+      .on("mouseleave",function(){
+        div
+        .attr("class","tooltip")
+        .transition()
+        .duration(500)
+        .style("opacity", 0);
+      })
+      .on("click",function(d){
+        d3.select(this).transition().duration(1000).attr("r",radius(d.deaths)+10).attr("fill","red").transition().duration(1000).attr("r",radius(d.deaths))
+        .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths))
+        .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths))
+        .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths))
+        .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths)).transition().duration(1000).attr("fill","#ff9500")
+      
+      })
+
+
+
+      var lasso_start = function() {
+            lasso.items() // reset size
+                .classed("not_possible",true)
+                .classed("selected",false);
+        };
+
+        var lasso_draw = function() {
+        
+            // Style the possible dots
+            lasso.possibleItems()
+                .classed("not_possible",false)
+                .classed("possible",true);
+    
+            // Style the not possible dot
+            lasso.notPossibleItems()
+                .classed("not_possible",true)
+                .classed("possible",false)
+        };
+
+        var lasso_end = function() {
+            // Reset the color of all dots
+            lasso.items()
+                .classed("not_possible",false)
+                .classed("possible",false)
+                .classed("isselected",false);
+
+            // Style the selected dots
+            lasso.selectedItems()
+                .classed("selected",true);
+            
+            let d=[];
+            for(i of lasso.selectedItems()._groups[0]){
+        if(i.__data__!=null)
+        {
+          d.push(i.__data__)
+        }
+}
+
+
+
+total_case_print1(d)
+
+        };
+        
+        var lasso = d3.lasso()
+            .closePathSelect(true)
+            .closePathDistance(100)
+            .items(circles)
+            .targetArea(container)
+            .on("start",lasso_start)
+            .on("draw",lasso_draw)
+            .on("end",lasso_end);
+
+        container.call(lasso)
+        lasso.items(container.selectAll('circle'))
+
+
+}
+
+
+function drawCirclesRecovered(recoveredcircle,clr) {
+  let config = getMapConfig(); 
+  let projection = getMapProjection(config)
+  let container = config.container; 
+  container.innerHTML=""
+  radius = d3.scaleSqrt([0,d3.max(recoveredcircle, d=> d.recovered)], [.5, config.width/40])
+  let circles = container.selectAll("circle")
+    .data(recoveredcircle)
+    .enter()               //confiremedlates earlier//
+  .append("circle")
+  .attr("class", "confirmed")
+    .attr("fill", clr)
+    .attr("fill-opacity", ".15")
+    .attr("stroke", clr)
+    .attr("stroke-width", 1)
+    .join("circle")
+    .attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
+    .attr("r", d => radius(d.recovered))
+    .on("mouseenter", function(d) {
+         // d3.select(this).attr("fill", "#229a5b")
+         div
+        .transition()
+        .duration(200)
+        .style("opacity", .9);
+      div
+        .html(
+          "<b>COUNTRY: </b>" +
+            d.country +
+            "</br><b>Recovered CASES: </b>" +
+          d.recovered +
+            "</br>AS OF " +
+          d.date
+        )
+        .attr("class","tooltip")
+        .style("left", d3.event.pageX + "px")
+        .style("top", d3.event.pageY - 28 + "px");
+         
+        })
+      .on("mouseleave",function(){
+        div
+        .attr("class","tooltip")
+        .transition()
+        .duration(500)
+        .style("opacity", 0);
+      })
+      .on("click",function(d){
+        d3.select(this).transition().duration(1000).attr("r",radius(d.recovered)+10).attr("fill","red").transition().duration(1000).attr("r",radius(d.recovered))
+        .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
+        .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
+        .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
+        .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered)).transition().duration(1000).attr("fill","green")
+      
+      })
+
+
+
+      var lasso_start = function() {
+            lasso.items() // reset size
+                .classed("not_possible",true)
+                .classed("selected",false);
+        };
+
+        var lasso_draw = function() {
+        
+            // Style the possible dots
+            lasso.possibleItems()
+                .classed("not_possible",false)
+                .classed("possible",true);
+    
+            // Style the not possible dot
+            lasso.notPossibleItems()
+                .classed("not_possible",true)
+                .classed("possible",false)
+        };
+
+        var lasso_end = function() {
+            // Reset the color of all dots
+            lasso.items()
+                .classed("not_possible",false)
+                .classed("possible",false)
+                .classed("isselected",false);
+
+            // Style the selected dots
+            lasso.selectedItems()
+                .classed("selected",true);
+            
+            let d=[];
+            for(i of lasso.selectedItems()._groups[0]){
+        if(i.__data__!=null)
+        {
+          d.push(i.__data__)
+        }
+}
+
+
+
+total_case_print2(d)
+
+        };
+        
+        var lasso = d3.lasso()
+            .closePathSelect(true)
+            .closePathDistance(100)
+            .items(circles)
+            .targetArea(container)
+            .on("start",lasso_start)
+            .on("draw",lasso_draw)
+            .on("end",lasso_end);
+
+        container.call(lasso)
+        lasso.items(container.selectAll('circle'))
+
+
+}
+
+
 function generate_country_list(data){
+  let data1=groupbyCountry(data);
   
+  console.log(data1)
 
 let countries = [
   
 ];
-for(i of data.features)
+for(i of data1)
 {
-  countries.push(i.properties.name);
+  
+  countries.push(i.country);
 }
 
 ul = document.getElementById("countries-list");
@@ -371,6 +755,12 @@ let filterCountries = function(event){
   });
   
   render_lists(filtered_countries);
+  let li = document.getElementsByTagName("li");
+setTimeout(function(){
+  for(let i = 0;i<li.length;i++){
+    li[i].addEventListener("click", myScript);
+}
+},500);
 }
 
 input.addEventListener('keyup', filterCountries);
@@ -378,8 +768,183 @@ input.addEventListener('keyup', filterCountries);
 
 
 function myScript(e){
-    console.log(e.target.innerHTML)
-    console.log(store.geoJSON)   
+  
+   let c=e.target.innerHTML
+    for( j=0;j<=180;j++){
+     i=d3.select("#G").selectAll("circle")._groups[0][j]
+     if(currentvis=="confirm"){
+    if(i.__data__.country==c)
+    {
+      d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+        .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+        .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+        .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+        .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed)).transition().duration(1000).attr("fill","#ff9500")
+    }
+     }
+     else if(currentvis=="death"){
+      if(i.__data__.country==c){
+  d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.deaths))
+        .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
+        .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
+        .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
+        .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths)).transition().duration(1000).attr("fill","purple")
+      }
+     }
+     else if(currentvis=="recovered"){
+      if(i.__data__.country==c){
+     d3.select(i).transition().duration(1000).attr("r",radius(d.recovered)+10).attr("fill","red").transition().duration(1000).attr("r",radius(d.recovered))
+        .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
+        .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
+        .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
+        .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered)).transition().duration(1000).attr("fill","green")
+      }
+     }
+    }
+    
+}
+
+function total_case_print(data)
+{
+  let cf=0;
+  let d;
+  if(data.length!=0){
+    for(i of data)
+    {
+      cf+=i.confirmed;
+d=i.date;
+    }
+    d3.select(".tc").html(
+            "<b> TOTAL CONFIRMED CASES: </b>" +
+        "<b>"+ cf +"</b>"+
+            "</br>AS OF " +
+          d
+        )
+    console.log(cf);
+}
+else{
+  data=groupbyCountry(store.coronadat)
+  for(i of data)
+    {
+      cf+=i.confirmed;
+d=i.date;
+    }
+    d3.select(".tc").html(
+            "<b> TOTAL CONFIRMED CASES: </b>" +
+        "<b>"+ cf +"</b>"+
+            "</br>AS OF " +
+          d
+        )
+    console.log(cf);
+  
+}
+}
+
+function total_case_print1(data)
+{
+  let cf=0;
+  let d;
+  if(data.length!=0){
+    for(i of data)
+    {
+      cf+=i.deaths;
+d=i.date;
+    }
+    d3.select(".tc1").html(
+            "<b> TOTAL DEATH CASES: </b>" +
+        "<b>"+ cf +"</b>"+
+            "</br>AS OF " +
+          d
+        )
+    console.log(cf);
+}
+else{
+  data=groupbyCountryDeath(store.death)
+  for(i of data)
+    {
+      cf+=i.deaths;
+d=i.date;
+    }
+    d3.select(".tc1").html(
+            "<b> TOTAL DEATH CASES: </b>" +
+        "<b>"+ cf +"</b>"+
+            "</br>AS OF " +
+          d
+        )
+    console.log(cf);
+  
+}
+}
+
+
+function total_case_print2(data)
+{
+  let cf=0;
+  let d;
+  if(data.length!=0){
+    for(i of data)
+    {
+      cf+=i.recovered;
+d=i.date;
+    }
+    d3.select(".tc2").html(
+            "<b> TOTAL RECOVERED CASES: </b>" +
+        "<b>"+ cf +"</b>"+
+            "</br>AS OF " +
+          d
+        )
+    console.log(cf);
+}
+else{
+  data=groupbyCountryRecovered(store.recovered)
+  for(i of data)
+    {
+      cf+=i.recovered;
+d=i.date;
+    }
+    d3.select(".tc2").html(
+            "<b> TOTAL RECOVERED CASES: </b>" +
+        "<b>"+ cf +"</b>"+
+            "</br>AS OF " +
+          d
+        )
+    console.log(cf);
+  
+}
+}
+
+function ddl()
+{
+  var selectBox = document.getElementById("options");
+    var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+    //console.log("hello")
+    //drawCirclesdeath(groupbyCountryDeath(store.death),"#ff9500")
+    //drawCircles(groupbyCountryDeath(store.death),)
+    if(selectedValue=="Death Cases"){
+      currentvis="death";
+    d3.select("#G").remove()
+    d3.select("#Map").append("g").attr("id","G")
+    drawMap(store.geoJSON)
+    drawCirclesdeath(groupbyCountryDeath(store.death),"purple")
+    }
+    else if(selectedValue=="Confirmed Cases")
+
+    {
+      currentvis="confirm";
+      d3.select("#G").remove()
+    d3.select("#Map").append("g").attr("id","G")
+    drawMap(store.geoJSON)
+    drawCircles(groupbyCountry(store.coronadat),"#ff9500")
+    }
+    else if(selectedValue=="Recovered Cases")
+    {
+      currentvis="recovered";
+      d3.select("#G").remove()
+    d3.select("#Map").append("g").attr("id","G")
+    drawMap(store.geoJSON)
+    drawCirclesRecovered(groupbyCountryRecovered(store.recovered),"green")
+    }
+    
 }
 
 loadData().then(showData);
