@@ -63,7 +63,7 @@ body {
     right: 475px;
     overflow: hidden;
     overflow-y:scroll;
-    margin:0;
+    margin-right:40px;
     padding:5px;
     position: absolute;
     height:120px; width:198px;
