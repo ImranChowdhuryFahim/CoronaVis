@@ -364,6 +364,7 @@ label{
             currentvis="confirm";
          groupbytime()
           drawMap(prep(store.geoJSON))
+          stackprocess()
         // groupbyCountryDeath(store.death)
             drawCircles(store.done,"blue")
             drawbar(store.done)
@@ -780,10 +781,47 @@ label{
                 }
             }
             store.done=a
+
             return store.geoJSON;
             
 
 
+        }
+
+        function stackprocess()
+        {
+          if(currentvis=="confirm")
+          {
+            a=store.done.sort((a,b) => b.confirmed - a.confirmed);
+          }
+          else if(currentvis=="death")
+          {
+            a=store.done.sort((a,b) => b.deaths - a.deaths);
+          }
+          else{
+            a=store.done.sort((a,b) => b.recovered - a.recovered);
+          }
+          let l=[]
+            for(i of a)
+            {
+              l.push({
+                country: i.country,
+                cases: "Confirmed",
+                number: i.confirmed
+              })
+              l.push({
+                country: i.country,
+                cases: "Recovered",
+                number: i.recovered
+              })
+              l.push({
+                country: i.country,
+                cases: "Death",
+                number: i.deaths
+              })
+            }
+            store.stackbar=l
+            return l
         }
         
         function drawCircles(countrycircle,clr) {
