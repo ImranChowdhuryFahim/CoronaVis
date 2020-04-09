@@ -362,7 +362,7 @@ label{
         
           function showData() { 
             currentvis="confirm";
-         groupbytime(store.coronadat)
+         groupbytime()
           drawMap(prep(store.geoJSON))
         // groupbyCountryDeath(store.death)
             drawCircles(store.done,"blue")
@@ -409,7 +409,7 @@ label{
          
         container.attr(
               "transform","translate(" + [d3.event.transform.x, d3.event.transform.y] + ")scale(" + d3.event.transform.k + ")rotate("+deg+",300,150)")
-             console.log(x,y,k)
+             
           }
         
         function getMapProjection(config) {
@@ -490,7 +490,7 @@ label{
           //console.log(data)
             confirmedLatest = data.map(d => d[d.length-1]).sort((a,b) => b.confirmed - a.confirmed);
             myData = confirmedLatest;
-            console.log(myData);
+            
             let result = confirmedLatest.reduce((result, d) => {
                 //The || sign in the line below means that in case the first option is anything that Javascript consider false (this insclude undefined, null and 0), the second option will be used. Here if result[d.DestAirportID] is false, it means that this is the first time we are seeing the airport, so we will create a new one (second part after ||)
                 
@@ -510,7 +510,7 @@ label{
             }, {})
             result = Object.keys(result).map(key => result[key])
             result= result.sort((a,b) => b.confirmed - a.confirmed);
-            //console.log(result)
+            
             return result;
         }
         
@@ -537,8 +537,7 @@ label{
             }, {})
             result = Object.keys(result).map(key => result[key])
             result= result.sort((a,b) => b.deaths - a.deaths);
-            // console.log("djhk")
-            // console.log(result)
+            
             return result;
         }
         
@@ -566,23 +565,165 @@ label{
             }, {})
             result = Object.keys(result).map(key => result[key])
             result= result.sort((a,b) => b.recovered - a.recovered);
-            // console.log("djhk")
-            // console.log(result)
+            
             return result;
         }
         
         
-        function groupbytime(data)
+        function groupbytime()
         {
           //console.log("hello")
           var byCountry = d3.nest()
             .key(function(d) {
               return d.country;
             })
-            .entries(data.flat());
-            return byCountry;
-          //console.log(databytime);
-          
+            .entries(store.coronadat.flat());
+           
+          //console.log(byCountry);
+          b=byCountry[0].values
+          for(i of byCountry)
+          {
+            if(i.values>b){
+              let a={}
+              for(j of i.values)
+              {
+                 if (!(j.date in a))
+                 {
+                   a[j.date]={
+                    country: j.country,
+                    lat: j.lat,
+                    lon: j.lon,
+                    iso: j.iso,
+                    date: j.date,
+                    confirmed: j.confirmed
+
+                   }
+                
+
+                 }
+                 else if(j.date in a){
+                  
+                a[j.date].confirmed+=j.confirmed;
+                 }
+
+              }
+              let l=[]
+              for( h in a)
+              {
+                
+                l.push(a[h])
+              }
+              i.values=l
+            }
+          }
+         
+
+//////death///////
+          var byCountrydeath = d3.nest()
+            .key(function(d) {
+              return d.country;
+            })
+            .entries(store.death.flat());
+           
+          b=byCountrydeath[0].values
+          for(i of byCountrydeath)
+          {
+            if(i.values>b){
+              let a={}
+              for(j of i.values)
+              {
+                 if (!(j.date in a))
+                 {
+                   a[j.date]={
+                    country: j.country,
+                    lat: j.lat,
+                    lon: j.lon,
+                    iso: j.iso,
+                    date: j.date,
+                    deaths: j.deaths
+
+                   }
+                
+
+                 }
+                 else if(j.date in a){
+                  
+                a[j.date].deaths+=j.deaths;
+                 }
+
+              }
+              let l=[]
+              for( h in a)
+              {
+                
+                l.push(a[h])
+              }
+              i.values=l
+            }
+          }
+
+
+/////////recovered////////
+          var byCountryrecoverd = d3.nest()
+            .key(function(d) {
+              return d.country;
+            })
+            .entries(store.recovered.flat());
+           
+          b=byCountryrecoverd[0].values
+          for(i of byCountryrecoverd)
+          {
+            if(i.values>b){
+              let a={}
+              for(j of i.values)
+              {
+                 if (!(j.date in a))
+                 {
+                   a[j.date]={
+                    country: j.country,
+                    lat: j.lat,
+                    lon: j.lon,
+                    iso: j.iso,
+                    date: j.date,
+                    recovered: j.recovered
+
+                   }
+                
+
+                 }
+                 else if(j.date in a){
+                  
+                a[j.date].recovered+=j.recovered;
+                 }
+
+              }
+              let l=[]
+              for( h in a)
+              {
+                
+                l.push(a[h])
+              }
+              i.values=l
+            }
+          }
+
+        for(i=0;i<byCountry.length;i++)
+        {
+          for(j=0;j<byCountry[i].values.length;j++)
+          {
+            byCountry[i].values[j].deaths=byCountrydeath[i].values[j].deaths;
+            byCountry[i].values[j].recovered=byCountryrecoverd[i].values[j].recovered;
+            byCountry[i].values[j].active=byCountry[i].values[j].confirmed - (byCountry[i].values[j].deaths+ byCountry[i].values[j].recovered);
+            if (j==0){
+            byCountry[i].values[j].new=0}
+            else{
+              byCountry[i].values[j].new=byCountry[i].values[j].confirmed - byCountry[i].values[j-1].confirmed;
+            }
+          }
+        }
+           store.time=byCountry;
+
+
           
          
         }
@@ -1016,7 +1157,7 @@ label{
         function generate_country_list(data){
           let data1=groupbyCountry(data);
           
-          console.log(data1)
+          
         
         let countries = [
           
@@ -1166,7 +1307,7 @@ label{
 "</br>"+"Confirmed Cases"
                   
                 )
-            console.log(cf);
+            
         }
         else{
           data=groupbyCountry(store.coronadat)
@@ -1179,7 +1320,7 @@ label{
                 "<span style='font-weight:bold;font-size:1.5em;color:orange'>"+cf+"</span>"+
 "</br>"+"Confirmed Cases"
                 )
-            console.log(cf);
+          
           
         }
         }
@@ -1198,7 +1339,7 @@ label{
                 "<span style='font-weight:bold;font-size:1.5em;color:red'>"+cf+"</span>"+
 "</br>"+"Deaths"
                 )
-            console.log(cf);
+            
         }
         else{
           data=groupbyCountryDeath(store.death)
@@ -1211,7 +1352,7 @@ label{
                 "<span style='font-weight:bold;font-size:1.5em;color:red'>"+cf+"</span>"+
 "</br>"+"Deaths"
                 )
-            console.log(cf);
+            
           
         }
         }
@@ -1231,7 +1372,7 @@ label{
                 "<span style='font-weight:bold;font-size:1.5em;color:green'>"+cf+"</span>"+
 "</br>"+"People Recovered"
                 )
-            console.log(cf);
+            
         }
         else{
           data=groupbyCountryRecovered(store.recovered)
@@ -1244,7 +1385,7 @@ label{
                 "<span style='font-weight:bold;font-size:1.5em;color:green'>"+cf+"</span>"+
 "</br>"+"People Recovered"
                 )
-            console.log(cf);
+            
           
         }
         }
@@ -1309,7 +1450,7 @@ var numBars = Math.round(width/barWidth);
 var isScrollDisplayed = barWidth * data.length > width;
        
 
-console.log(isScrollDisplayed)
+// console.log(isScrollDisplayed)
   
 var xscale = d3.scaleBand()
                 .domain(data.slice(0,numBars).map(function (d) { return d.country; }))
