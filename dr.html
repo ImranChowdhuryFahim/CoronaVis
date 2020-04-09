@@ -811,6 +811,11 @@ label{
               })
               l.push({
                 country: i.country,
+                cases: "Active",
+                number: (i.confirmed - (i.recovered + i.deaths))
+              })
+              l.push({
+                country: i.country,
                 cases: "Recovered",
                 number: i.recovered
               })
