@@ -1,0 +1,1549 @@
+
+<html>
+
+    <head>
+        <style>
+            body {
+                font-family: Helvetica, Arial, sans-serif
+            }
+            h1 {
+                background-color: #2a5599;
+                color: white;
+                padding: 5px;
+            }
+            svg {
+                border: solid 1px black;
+            }
+            
+            .info{
+                display: flex;
+                justify-content: center;
+                margin-bottom: 30px;
+            }
+             div.tc{
+    width: 100px;
+    text-align: center;
+    color:#808080;
+    width: 100px;
+    padding: 0 1em;
+    line-height: 1.2;
+    font-size: .9em;
+    vertical-align: top;
+    border-right:1px dotted #BDBDBD;
+  }
+  div.tc1{
+    width: 100px;
+    text-align: center;
+    color:#808080;
+    width: 100px;
+    padding: 0 1em;
+    line-height: 1.2;
+    font-size: .9em;
+    vertical-align: top;
+    border-right:1px dotted #BDBDBD;
+  }
+  div.tc2{
+    width: 100px;
+    text-align: center;
+    color:#808080;
+    width: 100px;
+    padding: 0 1em;
+    line-height: 1.2;
+    font-size: .9em;
+    vertical-align: top;
+    border-right:1px dotted #BDBDBD;
+  }
+            .mainView {
+                display: flex;
+            }
+    
+            #filter_countries{
+    width:15%;
+    padding:10px;
+    position: absolute;
+    right: 0%;
+    
+  }
+
+  #Map{
+    background: skyblue;
+  }
+
+  #countries-list{
+
+    right: 0%;
+    overflow: hidden;
+    overflow-y:scroll;
+    margin-top: 40px;
+    padding:5px;
+    position: absolute;
+    height:450px; width:198px;
+    background-color: transparent;
+    color: black;
+    fill-opacity: .1;
+    
+  }
+  #countries-list li{
+    
+    position: relative; 
+    list-style:none;
+    padding:0px;
+    margin:5px;
+    border: 1px solid #e4e4e4;
+   
+  }
+  #s{
+    border: none;
+  }
+  circle {
+    fill-opacity: .55;
+    stroke-width: .5;
+}
+label{
+    padding: 5px;
+    color:#808080;
+    font-size: 1.2em;
+    
+}
+
+.lasso path {
+    stroke: rgb(80,80,80);
+    stroke-width:2px;
+}
+
+.lasso .drawn {
+    fill-opacity:.05 ;
+}
+
+.lasso .loop_close {
+    fill:none;
+    stroke-dasharray: 4,4;
+}
+
+.lasso .origin {
+    fill:#3399FF;
+    fill-opacity:.5;
+}
+
+.not_possible {
+    fill:#415679;
+    
+}
+
+.possible {
+    fill: palevioletred;
+}
+
+.selected {
+    fill : black;
+    fill-opacity: 1;
+}
+
+.isselected {
+    fill: red;
+}
+                                                                            /* previousl 55 */
+            div.tooltip {position: absolute; text-align: left; width: 200px; height: 85px; padding: 15px;font: 14px calibri; background: #d60f23; color: white; border: 2px; border-radius: 8px; pointer-events: none;}
+  div.tooltip1{
+
+    position: absolute; text-align: left; width: 150px; height: 20px; padding: 15px;font: 14px calibri; background: purple; color: white; border: 2px; border-radius: 8px; pointer-events: none;
+   
+}
+
+.bar {
+          fill: steelblue;
+          clip-path: url(#clip);
+        }
+          
+        .subBar { 
+          fill: gray;
+          opacity: 0.5;
+        }
+        
+        .axis path,
+        .axis line {
+          fill: none;
+          stroke: #000;
+          shape-rendering: crispEdges;
+        }
+        
+        .brush .extent {
+          stroke: #fff;
+          fill: steelblue;
+          fill-opacity: .25;
+          shape-rendering: crispEdges;
+        }
+        
+          rect.mover {
+                    stroke: red;
+                    stroke-opacity: .1;
+                    fill: lightSteelBlue;
+                    fill-opacity: .5;
+                    overflow-y: scroll;
+                }
+        </style>
+        <script src="./d3-lasso.min.js"></script>
+        <script src="d3.js"></script>
+        <title>COVID-19 Dashboard</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
+
+    </head>
+    
+    <body>
+        <h1>COVID-19 Dashboard</h1>
+        <div class="info">
+                <div class="tc" ></div>
+               <div class="tc1"></div>
+                <div class="tc2"></div> 
+                <div>
+                    <form >
+                        <label>Choose Case:</label>
+                      <select id="options" name="cars" onchange="ddl()">
+                        <option value="Confirmed Cases">Confirmed Cases</option>
+                        <option value="Death Cases">Death Cases</option>
+                        <option value="Recovered Cases">Recovered Cases</option>
+                        <option value="New Cases">New Cases</option>
+                      </select>
+                    </form>
+                  </div>
+                  <div>
+                    <form >
+                        <label>Select Country:</label>
+                      <select id="countries" class="chosen" name="countries" onchange="myScript()">
+                        
+                      </select>
+                    </form>
+                  </div>
+        </div>
+        <div class="mainView">
+            <div id="bar">
+                <svg id="BarChart"  style="transform: rotate(90deg)" >
+                    
+                </svg>
+            </div>
+            <div>
+                <svg id="Map">
+                    <g id="G"></g>
+                </svg>
+            </div>
+            <div>
+                
+                <svg ></svg>
+                
+                <svg></svg>
+
+            </div>
+            <!-- <div>
+                <h2 align="right">Search Countries</h2>
+                <div class="search">
+                    <input type="text" placeholder="Search Countries" id="filter_countries"/>
+    
+                     <ul id="countries-list">
+    
+                     </ul>
+                    </div>
+                <svg id="s"></svg>
+            </div> -->
+          
+            
+    
+        </div>
+        
+    
+    </body>
+    <script>
+        let store={}
+        store.done=[];
+            let x=0
+            let y=0
+            let k=1
+            let deg=0
+            let svg=d3.select("#Map")
+            let currentvis="";
+            div = d3
+          .select("body")
+          .append("div")
+          .attr("class", "tooltip")
+          .style("opacity", 0)
+        
+        
+          function loadData() {
+            return Promise.all([
+            d3.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv', (d, rows, cols) => { 
+          
+          const dates = cols.slice(4, cols.length);
+          const data = [];
+            
+          dates.forEach((dd, i)=> {
+            const match = d['Country/Region'];
+            const country = d['Country/Region'];
+            const short = d['Country/Region'];
+            const region = d['Province/State'];
+            const iso = (match !== undefined)?match.iso:'';
+            const lat = d['Lat'];
+            const lon = d['Long'];
+            const date = dd;
+            const confirmed = +d[dd];
+            const pivot = {
+              country: country, short: short, region: region, lat: lat, lon: lon, date: date, confirmed: confirmed, iso: iso
+            }
+            
+            data.push(pivot)
+            
+          })
+          //console.log(data)
+        
+          return data
+         
+        }),
+                d3.json("countries.geo.json"),
+                d3.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv', (d, rows, cols) => { 
+          
+          const dates = cols.slice(4, cols.length);
+          const data = [];
+          
+          dates.forEach(dd=> {
+            const match = d['Country/Region']
+            const country = d['Country/Region'];
+            const region = d['Province/State'];
+            const iso = (match !== undefined)?match.iso:'';
+            const lat = d['Lat'];
+            const lon = d['Long'];
+            const date = dd;
+            const deaths = +d[dd];
+            const pivot = {
+              country: country, region: region, lat: lat, lon: lon, date: date, deaths: deaths, iso: iso
+            }
+            
+            data.push(pivot)
+            
+          })
+          
+          return data
+          
+        }),d3.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv', (d, rows, cols) => { 
+          
+          const dates = cols.slice(4, cols.length);
+          const data = [];
+          
+          dates.forEach(dd=> {
+            const match = d['Country/Region']
+            const country = d['Country/Region'];
+            const region = d['Province/State'];
+            const iso = (match !== undefined)?match.iso:'';
+            const lat = d['Lat'];
+            const lon = d['Long'];
+            const date = dd;
+            const recovered = +d[dd];
+            const pivot = {
+              country: country, region: region, lat: lat, lon: lon, date: date, recovered: recovered, iso: iso
+            }
+            
+            data.push(pivot)
+            
+          })
+          
+          return data
+          
+        })
+            ]).then(datasets => {
+                
+                store.coronadat=datasets[0];
+                store.geoJSON = datasets[1];
+                store.death=datasets[2];
+                store.recovered=datasets[3];
+                return store;
+            })
+        }
+        
+          function showData() { 
+            currentvis="confirm";
+         groupbytime(store.coronadat)
+          drawMap(prep(store.geoJSON))
+        // groupbyCountryDeath(store.death)
+            drawCircles(store.done,"blue")
+            drawbar(store.done)
+           generate_country_list(store.coronadat)
+        //   groupbyCountryDeath(store.death)
+         // drawCirclesdeath(groupbyCountryDeath(store.death),"#ff9500")
+          total_case_print(groupbyCountry(store.coronadat))
+          total_case_print1(groupbyCountryDeath(store.death))
+          total_case_print2(groupbyCountryRecovered(store.recovered))
+          
+        
+        }
+        
+          
+            function getMapConfig(){
+          let width = 550;
+          let height = 500;
+          let container=d3.select("#G")
+          let zoom = d3.zoom()
+               .scaleExtent([1, 40])
+               .translateExtent([[0,0], [width, height]])
+               .extent([[0, 0], [width, height]])
+            .on("zoom",function(){
+                zoomed(container)
+            })
+          
+        
+          let containe = d3.select("#Map")
+                          .attr("height",height)
+                          .attr("width",width)
+                          .call(zoom)
+        
+          
+          return {width, height, container}
+        }
+        
+        
+        function zoomed(container)
+          {
+            x=d3.event.transform.x
+            y=d3.event.transform.y
+            k=d3.event.transform.k
+         
+        container.attr(
+              "transform","translate(" + [d3.event.transform.x, d3.event.transform.y] + ")scale(" + d3.event.transform.k + ")rotate("+deg+",300,150)")
+             console.log(x,y,k)
+          }
+        
+        function getMapProjection(config) {
+          let {width, height} = config;
+          let projection = d3.geoMercator()
+          projection.scale(86)
+                    .translate([width / 2, height / 2+50])
+                    .rotate([0,0,0])
+                    
+          store.mapProjection = projection;
+          return projection;
+        }
+        
+        function drawBaseMap(container, countries, projection){
+          let path =d3.geoPath()
+                     .projection(projection)
+        mc=0
+        for(i of countries)
+        {
+          if(mc<i.confirmed){
+              mc=i.confirmed
+          }
+        }
+        // var color_scale =d3.scaleLinear().domain([0,mc]).range(["white","red"]);
+        var color_scale=d3.scaleLinear()
+    .domain([0,mc/4])
+    .range(["white","red"]);
+        
+          container.selectAll("path").data(countries)
+              .enter().append("path")
+              .attr("d",d=>path(d) )
+              .attr("fill", function(d){
+                  return color_scale(d.confirmed);
+              })
+            .attr("stroke", '#bdbdbd')
+            .attr("stroke-width", .5)
+            .attr("stroke-linejoin", "round")
+              .on("mouseenter", function(d) {
+                 // d3.select(this).attr("fill", "#229a5b")
+                 div
+                .transition()
+                .duration(200)
+                .style("opacity", .9);
+              div
+                .html(
+                    d.properties.name
+                )
+                .attr("class","tooltip1")
+                .style("left", d3.event.pageX + "px")
+                .style("top", d3.event.pageY - 28 + "px");
+                 
+                })
+              .on("mouseleave",function(){
+               // d3.select(this).attr("fill", "#eee")
+               div
+               .attr("class","tooltip1")
+                .transition()
+                .duration(500)
+                .style("opacity", 0);
+               
+              })
+        
+    
+             
+             
+              
+              
+        }
+        
+        function drawMap(geoJeon) {
+            let config = getMapConfig();
+            let projection = getMapProjection(config)
+            drawBaseMap(config.container, geoJeon.features, projection)
+        }
+        
+        let myData;
+        function groupbyCountry(data) {
+          //console.log(data)
+            confirmedLatest = data.map(d => d[d.length-1]).sort((a,b) => b.confirmed - a.confirmed);
+            myData = confirmedLatest;
+            console.log(myData);
+            let result = confirmedLatest.reduce((result, d) => {
+                //The || sign in the line below means that in case the first option is anything that Javascript consider false (this insclude undefined, null and 0), the second option will be used. Here if result[d.DestAirportID] is false, it means that this is the first time we are seeing the airport, so we will create a new one (second part after ||)
+                
+                let grpbycounty = result[d.country] || {
+                    country: d.country,
+                    short: d.short,
+                    lat: d.lat,
+                    lon: d.lon,
+                    iso: d.iso,
+                    date: d.date,
+                    confirmed: 0
+                }
+                grpbycounty.confirmed += d.confirmed
+                result[d.country] = grpbycounty
+        
+                return result
+            }, {})
+            result = Object.keys(result).map(key => result[key])
+            result= result.sort((a,b) => b.confirmed - a.confirmed);
+            //console.log(result)
+            return result;
+        }
+        
+        function groupbyCountryDeath(data)
+        {
+          confirmedLatestdeath = data.map(d => d[d.length-1]).sort((a,b) => b.deaths - a.deaths);
+            myData = confirmedLatestdeath;
+            //console.log(myData);
+            let result = confirmedLatestdeath.reduce((result, d) => {
+                //The || sign in the line below means that in case the first option is anything that Javascript consider false (this insclude undefined, null and 0), the second option will be used. Here if result[d.DestAirportID] is false, it means that this is the first time we are seeing the airport, so we will create a new one (second part after ||)
+                
+                let grpbycounty = result[d.country] || {
+                    country: d.country,
+                    lat: d.lat,
+                    lon: d.lon,
+                    iso: d.iso,
+                    date: d.date,
+                    deaths: 0
+                }
+                grpbycounty.deaths += d.deaths
+                result[d.country] = grpbycounty
+        
+                return result
+            }, {})
+            result = Object.keys(result).map(key => result[key])
+            result= result.sort((a,b) => b.deaths - a.deaths);
+            // console.log("djhk")
+            // console.log(result)
+            return result;
+        }
+        
+        
+        function groupbyCountryRecovered(data)
+        {
+          confirmedLatestrecovered = data.map(d => d[d.length-1]).sort((a,b) => b.recovered - a.recovered);
+            myData = confirmedLatestrecovered;
+            //console.log(myData);
+            let result = confirmedLatestrecovered.reduce((result, d) => {
+                //The || sign in the line below means that in case the first option is anything that Javascript consider false (this insclude undefined, null and 0), the second option will be used. Here if result[d.DestAirportID] is false, it means that this is the first time we are seeing the airport, so we will create a new one (second part after ||)
+                
+                let grpbycounty = result[d.country] || {
+                    country: d.country,
+                    lat: d.lat,
+                    lon: d.lon,
+                    iso: d.iso,
+                    date: d.date,
+                    recovered: 0
+                }
+                grpbycounty.recovered += d.recovered
+                result[d.country] = grpbycounty
+        
+                return result
+            }, {})
+            result = Object.keys(result).map(key => result[key])
+            result= result.sort((a,b) => b.recovered - a.recovered);
+            // console.log("djhk")
+            // console.log(result)
+            return result;
+        }
+        
+        
+        function groupbytime(data)
+        {
+          //console.log("hello")
+          var byCountry = d3.nest()
+            .key(function(d) {
+              return d.country;
+            })
+            .entries(data.flat());
+            return byCountry;
+          //console.log(databytime);
+          
+          
+         
+        }
+
+        function prep(){
+            
+            a=groupbyCountry(store.coronadat);
+            k=groupbyCountryDeath(store.death)
+            z=groupbyCountryRecovered(store.recovered)
+            for(i=0;i<a.length;i++)
+            {
+                
+                b=a[i].country;
+                // a[i].deaths=k[i].deaths;
+                // a[i].recovered=z[i].recovered;
+                if(b=="US"){
+                    b="United States of America"
+                }
+                for (j of store.geoJSON.features)
+                {
+                    if(j.properties.name==b)
+                    {
+                        j.confirmed=a[i].confirmed;
+                        break;
+                    }
+                    
+                }
+            }
+            for (i of store.geoJSON.features)
+            {
+                if(!('confirmed' in i)){
+                    i.confirmed=0;
+                }
+            }
+            for(f of a)
+            {
+
+                for (g of k){
+                    if(f.country==g.country)
+                    {
+                        f.deaths=g.deaths;
+                        break;
+                    }
+
+                }
+                for(h of z)
+                {
+                   if(f.country==h.country)
+                   {
+                       f.recovered=h.recovered;
+                       break;
+                   }
+                }
+            }
+            store.done=a
+            return store.geoJSON;
+            
+
+
+        }
+        
+        function drawCircles(countrycircle,clr) {
+          let config = getMapConfig(); 
+          let projection = getMapProjection(config)
+          let container = config.container; 
+          container.innerHTML=""
+          radius = d3.scaleSqrt([0,d3.max(countrycircle, d=> d.confirmed)], [.5, config.width/40])
+          let circles = container.selectAll("circle")
+            .data(countrycircle)
+            .enter()               //confiremedlates earlier//
+          .append("circle")
+          .attr("class", "confirmed")
+            .attr("fill", clr)
+            .attr("fill-opacity", ".15")
+            .attr("stroke", clr)
+            .attr("stroke-width", 1)
+            .join("circle")
+            .attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
+            .attr("r", d => radius(d.confirmed))
+            .on("mouseenter", function(d) {
+                 // d3.select(this).attr("fill", "#229a5b")
+                 div
+                .transition()
+                .duration(200)
+                .style("opacity", .9);
+              div
+                .html(
+                  "<b>COUNTRY: </b>" +
+                    d.country +
+                    "</br><b>CONFIRMED CASES: </b>" +
+                  d.confirmed +
+                  "</br><b>Death CASES: </b>" +
+                  d.deaths +
+                  "</br><b>Recovered CASES: </b>" +
+                  d.recovered +
+                    "</br>AS OF " +
+                  d.date
+                )
+                .attr("class","tooltip")
+                .style("left", d3.event.pageX + "px")
+                .style("top", d3.event.pageY - 28 + "px");
+                 
+                })
+              .on("mouseleave",function(){
+                div
+                .attr("class","tooltip")
+                .transition()
+                .duration(500)
+                .style("opacity", 0);
+              })
+              .on("click",function(d){
+                d3.select(this).transition().duration(1000).attr("r",radius(d.confirmed)+10).attr("fill","red").transition().duration(1000).attr("r",radius(d.confirmed))
+                .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed))
+                .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed))
+                .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed))
+                .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed)).transition().duration(1000).attr("fill","#ff9500")
+              
+              })
+        
+        
+        
+              var lasso_start = function() {
+                    lasso.items() // reset size
+                        .classed("not_possible",true)
+                        .classed("selected",false);
+                };
+        
+                var lasso_draw = function() {
+                
+                    // Style the possible dots
+                    lasso.possibleItems()
+                        .classed("not_possible",false)
+                        .classed("possible",true);
+            
+                    // Style the not possible dot
+                    lasso.notPossibleItems()
+                        .classed("not_possible",true)
+                        .classed("possible",false)
+                };
+        
+                var lasso_end = function() {
+                    // Reset the color of all dots
+                    lasso.items()
+                        .classed("not_possible",false)
+                        .classed("possible",false)
+                        .classed("isselected",false);
+        
+                    // Style the selected dots
+                    lasso.selectedItems()
+                        .classed("selected",true);
+                    
+                    let d=[];
+                    for(i of lasso.selectedItems()._groups[0]){
+                if(i.__data__!=null)
+                {
+                  d.push(i.__data__)
+                }
+        }
+        total_case_print(d)
+        total_case_print1(d)
+        total_case_print2(d)
+        
+                };
+                
+                var lasso = d3.lasso()
+                    .closePathSelect(true)
+                    .closePathDistance(100)
+                    .items(circles)
+                    .targetArea(container)
+                    .on("start",lasso_start)
+                    .on("draw",lasso_draw)
+                    .on("end",lasso_end);
+        
+                container.call(lasso)
+                lasso.items(container.selectAll('circle'))
+
+//                 container.selectAll("text")
+//         .data(countrycircle)
+//         .enter().append("svg:text")
+//     .text(function(d){
+//         return d.country;
+//     }).attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
+// .attr("text-anchor","middle")
+//     .attr('font-size','2pt');
+        
+        
+        }
+        
+        
+        
+        function drawCirclesdeath(deathcircle,clr) {
+          let config = getMapConfig(); 
+          let projection = getMapProjection(config)
+          let container = config.container; 
+          container.innerHTML=""
+          radius = d3.scaleSqrt([0,d3.max(deathcircle, d=> d.deaths)], [.5, config.width/40])
+          let circles = container.selectAll("circle")
+            .data(deathcircle)
+            .enter()               //confiremedlates earlier//
+          .append("circle")
+          .attr("class", "confirmed")
+            .attr("fill", clr)
+            .attr("fill-opacity", ".15")
+            .attr("stroke", clr)
+            .attr("stroke-width", 1)
+            .join("circle")
+            .attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
+            .attr("r", d => radius(d.deaths))
+            .on("mouseenter", function(d) {
+                 // d3.select(this).attr("fill", "#229a5b")
+                 div
+                .transition()
+                .duration(200)
+                .style("opacity", .9);
+              div
+              .html(
+                  "<b>COUNTRY: </b>" +
+                    d.country +
+                    "</br><b>CONFIRMED CASES: </b>" +
+                  d.confirmed +
+                  "</br><b>Death CASES: </b>" +
+                  d.deaths +
+                  "</br><b>Recovered CASES: </b>" +
+                  d.recovered +
+                    "</br>AS OF " +
+                  d.date
+                )
+                .attr("class","tooltip")
+                .style("left", d3.event.pageX + "px")
+                .style("top", d3.event.pageY - 28 + "px");
+                 
+                })
+              .on("mouseleave",function(){
+                div
+                .attr("class","tooltip")
+                .transition()
+                .duration(500)
+                .style("opacity", 0);
+              })
+              .on("click",function(d){
+                d3.select(this).transition().duration(1000).attr("r",radius(d.deaths)+10).attr("fill","red").transition().duration(1000).attr("r",radius(d.deaths))
+                .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths))
+                .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths))
+                .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths))
+                .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths)).transition().duration(1000).attr("fill","blue")
+              
+              })
+        
+        
+        
+              var lasso_start = function() {
+                    lasso.items() // reset size
+                        .classed("not_possible",true)
+                        .classed("selected",false);
+                };
+        
+                var lasso_draw = function() {
+                
+                    // Style the possible dots
+                    lasso.possibleItems()
+                        .classed("not_possible",false)
+                        .classed("possible",true);
+            
+                    // Style the not possible dot
+                    lasso.notPossibleItems()
+                        .classed("not_possible",true)
+                        .classed("possible",false)
+                };
+        
+                var lasso_end = function() {
+                    // Reset the color of all dots
+                    lasso.items()
+                        .classed("not_possible",false)
+                        .classed("possible",false)
+                        .classed("isselected",false);
+        
+                    // Style the selected dots
+                    lasso.selectedItems()
+                        .classed("selected",true);
+                    
+                    let d=[];
+                    for(i of lasso.selectedItems()._groups[0]){
+                if(i.__data__!=null)
+                {
+                  d.push(i.__data__)
+                }
+        }
+        
+        
+        
+        total_case_print1(d)
+        
+                };
+                
+                var lasso = d3.lasso()
+                    .closePathSelect(true)
+                    .closePathDistance(100)
+                    .items(circles)
+                    .targetArea(container)
+                    .on("start",lasso_start)
+                    .on("draw",lasso_draw)
+                    .on("end",lasso_end);
+        
+                container.call(lasso)
+                lasso.items(container.selectAll('circle'))
+        
+        
+        }
+        
+        
+        function drawCirclesRecovered(recoveredcircle,clr) {
+          let config = getMapConfig(); 
+          let projection = getMapProjection(config)
+          let container = config.container; 
+          container.innerHTML=""
+          radius = d3.scaleSqrt([0,d3.max(recoveredcircle, d=> d.recovered)], [.5, config.width/40])
+          let circles = container.selectAll("circle")
+            .data(recoveredcircle)
+            .enter()               //confiremedlates earlier//
+          .append("circle")
+          .attr("class", "confirmed")
+            .attr("fill", clr)
+            .attr("fill-opacity", ".15")
+            .attr("stroke", clr)
+            .attr("stroke-width", 1)
+            .join("circle")
+            .attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
+            .attr("r", d => radius(d.recovered))
+            .on("mouseenter", function(d) {
+                 // d3.select(this).attr("fill", "#229a5b")
+                 div
+                .transition()
+                .duration(200)
+                .style("opacity", .9);
+              div
+              .html(
+                  "<b>COUNTRY: </b>" +
+                    d.country +
+                    "</br><b>CONFIRMED CASES: </b>" +
+                  d.confirmed +
+                  "</br><b>Death CASES: </b>" +
+                  d.deaths +
+                  "</br><b>Recovered CASES: </b>" +
+                  d.recovered +
+                    "</br>AS OF " +
+                  d.date
+                )
+                .attr("class","tooltip")
+                .style("left", d3.event.pageX + "px")
+                .style("top", d3.event.pageY - 28 + "px");
+                 
+                })
+              .on("mouseleave",function(){
+                div
+                .attr("class","tooltip")
+                .transition()
+                .duration(500)
+                .style("opacity", 0);
+              })
+              .on("click",function(d){
+                d3.select(this).transition().duration(1000).attr("r",radius(d.recovered)+10).attr("fill","red").transition().duration(1000).attr("r",radius(d.recovered))
+                .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
+                .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
+                .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
+                .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered)).transition().duration(1000).attr("fill","green")
+              
+              })
+        
+        
+        
+              var lasso_start = function() {
+                    lasso.items() // reset size
+                        .classed("not_possible",true)
+                        .classed("selected",false);
+                };
+        
+                var lasso_draw = function() {
+                
+                    // Style the possible dots
+                    lasso.possibleItems()
+                        .classed("not_possible",false)
+                        .classed("possible",true);
+            
+                    // Style the not possible dot
+                    lasso.notPossibleItems()
+                        .classed("not_possible",true)
+                        .classed("possible",false)
+                };
+        
+                var lasso_end = function() {
+                    // Reset the color of all dots
+                    lasso.items()
+                        .classed("not_possible",false)
+                        .classed("possible",false)
+                        .classed("isselected",false);
+        
+                    // Style the selected dots
+                    lasso.selectedItems()
+                        .classed("selected",true);
+                    
+                    let d=[];
+                    for(i of lasso.selectedItems()._groups[0]){
+                if(i.__data__!=null)
+                {
+                  d.push(i.__data__)
+                }
+        }
+        
+        
+        
+        total_case_print2(d)
+        
+                };
+                
+                var lasso = d3.lasso()
+                    .closePathSelect(true)
+                    .closePathDistance(100)
+                    .items(circles)
+                    .targetArea(container)
+                    .on("start",lasso_start)
+                    .on("draw",lasso_draw)
+                    .on("end",lasso_end);
+        
+                container.call(lasso)
+                lasso.items(container.selectAll('circle'))
+        
+        
+        }
+        
+        
+        function generate_country_list(data){
+          let data1=groupbyCountry(data);
+          
+          console.log(data1)
+        
+        let countries = [
+          
+        ];
+        countries.push("All");
+        for(i of data1)
+        {
+          
+          countries.push(i.country);
+        }
+        
+        ul = document.getElementById("countries");
+        
+        let render_lists = function(lists){
+          let li = "";
+          for(index in lists){
+            li += "<option>" + lists[index] + "</option>";
+          }
+          ul.innerHTML = li;
+        }
+        
+        // let li = document.getElementsByTagName("li");
+        // setTimeout(function(){
+        //   for(let i = 0;i<li.length;i++){
+        //     li[i].addEventListener("click", myScript);
+        // }
+        // },500);
+        
+        
+        
+        render_lists(countries);
+
+        $(".chosen").chosen();
+        
+        // lets filters it
+        // input = document.getElementById('filter_countries');
+        
+        // let filterCountries = function(event){
+        //   keyword = input.value.toLowerCase();
+        //   filtered_countries = countries.filter(function(country){
+        //         country = country.toLowerCase();
+        //        return country.indexOf(keyword) > -1; 
+        //   });
+          
+        //   render_lists(filtered_countries);
+        //   let li = document.getElementsByTagName("li");
+        // setTimeout(function(){
+        //   for(let i = 0;i<li.length;i++){
+        //     li[i].addEventListener("click", myScript);
+        // }
+        // },500);
+        // }
+        
+        // input.addEventListener('keyup', filterCountries);
+        }
+        
+        
+        function myScript(){
+
+            var selectBox = document.getElementById("countries");
+            var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+          
+           let c=selectedValue;
+            for( j=0;j<=180;j++){
+             i=d3.select("#G").selectAll("circle")._groups[0][j]
+             if(currentvis=="confirm"){
+            if(i.__data__.country==c)
+            {
+              d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+                .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+                .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+                .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+                .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed)).transition().duration(1000).attr("fill","blue")
+            }
+             }
+             else if(currentvis=="death"){
+              if(i.__data__.country==c){
+          d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
+                .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
+                .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
+                .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
+                .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths)).transition().duration(1000).attr("fill","purple")
+              }
+             }
+             else if(currentvis=="recovered"){
+              if(i.__data__.country==c){
+                d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
+               .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
+               .transition().duration(1000).attr("r",radius(i.__data__d.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
+               .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
+               .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered)).transition().duration(1000).attr("fill","green")
+              }
+             }
+            }
+            
+        }
+
+        function myScript1(e){
+          
+          let c=e
+           for( j=0;j<=180;j++){
+            i=d3.select("#G").selectAll("circle")._groups[0][j]
+            if(currentvis=="confirm"){
+           if(i.__data__.country==c)
+           {
+             d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+               .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+               .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+               .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+               .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed)).transition().duration(1000).attr("fill","blue")
+           }
+            }
+            else if(currentvis=="death"){
+             if(i.__data__.country==c){
+         d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
+               .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
+               .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
+               .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
+               .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths)).transition().duration(1000).attr("fill","purple")
+             }
+            }
+            else if(currentvis=="recovered"){
+             if(i.__data__.country==c){
+            d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
+               .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
+               .transition().duration(1000).attr("r",radius(i.__data__d.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
+               .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
+               .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered)).transition().duration(1000).attr("fill","green")
+             }
+            }
+           }
+           
+       }
+        
+        function total_case_print(data)
+        {
+          let cf=0;
+          let d;
+          if(data.length!=0){
+            for(i of data)
+            {
+              cf+=i.confirmed;
+        d=i.date;
+            }
+            d3.select(".tc").html(
+"<span style='font-weight:bold;font-size:1.5em;color:orange'>"+cf+"</span>"+
+"</br>"+"Confirmed Cases"
+                  
+                )
+            console.log(cf);
+        }
+        else{
+          data=groupbyCountry(store.coronadat)
+          for(i of data)
+            {
+              cf+=i.confirmed;
+        d=i.date;
+            }
+            d3.select(".tc").html(
+                "<span style='font-weight:bold;font-size:1.5em;color:orange'>"+cf+"</span>"+
+"</br>"+"Confirmed Cases"
+                )
+            console.log(cf);
+          
+        }
+        }
+        
+        function total_case_print1(data)
+        {
+          let cf=0;
+          let d;
+          if(data.length!=0){
+            for(i of data)
+            {
+              cf+=i.deaths;
+        d=i.date;
+            }
+            d3.select(".tc1").html(
+                "<span style='font-weight:bold;font-size:1.5em;color:red'>"+cf+"</span>"+
+"</br>"+"Deaths"
+                )
+            console.log(cf);
+        }
+        else{
+          data=groupbyCountryDeath(store.death)
+          for(i of data)
+            {
+              cf+=i.deaths;
+        d=i.date;
+            }
+            d3.select(".tc1").html(
+                "<span style='font-weight:bold;font-size:1.5em;color:red'>"+cf+"</span>"+
+"</br>"+"Deaths"
+                )
+            console.log(cf);
+          
+        }
+        }
+        
+        
+        function total_case_print2(data)
+        {
+          let cf=0;
+          let d;
+          if(data.length!=0){
+            for(i of data)
+            {
+              cf+=i.recovered;
+        d=i.date;
+            }
+            d3.select(".tc2").html(
+                "<span style='font-weight:bold;font-size:1.5em;color:green'>"+cf+"</span>"+
+"</br>"+"People Recovered"
+                )
+            console.log(cf);
+        }
+        else{
+          data=groupbyCountryRecovered(store.recovered)
+          for(i of data)
+            {
+              cf+=i.recovered;
+        d=i.date;
+            }
+            d3.select(".tc2").html(
+                "<span style='font-weight:bold;font-size:1.5em;color:green'>"+cf+"</span>"+
+"</br>"+"People Recovered"
+                )
+            console.log(cf);
+          
+        }
+        }
+        
+        function ddl()
+        {
+          var selectBox = document.getElementById("options");
+            var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+            //console.log("hello")
+            //drawCirclesdeath(groupbyCountryDeath(store.death),"#ff9500")
+            //drawCircles(groupbyCountryDeath(store.death),)
+            if(selectedValue=="Death Cases"){
+              currentvis="death";
+            d3.select("#G").remove()
+            d3.select("#Map").append("g").attr("id","G")
+            d3.select("#BarChart").remove()
+            d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
+            drawbar(store.done.sort((a,b)=>b.deaths - a.deaths))
+            drawMap(store.geoJSON)
+            drawCirclesdeath(store.done,"purple")
+            }
+            else if(selectedValue=="Confirmed Cases")
+        
+            {
+              currentvis="confirm";
+              d3.select("#G").remove()
+            d3.select("#Map").append("g").attr("id","G")
+            d3.select("#BarChart").remove()
+            d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
+            drawbar(store.done.sort((a,b)=>b.confirmed - a.confirmed))
+            drawMap(store.geoJSON)
+            drawCircles(store.done,"blue")
+            }
+            else if(selectedValue=="Recovered Cases")
+            {
+              currentvis="recovered";
+              d3.select("#G").remove()
+            d3.select("#Map").append("g").attr("id","G")
+            d3.select("#BarChart").remove()
+            d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
+            drawbar(store.done.sort((a,b)=>b.recovered - a.recovered))
+            drawMap(store.geoJSON)
+            drawCirclesRecovered(store.done,"green")
+            }
+            
+        }
+
+        function drawbar(data){
+
+      
+               
+var margin =  {top: 20, right: 10, bottom: 70, left: 50};
+var marginOverview = {top: 30, right: 10, bottom: 20, left: 40};
+var selectorHeight = 20;
+var width = 500 - margin.left - margin.right;
+var height = 500 - margin.top - margin.bottom - selectorHeight;
+var heightOverview = 80 - marginOverview.top - marginOverview.bottom;
+       
+var maxLength = d3.max(data.map(function(d){ return d.country.length}))
+var barWidth = 20;
+var numBars = Math.round(width/barWidth);
+var isScrollDisplayed = barWidth * data.length > width;
+       
+
+console.log(isScrollDisplayed)
+  
+var xscale = d3.scaleBand()
+                .domain(data.slice(0,numBars).map(function (d) { return d.country; }))
+                .range([0, width])
+                .padding(.2);
+
+var yscale = d3.scaleLinear()
+							.domain([0, d3.max(data, function (d) { 
+                                if(currentvis=="confirm")
+                                {
+                                    return d.confirmed;
+                                }
+                                else if(currentvis=="death")
+                                {
+                                    return d.deaths;
+                                }
+                                else{
+                                    return d.recovered;
+                                }
+                                 })])
+              .range([height, 0]);
+  
+var xAxis  = d3.axisBottom(xscale);
+var yAxis  = d3.axisLeft(yscale);
+  
+var svg = d3.select("#BarChart")
+						.attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom + selectorHeight);
+  
+var diagram = svg.append("g")
+								 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  
+diagram.append("g")
+  		 .attr("class", "x axis")
+       .attr("transform", "translate(0, " + height + ")")
+       .call(xAxis)
+       .selectAll("text")	
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", "-.5em")
+            .attr("transform", function(d) {
+                return "rotate(-90)" 
+                });
+  
+diagram.append("g")
+       .attr("class", "y axis")
+       .call(yAxis);
+  
+var bars = diagram.append("g");
+  
+bars.selectAll("rect")
+            .data(data.slice(0, numBars), function (d) {return d.country; })
+            .enter().append("rect")
+            .attr("class", "bar")
+            .attr("x", function (d) { return xscale(d.country); })
+            .attr("y", function (d) { 
+                                if(currentvis=="confirm")
+                                {
+                                    return yscale(d.confirmed);
+                                }
+                                else if(currentvis=="death")
+                                {
+                                    return yscale(d.deaths);
+                                }
+                                else{
+                                    return yscale(d.recovered);
+                                }
+                 })
+            .attr("width", xscale.bandwidth())
+            .attr("height", function (d) { 
+                                if(currentvis=="confirm")
+                                {
+                                    return height - yscale(d.confirmed);
+                                }
+                                else if(currentvis=="death")
+                                {
+                                    return height - yscale(d.deaths);
+                                }
+                                else{
+                                    return height - yscale(d.recovered);
+                                }
+                 })
+            .on("click", d=>{
+                //console.log(d.country);
+                myScript1(d.country);
+               // drawline(d.country, store.coronadat)
+		    });
+            
+  
+if (isScrollDisplayed)
+{
+  var xOverview = d3.scaleBand()
+                  .domain(data.map(function (d) { return d.country; }))
+                  .range([0, width])
+                  .padding(.2);
+  yOverview = d3.scaleLinear().range([heightOverview, 0]);
+  yOverview.domain(yscale.domain());
+
+  var subBars = diagram.selectAll('.subBar')
+      .data(data)
+
+  subBars.enter().append("rect")
+      .classed('subBar', true)
+      .attr({
+          height: function(d) {
+                               if(currentvis=="confirm")
+                                {
+                                    return heightOverview - yOverview(d.confirmed);
+                                }
+                                else if(currentvis=="death")
+                                {
+                                    return heightOverview - yOverview(d.deaths);
+                                }
+                                else{
+                                    return heightOverview - yOverview(d.recovered);
+                                }
+
+              
+          },
+          width: function(d) {
+              return xOverview.bandwidth()
+          },
+          x: function(d) {
+
+              return xOverview(d.country);
+          },
+          y: function(d) {
+              
+                                if(currentvis=="confirm")
+                                {
+                                    return height + heightOverview + yOverview(d.confirmed)
+                                }
+                                else if(currentvis=="death")
+                                {
+                                    return height + heightOverview + yOverview(d.deaths)
+                                }
+                                else{
+                                    return height + heightOverview + yOverview(d.recovered)
+                                }
+
+              
+          }
+      })
+
+  var displayed = d3.scaleQuantize()
+              .domain([0, width])
+              .range(d3.range(data.length));
+
+  diagram.append("rect")
+              .attr("transform", "translate(0, " + (height + margin.bottom) + ")")
+              .attr("class", "mover")
+              .attr("x", 0)
+              .attr("y", 0)
+              .attr("height", selectorHeight)
+              .attr("width", Math.round(parseFloat(numBars * width)/data.length))
+              .attr("pointer-events", "all")
+              .attr("cursor", "ew-resize")
+              .call(d3.drag().on("drag", display))
+              .on("click", d=>{
+                //console.log(d.country);
+                myScript1(d.country);
+                //drawline(d.country, store.coronadat)
+		    });
+}
+function display () {
+    var x = parseInt(d3.select(this).attr("x")),
+        nx = x + d3.event.dx,
+        w = parseInt(d3.select(this).attr("width")),
+        f, nf, new_data, rects;
+
+    if ( nx < 0 || nx + w > width ) return;
+
+    d3.select(this).attr("x", nx);
+
+    f = displayed(x);
+    nf = displayed(nx);
+
+    if ( f === nf ) return;
+
+    new_data = data.slice(nf, nf + numBars);
+
+    xscale.domain(new_data.map(function (d) { return d.country; }));
+    diagram.select(".x.axis").call(xAxis).selectAll("text")	
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", "-.5em")
+            .attr("transform", function(d) {
+                return "rotate(-90)" 
+                });
+
+    rects = bars.selectAll("rect")
+      .data(new_data, function (d) {return d.country; });
+
+    rects.attr("x", function (d) { return xscale(d.country); });
+
+    rects.enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function (d) { return xscale(d.country); })
+      .attr("y", function (d) { if(currentvis=="confirm")
+                                {
+                                    return yscale(d.confirmed);
+                                }
+                                else if(currentvis=="death")
+                                {
+                                    return yscale(d.deaths);
+                                }
+                                else{
+                                    return yscale(d.recovered);
+                                } })
+      .attr("width", xscale.bandwidth())
+      .attr("height", function (d) {
+                                 if(currentvis=="confirm")
+                                {
+                                    return height - yscale(d.confirmed);
+                                }
+                                else if(currentvis=="death")
+                                {
+                                    return height - yscale(d.deaths);
+                                }
+                                else{
+                                    return height - yscale(d.recovered);
+                                }
+            });
+
+    rects.exit().remove();
+};
+
+
+}
+
+////Bar end
+        
+        loadData().then(showData);
+        
+        
+        </script>
+    </html>

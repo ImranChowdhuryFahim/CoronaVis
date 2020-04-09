@@ -1,0 +1,131 @@
+body {
+    margin-top: 150px;
+    width:100%;
+    margin-left: 50px;
+  }
+
+  .container_12 {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+
+.grid_1
+{
+  display: inline;
+  float: left;
+  margin-top: 45px;
+  margin-right: 10px;
+  width: 31%;
+  height: 500px;
+  border:solid 1px blue;
+  
+}
+.grid_2
+{
+  display: inline;
+  float: left;
+  margin-left: -20px;
+  margin-right: 2px;
+  width: 40%;
+  height: 600px;
+  border:solid 1px blue;
+}
+.grid_3
+{
+  display: inline;
+  float: left;
+  margin-left: 2px;
+  margin-right: 2px;
+  width: 25%;
+  height: 600px;
+  border:solid 1px blue;
+}
+
+/* .container_12 .grid_4 {
+    width: 32%;
+    height:500px;
+    border:solid 1px blue;
+  } */
+
+  #filter_countries{
+    width:30%;
+    padding:10px;
+    float: right;
+  }
+
+  #Map{
+    background: skyblue;
+  }
+  
+  #countries-list{
+
+    right: 475px;
+    overflow: hidden;
+    overflow-y:scroll;
+    margin-right:40px;
+    padding:5px;
+    position: absolute;
+    height:120px; width:198px;
+    background-color: transparent;
+    color: gray;
+    fill-opacity: .1;
+    
+  }
+  #countries-list li{
+    
+    position: relative; 
+    list-style:none;
+    padding:0px;
+    margin:5px 0;
+    border: 1px solid #e4e4e4;
+   
+  }
+
+  circle {
+    fill-opacity: .55;
+    stroke-width: .5;
+}
+
+.lasso path {
+    stroke: rgb(80,80,80);
+    stroke-width:2px;
+}
+
+.lasso .drawn {
+    fill-opacity:.05 ;
+}
+
+.lasso .loop_close {
+    fill:none;
+    stroke-dasharray: 4,4;
+}
+
+.lasso .origin {
+    fill:#3399FF;
+    fill-opacity:.5;
+}
+
+.not_possible {
+    fill:#415679;
+    
+}
+
+.possible {
+    fill: palevioletred;
+}
+
+.selected {
+    fill : black;
+}
+
+.isselected {
+    fill: red;
+}
+
+  div.tooltip {position: absolute; text-align: left; width: 200px; height: 55px; padding: 15px;font: 14px calibri; background: #d60f23; color: white; border: 2px; border-radius: 8px; pointer-events: none;}
+  div.tooltip1{
+
+    position: absolute; text-align: left; width: 150px; height: 20px; padding: 15px;font: 14px calibri; background: purple; color: white; border: 2px; border-radius: 8px; pointer-events: none;
+   
+}
