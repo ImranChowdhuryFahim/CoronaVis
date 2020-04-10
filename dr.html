@@ -146,14 +146,14 @@ label{
             div.tooltip {position: absolute; text-align: left; width: 200px; height: 85px; padding: 15px;font: 14px calibri; background: #d60f23; color: white; border: 2px; border-radius: 8px; pointer-events: none;}
   div.tooltip1{
 
-    position: absolute; text-align: left; width: 150px; height: 20px; padding: 15px;font: 14px calibri; background: purple; color: white; border: 2px; border-radius: 8px; pointer-events: none;
+    position: absolute; text-align: left; width: 200px; height: 95px; padding: 15px;font: 14px calibri; background: purple; color: white; border: 2px; border-radius: 8px; pointer-events: none;
    
 }
-
+/* 
 .bar {
           fill: steelblue;
           clip-path: url(#clip);
-        }
+        } */
           
         .subBar { 
           fill: gray;
@@ -431,25 +431,58 @@ label{
         mc=0
         for(i of countries)
         {
+          if(currentvis=="confirm"){
           if(mc<i.confirmed){
               mc=i.confirmed
-          }
+          }}
+          else if(currentvis=="death"){
+          if(mc<i.deaths){
+              mc=i.deaths
+          }}
+          else if(currentvis=="recovered"){
+          if(mc<i.recovered){
+              mc=i.recovered
+          }}
         }
+        //console.log(mc)
+        clr=[]
+        if(currentvis=="confirm"){
+          clr=["white","blue"];
+          }
+          else if(currentvis=="death"){
+            clr=["white","red"];
+            }
+          else if(currentvis=="recovered"){
+            clr=["white","green"];
+            }
+        
         // var color_scale =d3.scaleLinear().domain([0,mc]).range(["white","red"]);
         var color_scale=d3.scaleLinear()
-    .domain([0,mc/4])
-    .range(["white","red"]);
+    .domain([0,mc/5])
+    .range(clr);
         
           container.selectAll("path").data(countries)
               .enter().append("path")
               .attr("d",d=>path(d) )
               .attr("fill", function(d){
+                if (currentvis=="confirm")
+                {
                   return color_scale(d.confirmed);
+                }
+                else if(currentvis=="death")
+                {
+                  return color_scale(d.deaths);
+                }
+                else if(currentvis=="recovered")
+                { 
+                  return color_scale(d.recovered);
+                }
+                  
               })
             .attr("stroke", '#bdbdbd')
             .attr("stroke-width", .5)
             .attr("stroke-linejoin", "round")
-              .on("mouseenter", function(d) {
+            .on("mousemove", function(d) {
                  // d3.select(this).attr("fill", "#229a5b")
                  div
                 .transition()
@@ -457,21 +490,28 @@ label{
                 .style("opacity", .9);
               div
                 .html(
-                    d.properties.name
+                  "<b>COUNTRY: </b>" +
+                    d.properties.name +
+                    "</br><b>CONFIRMED CASES: </b>" +
+                  d.confirmed +
+                  "</br><b>DEATH CASES: </b>" +
+                  d.deaths +
+                  "</br><b>RECOVERED CASES: </b>" +
+                  d.recovered +
+                    "</br>AS OF " +
+                  store.date
                 )
                 .attr("class","tooltip1")
-                .style("left", d3.event.pageX + "px")
-                .style("top", d3.event.pageY - 28 + "px");
+                .style("left", d3.event.clientX + "px")
+                .style("top", d3.event.clientY - 28 + "px");
                  
                 })
               .on("mouseleave",function(){
-               // d3.select(this).attr("fill", "#eee")
-               div
-               .attr("class","tooltip1")
+                div
+                .attr("class","tooltip1")
                 .transition()
                 .duration(500)
                 .style("opacity", 0);
-               
               })
         
     
@@ -709,13 +749,14 @@ label{
             }
           }
 
+        
         for(i=0;i<byCountry.length;i++)
         {
           for(j=0;j<byCountry[i].values.length;j++)
           {
             byCountry[i].values[j].deaths=byCountrydeath[i].values[j].deaths;
-            byCountry[i].values[j].recovered=byCountryrecoverd[i].values[j].recovered;
-            byCountry[i].values[j].active=byCountry[i].values[j].confirmed - (byCountry[i].values[j].deaths+ byCountry[i].values[j].recovered);
+            // byCountry[i].values[j].recovered=byCountryrecoverd[i].values[j].recovered;
+             byCountry[i].values[j].active=byCountry[i].values[j].confirmed - byCountry[i].values[j].deaths;
             if (j==0){
             byCountry[i].values[j].new=0}
             else{
@@ -723,11 +764,54 @@ label{
             }
           }
         }
+        for (i of byCountry)
+        {
+           for(j of byCountryrecoverd)
+           {
+             
+                if(i.key==j.key)
+                {
+                  for( k=0;k<j.values.length;k++)
+                  {
+                    i.values[k].recovered=j.values[k].recovered;
+                    i.values[k].active-=j.values[k].recovered;
+                  }
+                  break;
+                }
+           }
+           
+        }
+        // console.log(byCountryrecoverd)
            store.time=byCountry;
 
-
-          
+        df=byCountry[0].values.length
+        k=[]
+        
+        
+        for(i=0;i<df;i++)
+        {
+          let c=0;
+          let d=0;
+          let r=0;
+          dt=''
+          for(j=0;j<store.time.length;j++)
+          {
+            dt=store.time[j].values[i].date;
+            c+=store.time[j].values[i].confirmed;
+            d+=store.time[j].values[i].deaths;
+            r+=store.time[j].values[i].recovered;
+          }
+          k.push({
+            date:dt,
+            confirmed: c,
+            deaths: d,
+            recovered: r
+          })
+            store.sumdate=k
          
+        }
+          
+          
         }
 
         function prep(){
@@ -735,31 +819,7 @@ label{
             a=groupbyCountry(store.coronadat);
             k=groupbyCountryDeath(store.death)
             z=groupbyCountryRecovered(store.recovered)
-            for(i=0;i<a.length;i++)
-            {
-                
-                b=a[i].country;
-                // a[i].deaths=k[i].deaths;
-                // a[i].recovered=z[i].recovered;
-                if(b=="US"){
-                    b="United States of America"
-                }
-                for (j of store.geoJSON.features)
-                {
-                    if(j.properties.name==b)
-                    {
-                        j.confirmed=a[i].confirmed;
-                        break;
-                    }
-                    
-                }
-            }
-            for (i of store.geoJSON.features)
-            {
-                if(!('confirmed' in i)){
-                    i.confirmed=0;
-                }
-            }
+            
             for(f of a)
             {
 
@@ -780,8 +840,39 @@ label{
                    }
                 }
             }
-            store.done=a
 
+            for(i=0;i<a.length;i++)
+            {
+                
+                b=a[i].country;
+                // a[i].deaths=k[i].deaths;
+                // a[i].recovered=z[i].recovered;
+                if(b=="US"){
+                    b="United States of America"
+                }
+                for (j of store.geoJSON.features)
+                {
+                    if(j.properties.name==b)
+                    {
+                        j.confirmed=a[i].confirmed;
+                        j.deaths=a[i].deaths;
+                        j.recovered=a[i].recovered;
+                        break;
+                    }
+                    
+                }
+            }
+            for (i of store.geoJSON.features)
+            {
+                if(!('confirmed' in i)){
+                    i.confirmed=0;
+                    i.deaths=0
+                    i.recovered=0
+                }
+            }
+
+            store.done=a
+            store.date=a[0].date;
             return store.geoJSON;
             
 
@@ -846,46 +937,46 @@ label{
             .attr("stroke-width", 1)
             .join("circle")
             .attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
-            .attr("r", d => radius(d.confirmed))
-            .on("mouseenter", function(d) {
-                 // d3.select(this).attr("fill", "#229a5b")
-                 div
-                .transition()
-                .duration(200)
-                .style("opacity", .9);
-              div
-                .html(
-                  "<b>COUNTRY: </b>" +
-                    d.country +
-                    "</br><b>CONFIRMED CASES: </b>" +
-                  d.confirmed +
-                  "</br><b>Death CASES: </b>" +
-                  d.deaths +
-                  "</br><b>Recovered CASES: </b>" +
-                  d.recovered +
-                    "</br>AS OF " +
-                  d.date
-                )
-                .attr("class","tooltip")
-                .style("left", d3.event.pageX + "px")
-                .style("top", d3.event.pageY - 28 + "px");
+            .attr("r", .5)//radius funtion previosly
+            // .on("mouseenter", function(d) {
+            //      // d3.select(this).attr("fill", "#229a5b")
+            //      div
+            //     .transition()
+            //     .duration(200)
+            //     .style("opacity", .9);
+            //   div
+            //     .html(
+            //       "<b>COUNTRY: </b>" +
+            //         d.country +
+            //         "</br><b>CONFIRMED CASES: </b>" +
+            //       d.confirmed +
+            //       "</br><b>Death CASES: </b>" +
+            //       d.deaths +
+            //       "</br><b>Recovered CASES: </b>" +
+            //       d.recovered +
+            //         "</br>AS OF " +
+            //       d.date
+            //     )
+            //     .attr("class","tooltip")
+            //     .style("left", d3.event.pageX + "px")
+            //     .style("top", d3.event.pageY - 28 + "px");
                  
-                })
-              .on("mouseleave",function(){
-                div
-                .attr("class","tooltip")
-                .transition()
-                .duration(500)
-                .style("opacity", 0);
-              })
-              .on("click",function(d){
-                d3.select(this).transition().duration(1000).attr("r",radius(d.confirmed)+10).attr("fill","red").transition().duration(1000).attr("r",radius(d.confirmed))
-                .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed))
-                .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed))
-                .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed))
-                .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed)).transition().duration(1000).attr("fill","#ff9500")
+            //     })
+            //   .on("mouseleave",function(){
+            //     div
+            //     .attr("class","tooltip")
+            //     .transition()
+            //     .duration(500)
+            //     .style("opacity", 0);
+            //   })
+              // .on("click",function(d){
+              //   d3.select(this).transition().duration(1000).attr("r",radius(d.confirmed)+10).attr("fill","red").transition().duration(1000).attr("r",radius(d.confirmed))
+              //   .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed))
+              //   .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed))
+              //   .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed))
+              //   .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed)).transition().duration(1000).attr("fill","maroon")
               
-              })
+              // })
         
         
         
@@ -975,46 +1066,46 @@ label{
             .attr("stroke-width", 1)
             .join("circle")
             .attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
-            .attr("r", d => radius(d.deaths))
-            .on("mouseenter", function(d) {
-                 // d3.select(this).attr("fill", "#229a5b")
-                 div
-                .transition()
-                .duration(200)
-                .style("opacity", .9);
-              div
-              .html(
-                  "<b>COUNTRY: </b>" +
-                    d.country +
-                    "</br><b>CONFIRMED CASES: </b>" +
-                  d.confirmed +
-                  "</br><b>Death CASES: </b>" +
-                  d.deaths +
-                  "</br><b>Recovered CASES: </b>" +
-                  d.recovered +
-                    "</br>AS OF " +
-                  d.date
-                )
-                .attr("class","tooltip")
-                .style("left", d3.event.pageX + "px")
-                .style("top", d3.event.pageY - 28 + "px");
+            .attr("r", .5)//radius funtion previosly
+            // .on("mouseenter", function(d) {
+            //      // d3.select(this).attr("fill", "#229a5b")
+            //      div
+            //     .transition()
+            //     .duration(200)
+            //     .style("opacity", .9);
+            //   div
+            //   .html(
+            //       "<b>COUNTRY: </b>" +
+            //         d.country +
+            //         "</br><b>CONFIRMED CASES: </b>" +
+            //       d.confirmed +
+            //       "</br><b>Death CASES: </b>" +
+            //       d.deaths +
+            //       "</br><b>Recovered CASES: </b>" +
+            //       d.recovered +
+            //         "</br>AS OF " +
+            //       d.date
+            //     )
+            //     .attr("class","tooltip")
+            //     .style("left", d3.event.pageX + "px")
+            //     .style("top", d3.event.pageY - 28 + "px");
                  
-                })
-              .on("mouseleave",function(){
-                div
-                .attr("class","tooltip")
-                .transition()
-                .duration(500)
-                .style("opacity", 0);
-              })
-              .on("click",function(d){
-                d3.select(this).transition().duration(1000).attr("r",radius(d.deaths)+10).attr("fill","red").transition().duration(1000).attr("r",radius(d.deaths))
-                .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths))
-                .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths))
-                .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths))
-                .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths)).transition().duration(1000).attr("fill","blue")
+            //     })
+            //   .on("mouseleave",function(){
+            //     div
+            //     .attr("class","tooltip")
+            //     .transition()
+            //     .duration(500)
+            //     .style("opacity", 0);
+            //   })
+            //   .on("click",function(d){
+            //     d3.select(this).transition().duration(1000).attr("r",radius(d.deaths)+10).attr("fill","red").transition().duration(1000).attr("r",radius(d.deaths))
+            //     .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths))
+            //     .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths))
+            //     .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths))
+            //     .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths)).transition().duration(1000).attr("fill","red")
               
-              })
+            //   })
         
         
         
@@ -1095,46 +1186,46 @@ label{
             .attr("stroke-width", 1)
             .join("circle")
             .attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
-            .attr("r", d => radius(d.recovered))
-            .on("mouseenter", function(d) {
-                 // d3.select(this).attr("fill", "#229a5b")
-                 div
-                .transition()
-                .duration(200)
-                .style("opacity", .9);
-              div
-              .html(
-                  "<b>COUNTRY: </b>" +
-                    d.country +
-                    "</br><b>CONFIRMED CASES: </b>" +
-                  d.confirmed +
-                  "</br><b>Death CASES: </b>" +
-                  d.deaths +
-                  "</br><b>Recovered CASES: </b>" +
-                  d.recovered +
-                    "</br>AS OF " +
-                  d.date
-                )
-                .attr("class","tooltip")
-                .style("left", d3.event.pageX + "px")
-                .style("top", d3.event.pageY - 28 + "px");
+            .attr("r", .5)//radius funtion previosly
+            // .on("mouseenter", function(d) {
+            //      // d3.select(this).attr("fill", "#229a5b")
+            //      div
+            //     .transition()
+            //     .duration(200)
+            //     .style("opacity", .9);
+            //   div
+            //   .html(
+            //       "<b>COUNTRY: </b>" +
+            //         d.country +
+            //         "</br><b>CONFIRMED CASES: </b>" +
+            //       d.confirmed +
+            //       "</br><b>Death CASES: </b>" +
+            //       d.deaths +
+            //       "</br><b>Recovered CASES: </b>" +
+            //       d.recovered +
+            //         "</br>AS OF " +
+            //       d.date
+            //     )
+            //     .attr("class","tooltip")
+            //     .style("left", d3.event.pageX + "px")
+            //     .style("top", d3.event.pageY - 28 + "px");
                  
-                })
-              .on("mouseleave",function(){
-                div
-                .attr("class","tooltip")
-                .transition()
-                .duration(500)
-                .style("opacity", 0);
-              })
-              .on("click",function(d){
-                d3.select(this).transition().duration(1000).attr("r",radius(d.recovered)+10).attr("fill","red").transition().duration(1000).attr("r",radius(d.recovered))
-                .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
-                .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
-                .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
-                .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered)).transition().duration(1000).attr("fill","green")
+            //     })
+            //   .on("mouseleave",function(){
+            //     div
+            //     .attr("class","tooltip")
+            //     .transition()
+            //     .duration(500)
+            //     .style("opacity", 0);
+            //   })
+            //   .on("click",function(d){
+            //     d3.select(this).transition().duration(1000).attr("r",radius(d.recovered)+10).attr("fill","red").transition().duration(1000).attr("r",radius(d.recovered))
+            //     .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
+            //     .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
+            //     .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
+            //     .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered)).transition().duration(1000).attr("fill","green")
               
-              })
+            //   })
         
         
         
@@ -1265,34 +1356,108 @@ label{
             var selectedValue = selectBox.options[selectBox.selectedIndex].value;
           
            let c=selectedValue;
+           sd=d3.selectAll("rect")
+            for(j=0;j<206;j++)
+            {
+              i=d3.selectAll("rect")._groups[0][j];
+              if(i.__data__.country==c){
+                    d3.select(i).attr("fill","#992a5b")
+                    break;
+              }
+              // else{
+              //   d3.select(i).attr("fill","#2a5599")
+              // }
+            }
+           if(c=="All")
+           {
+            total_case_print(groupbyCountry(store.coronadat))
+          total_case_print1(groupbyCountryDeath(store.death))
+          total_case_print2(groupbyCountryRecovered(store.recovered))
+          for(j=0;j<206;j++)
+            {
+              i=d3.selectAll("rect")._groups[0][j];
+                    d3.select(i).attr("fill","#2a5599")
+            }
+          return;
+           }
+            
+
             for( j=0;j<=180;j++){
              i=d3.select("#G").selectAll("circle")._groups[0][j]
              if(currentvis=="confirm"){
             if(i.__data__.country==c)
             {
-              d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+              d3.select(".tc").html(
+"<span style='font-weight:bold;font-size:1.5em;color:maroon'>"+i.__data__.confirmed+"</span>"+
+"</br>"+"Confirmed Cases"
+                  
+                )
+
+                d3.select(".tc1").html(
+                "<span style='font-weight:bold;font-size:1.5em;color:red'>"+i.__data__.deaths+"</span>"+
+"</br>"+"Deaths"
+                )
+                d3.select(".tc2").html(
+                "<span style='font-weight:bold;font-size:1.5em;color:green'>"+i.__data__.recovered+"</span>"+
+"</br>"+"People Recovered"
+                )
+
+              d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.confirmed))
                 .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
                 .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
                 .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
-                .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed)).transition().duration(1000).attr("fill","blue")
+                .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed)).transition().duration(1000).attr("r",.5).attr("fill","blue")
+                break;
             }
              }
              else if(currentvis=="death"){
               if(i.__data__.country==c){
-          d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
+                d3.select(".tc").html(
+"<span style='font-weight:bold;font-size:1.5em;color:maroon'>"+i.__data__.confirmed+"</span>"+
+"</br>"+"Confirmed Cases"
+                  
+                )
+
+                d3.select(".tc1").html(
+                "<span style='font-weight:bold;font-size:1.5em;color:red'>"+i.__data__.deaths+"</span>"+
+"</br>"+"Deaths"
+                )
+                d3.select(".tc2").html(
+                "<span style='font-weight:bold;font-size:1.5em;color:green'>"+i.__data__.recovered+"</span>"+
+"</br>"+"People Recovered"
+                )
+          d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).attr("fill","blue").transition().duration(1000).attr("r",radius(i.__data__.deaths))
                 .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
                 .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
                 .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
-                .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths)).transition().duration(1000).attr("fill","purple")
+                .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths)).transition().duration(1000).attr("r",.5).attr("fill","red")
+              break;
               }
+
+              
              }
              else if(currentvis=="recovered"){
               if(i.__data__.country==c){
-                d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
+                d3.select(".tc").html(
+"<span style='font-weight:bold;font-size:1.5em;color:maroon'>"+i.__data__.confirmed+"</span>"+
+"</br>"+"Confirmed Cases"
+                  
+                )
+
+                d3.select(".tc1").html(
+                "<span style='font-weight:bold;font-size:1.5em;color:red'>"+i.__data__.deaths+"</span>"+
+"</br>"+"Deaths"
+                )
+                d3.select(".tc2").html(
+                "<span style='font-weight:bold;font-size:1.5em;color:green'>"+i.__data__.recovered+"</span>"+
+"</br>"+"People Recovered"
+                )
+                d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.recovered))
                .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
                .transition().duration(1000).attr("r",radius(i.__data__d.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
                .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
-               .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered)).transition().duration(1000).attr("fill","green")
+               .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered)).transition().duration(1000).attr("r",.5).attr("r",.5).attr("fill","green")
+               break;
               }
              }
             }
@@ -1307,29 +1472,30 @@ label{
             if(currentvis=="confirm"){
            if(i.__data__.country==c)
            {
-             d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+            
+             d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.confirmed))
                .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
                .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
                .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
-               .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed)).transition().duration(1000).attr("fill","blue")
+               .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed)).transition().duration(1000).attr("r",.5).attr("fill","blue")
            }
             }
             else if(currentvis=="death"){
              if(i.__data__.country==c){
-         d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
+         d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).attr("fill","blue").transition().duration(1000).attr("r",radius(i.__data__.deaths))
                .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
                .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
                .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
-               .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths)).transition().duration(1000).attr("fill","purple")
+               .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths)).transition().duration(1000).attr("r",.5).attr("fill","red")
              }
             }
             else if(currentvis=="recovered"){
              if(i.__data__.country==c){
-            d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
+            d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.recovered))
                .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
                .transition().duration(1000).attr("r",radius(i.__data__d.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
                .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
-               .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered)).transition().duration(1000).attr("fill","green")
+               .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered)).transition().duration(1000).attr("r",.5).attr("fill","green")
              }
             }
            }
@@ -1347,7 +1513,7 @@ label{
         d=i.date;
             }
             d3.select(".tc").html(
-"<span style='font-weight:bold;font-size:1.5em;color:orange'>"+cf+"</span>"+
+"<span style='font-weight:bold;font-size:1.5em;color:maroon'>"+cf+"</span>"+
 "</br>"+"Confirmed Cases"
                   
                 )
@@ -1449,7 +1615,7 @@ label{
             d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
             drawbar(store.done.sort((a,b)=>b.deaths - a.deaths))
             drawMap(store.geoJSON)
-            drawCirclesdeath(store.done,"purple")
+            drawCirclesdeath(store.done,"red")
             }
             else if(selectedValue=="Confirmed Cases")
         
@@ -1548,7 +1714,7 @@ var bars = diagram.append("g");
 bars.selectAll("rect")
             .data(data.slice(0, numBars), function (d) {return d.country; })
             .enter().append("rect")
-            .attr("class", "bar")
+            .attr("fill", "#2a5599")
             .attr("x", function (d) { return xscale(d.country); })
             .attr("y", function (d) { 
                                 if(currentvis=="confirm")
@@ -1577,9 +1743,45 @@ bars.selectAll("rect")
                                     return height - yscale(d.recovered);
                                 }
                  })
+                 .on("mouseenter", function(d) {
+                  d3.select(this).attr("fill", "#992a5b")
+                  //myScript1(d.country);
+                 
+                 
+                })
+                .on("mousemove",function(d){
+                  div
+                .transition()
+                .duration(200)
+                .style("opacity", .9);
+              div
+              .html(
+                  "<b>COUNTRY: </b>" +
+                    d.country +
+                    "</br><b>CONFIRMED CASES: </b>" +
+                  d.confirmed +
+                  "</br><b>Death CASES: </b>" +
+                  d.deaths +
+                  "</br><b>Recovered CASES: </b>" +
+                  d.recovered +
+                    "</br>AS OF " +
+                  d.date
+                )
+                .attr("class","tooltip")
+                .style("left", d3.event.clientX + "px")
+                .style("top", d3.event.clientY - 28 + "px");
+                })
+              .on("mouseleave",function(){
+                d3.select(this).attr("fill", "#2a5599")
+                div
+                .attr("class","tooltip")
+                .transition()
+                .duration(500)
+                .style("opacity", 0);
+              })
             .on("click", d=>{
                 //console.log(d.country);
-                myScript1(d.country);
+                 myScript1(d.country);
                // drawline(d.country, store.coronadat)
 		    });
             
@@ -1651,13 +1853,8 @@ if (isScrollDisplayed)
               .attr("height", selectorHeight)
               .attr("width", Math.round(parseFloat(numBars * width)/data.length))
               .attr("pointer-events", "all")
-              .attr("cursor", "ew-resize")
-              .call(d3.drag().on("drag", display))
-              .on("click", d=>{
-                //console.log(d.country);
-                myScript1(d.country);
-                //drawline(d.country, store.coronadat)
-		    });
+              .attr("cursor", "all-scroll")
+              .call(d3.drag().on("drag", display));
 }
 function display () {
     var x = parseInt(d3.select(this).attr("x")),
@@ -1691,7 +1888,7 @@ function display () {
     rects.attr("x", function (d) { return xscale(d.country); });
 
     rects.enter().append("rect")
-      .attr("class", "bar")
+       .attr("fill", "#2a5599")
       .attr("x", function (d) { return xscale(d.country); })
       .attr("y", function (d) { if(currentvis=="confirm")
                                 {
@@ -1717,7 +1914,47 @@ function display () {
                                 else{
                                     return height - yscale(d.recovered);
                                 }
-            });
+            }).on("mouseenter", function(d) {
+                  d3.select(this).attr("fill", "#992a5b")
+                  // myScript1(d.country);
+                 
+                 
+                })
+                .on("mousemove",function(d){
+                  div
+                .transition()
+                .duration(200)
+                .style("opacity", .9);
+              div
+              .html(
+                  "<b>COUNTRY: </b>" +
+                    d.country +
+                    "</br><b>CONFIRMED CASES: </b>" +
+                  d.confirmed +
+                  "</br><b>Death CASES: </b>" +
+                  d.deaths +
+                  "</br><b>Recovered CASES: </b>" +
+                  d.recovered +
+                    "</br>AS OF " +
+                  d.date
+                )
+                .attr("class","tooltip")
+                .style("left", d3.event.clientX + "px")
+                .style("top", d3.event.clientY - 28 + "px");
+                })
+              .on("mouseleave",function(){
+                d3.select(this).attr("fill", "#2a5599")
+                div
+                .attr("class","tooltip")
+                .transition()
+                .duration(500)
+                .style("opacity", 0);
+              })
+            .on("click", d=>{
+                //console.log(d.country);
+                 myScript1(d.country);
+               // drawline(d.country, store.coronadat)
+		    });
 
     rects.exit().remove();
 };
