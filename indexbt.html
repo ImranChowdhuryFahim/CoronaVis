@@ -270,7 +270,7 @@ width: 300px;
                       <g id="body2" style="transform: translate(50px,10px);margin-top:50px ;"></g>
                   </svg>
                   <div id="tooltip"></div><br>
-                  <div style="text-align: center;"><h1>Confirmed cases</h1></div>
+                  <!--<div style="text-align: center;"><h1>Confirmed cases</h1></div>-->
                   </div>
 
           </div>
@@ -2023,7 +2023,7 @@ function showtool(data, coord){ console.log(data)
       .append("path")
       .datum(data)
       .attr("fill", "none")
-      .attr("stroke", "blue")
+      .attr("stroke", "orange")
       .attr("stroke-width", 3)
       .attr("d", valueline)
       .attr("class", "line")
@@ -2063,22 +2063,7 @@ function showtool(data, coord){ console.log(data)
    //end deaths
 //console.log(data)
 
-   // draw new
 
-   var valuenw = d3.line()
-  .x(d => xscale(d.date))
-  .y(d => yscale(d.new))
-      .defined(d => !!d.new)
-
-      body
-      .append("path")
-      .datum(data)
-      .attr("fill", "none")
-      .attr("stroke", "blue")
-      .attr("stroke-width", 3)
-      .attr("d", valuenw)
-      .attr("class", "line")
-   //end new
    
 }
 
