@@ -66,7 +66,7 @@
   }
 
   #Map{
-    background: skyblue;
+    background: #000029;
   }
 
   #countries-list{
@@ -131,12 +131,14 @@ label{
 }
 
 .possible {
-    fill: palevioletred;
+    fill: violet;
 }
 
 .selected {
-    fill : black;
+    fill : yellow;
     fill-opacity: 1;
+    stroke: black;
+    stroke-width: 2;
 }
 
 .isselected {
@@ -232,9 +234,10 @@ label{
             </div>
             <div>
                 
-                <svg ></svg>
-                
-                <svg></svg>
+              <svg height="450px" width="480px">
+                <g id="body2" style="transform: translate(50px,10px);margin-top:50px ;"></g>
+            </svg>
+
 
             </div>
             <!-- <div>
@@ -365,6 +368,7 @@ label{
          groupbytime()
           drawMap(prep(store.geoJSON))
           stackprocess()
+          drawline(store.sumdate)
         // groupbyCountryDeath(store.death)
             drawCircles(store.done,"blue")
             drawbar(store.done)
@@ -382,7 +386,7 @@ label{
           
             function getMapConfig(){
           let width = 550;
-          let height = 500;
+          let height = 450;
           let container=d3.select("#G")
           let zoom = d3.zoom()
                .scaleExtent([1, 40])
@@ -458,7 +462,7 @@ label{
         
         // var color_scale =d3.scaleLinear().domain([0,mc]).range(["white","red"]);
         var color_scale=d3.scaleLinear()
-    .domain([0,mc/5])
+    .domain([0,100])
     .range(clr);
         
           container.selectAll("path").data(countries)
@@ -466,20 +470,40 @@ label{
               .attr("d",d=>path(d) )
               .attr("fill", function(d){
                 if (currentvis=="confirm")
-                {
-                  return color_scale(d.confirmed);
+                {                                                              //
+
+                  if (d.confirmed>mc*.9) return '#084594';
+                  else if(d.confirmed>mc*.09) return '#2171b5';
+                  else if(d.confirmed>mc*.01) return "#4292c6";
+                  else if(d.confirmed>mc*.004) return "#6baed6";
+                  else if (d.confirmed>mc*.001)return "#9ecae1";
+                  else if(d.confirmed>0) return "#c6dbef";
+                  else return "gray"
                 }
                 else if(currentvis=="death")
                 {
-                  return color_scale(d.deaths);
+                  if(d.deaths>mc*.5) return '#99000d';
+                  else if(d.deaths>mc*.1) return '#cb181d';
+                  else if(d.deaths>mc*.03)return "#ef3b2c";
+                  else if(d.deaths>mc*.01)return "#fb6a4a";
+                  else if(d.deaths>mc*.005)return '#fc9272';
+                  else if(d.deaths>mc*.001)return "#fcbba1";
+                  else if(d.deaths>0)return "#fcbba1";
+                  else return "gray";
                 }
                 else if(currentvis=="recovered")
                 { 
-                  return color_scale(d.recovered);
+                  if (d.confirmed>mc*.9) return '#005a32';
+                  else if(d.recovered>mc*.09) return '#238b45';
+                  else if(d.recovered>mc*.01) return "#41ab5d";
+                  else if(d.recovered>mc*.004) return "#74c476";
+                  else if (d.recovered>mc*.001)return "#a1d99b";
+                  else if(d.recovered>0) return "#c7e9c0";
+                  else return "gray"
                 }
                   
               })
-            .attr("stroke", '#bdbdbd')
+            .attr("stroke", "gray")
             .attr("stroke-width", .5)
             .attr("stroke-linejoin", "round")
             .on("mousemove", function(d) {
@@ -933,42 +957,40 @@ label{
           .attr("class", "confirmed")
             .attr("fill", clr)
             .attr("fill-opacity", ".15")
-            .attr("stroke", clr)
-            .attr("stroke-width", 1)
             .join("circle")
             .attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
-            .attr("r", .5)//radius funtion previosly
-            // .on("mouseenter", function(d) {
-            //      // d3.select(this).attr("fill", "#229a5b")
-            //      div
-            //     .transition()
-            //     .duration(200)
-            //     .style("opacity", .9);
-            //   div
-            //     .html(
-            //       "<b>COUNTRY: </b>" +
-            //         d.country +
-            //         "</br><b>CONFIRMED CASES: </b>" +
-            //       d.confirmed +
-            //       "</br><b>Death CASES: </b>" +
-            //       d.deaths +
-            //       "</br><b>Recovered CASES: </b>" +
-            //       d.recovered +
-            //         "</br>AS OF " +
-            //       d.date
-            //     )
-            //     .attr("class","tooltip")
-            //     .style("left", d3.event.pageX + "px")
-            //     .style("top", d3.event.pageY - 28 + "px");
+            .attr("r", 0)//radius funtion previosly
+            .on("mouseenter", function(d) {
+                 // d3.select(this).attr("fill", "#229a5b")
+                 div
+                .transition()
+                .duration(200)
+                .style("opacity", .9);
+              div
+                .html(
+                  "<b>COUNTRY: </b>" +
+                    d.country +
+                    "</br><b>CONFIRMED CASES: </b>" +
+                  d.confirmed +
+                  "</br><b>Death CASES: </b>" +
+                  d.deaths +
+                  "</br><b>Recovered CASES: </b>" +
+                  d.recovered +
+                    "</br>AS OF " +
+                  d.date
+                )
+                .attr("class","tooltip")
+                .style("left", d3.event.pageX + "px")
+                .style("top", d3.event.pageY - 28 + "px");
                  
-            //     })
-            //   .on("mouseleave",function(){
-            //     div
-            //     .attr("class","tooltip")
-            //     .transition()
-            //     .duration(500)
-            //     .style("opacity", 0);
-            //   })
+                })
+              .on("mouseleave",function(){
+                div
+                .attr("class","tooltip")
+                .transition()
+                .duration(500)
+                .style("opacity", 0);
+              })
               // .on("click",function(d){
               //   d3.select(this).transition().duration(1000).attr("r",radius(d.confirmed)+10).attr("fill","red").transition().duration(1000).attr("r",radius(d.confirmed))
               //   .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed))
@@ -1026,14 +1048,13 @@ label{
                 var lasso = d3.lasso()
                     .closePathSelect(true)
                     .closePathDistance(100)
-                    .items(circles)
                     .targetArea(container)
                     .on("start",lasso_start)
                     .on("draw",lasso_draw)
                     .on("end",lasso_end);
         
                 container.call(lasso)
-                lasso.items(container.selectAll('circle'))
+                lasso.items(container.selectAll('path'))
 
 //                 container.selectAll("text")
 //         .data(countrycircle)
@@ -1062,11 +1083,9 @@ label{
           .attr("class", "confirmed")
             .attr("fill", clr)
             .attr("fill-opacity", ".15")
-            .attr("stroke", clr)
-            .attr("stroke-width", 1)
             .join("circle")
             .attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
-            .attr("r", .5)//radius funtion previosly
+            .attr("r", 0)//radius funtion previosly
             // .on("mouseenter", function(d) {
             //      // d3.select(this).attr("fill", "#229a5b")
             //      div
@@ -1163,7 +1182,7 @@ label{
                     .on("end",lasso_end);
         
                 container.call(lasso)
-                lasso.items(container.selectAll('circle'))
+                lasso.items(container.selectAll('path'))
         
         
         }
@@ -1182,11 +1201,9 @@ label{
           .attr("class", "confirmed")
             .attr("fill", clr)
             .attr("fill-opacity", ".15")
-            .attr("stroke", clr)
-            .attr("stroke-width", 1)
             .join("circle")
             .attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
-            .attr("r", .5)//radius funtion previosly
+            .attr("r", 0)//radius funtion previosly
             // .on("mouseenter", function(d) {
             //      // d3.select(this).attr("fill", "#229a5b")
             //      div
@@ -1283,7 +1300,7 @@ label{
                     .on("end",lasso_end);
         
                 container.call(lasso)
-                lasso.items(container.selectAll('circle'))
+                lasso.items(container.selectAll('path'))
         
         
         }
@@ -1513,7 +1530,7 @@ label{
         d=i.date;
             }
             d3.select(".tc").html(
-"<span style='font-weight:bold;font-size:1.5em;color:maroon'>"+cf+"</span>"+
+"<span style='font-weight:bold;font-size:1.5em;color:#2a5599'>"+cf+"</span>"+
 "</br>"+"Confirmed Cases"
                   
                 )
@@ -1527,7 +1544,7 @@ label{
         d=i.date;
             }
             d3.select(".tc").html(
-                "<span style='font-weight:bold;font-size:1.5em;color:orange'>"+cf+"</span>"+
+                "<span style='font-weight:bold;font-size:1.5em;color:#2a5599'>"+cf+"</span>"+
 "</br>"+"Confirmed Cases"
                 )
           
@@ -1638,7 +1655,7 @@ label{
             d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
             drawbar(store.done.sort((a,b)=>b.recovered - a.recovered))
             drawMap(store.geoJSON)
-            drawCirclesRecovered(store.done,"green")
+            drawCirclesRecovered(store.done,"red")
             }
             
         }
@@ -1650,8 +1667,8 @@ label{
 var margin =  {top: 20, right: 10, bottom: 70, left: 50};
 var marginOverview = {top: 30, right: 10, bottom: 20, left: 40};
 var selectorHeight = 20;
-var width = 500 - margin.left - margin.right;
-var height = 500 - margin.top - margin.bottom - selectorHeight;
+var width = 450 - margin.left - margin.right;
+var height = 450 - margin.top - margin.bottom - selectorHeight;
 var heightOverview = 80 - marginOverview.top - marginOverview.bottom;
        
 var maxLength = d3.max(data.map(function(d){ return d.country.length}))
@@ -1784,6 +1801,21 @@ bars.selectAll("rect")
                  myScript1(d.country);
                // drawline(d.country, store.coronadat)
 		    });
+
+      let brush=   d3.brush()                     // Add the brush feature using the d3.brush function
+        .extent( [ [0,0], [400,400] ] )
+      brush.on("end",function(d)
+      {
+
+      })       // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+
+      //bars.call(brush) 
+      function brushend()
+      {
+        console.log(brush.extent)
+      }
+      
+
             
   
 if (isScrollDisplayed)
@@ -1963,6 +1995,116 @@ function display () {
 }
 
 ////Bar end
+
+
+
+
+function drawline(data){
+
+// draw line here
+
+let body = d3.select("#body2")
+document.getElementById("body2").innerHTML="";
+let height = 400;
+let width = 400;
+
+function showtool(data, coord){ console.log(data)
+d3.select("#tooltip")
+.html("Price: "+data[0]+"<br> Date: "+data[1])
+.style('top', coord[1]-15+"px")
+.style("left", coord[0]+15+"px")
+.style("display", "block")
+.style("color", "blue")
+
+}
+
+data.map(d=> {
+   d.date= new Date(d.date)
+   d.confirmed = +d.confirmed
+})
+let max = d3.max(data,d=>d.confirmed)
+let yscale = d3.scaleLinear()
+.domain([0,max])
+.range([height,0])
+body.append("g")
+.call(d3.axisLeft(yscale))
+
+let xscale = d3.scaleTime()
+.domain(d3.extent(data,d=>d.date))
+.range([0,width])
+body.append("g")
+.attr("transform", "translate(0,"+height+")")
+.call(d3.axisBottom(xscale)
+ .tickFormat(d3.timeFormat("%d%b")))
+
+var valueline = d3.line()
+.x(d => xscale(d.date))
+.y(d => yscale(d.confirmed))
+.defined(d => !!d.confirmed)
+
+
+body
+.append("path")
+.datum(data)
+.attr("fill", "none")
+.attr("stroke", "blue")
+.attr("stroke-width", 3)
+.attr("d", valueline)
+.attr("class", "line")
+
+//draw line end 
+
+//recovered case
+var valuerc = d3.line()
+.x(d => xscale(d.date))
+.y(d => yscale(d.recovered))
+.defined(d => !!d.recovered)
+
+body
+.append("path")
+.datum(data)
+.attr("fill", "none")
+.attr("stroke", "green")
+.attr("stroke-width", 3)
+.attr("d", valuerc)
+.attr("class", "line")
+// end recov
+
+//draw deaths
+var valuedth = d3.line()
+.x(d => xscale(d.date))
+.y(d => yscale(d.deaths))
+.defined(d => !!d.deaths)
+
+body
+.append("path")
+.datum(data)
+.attr("fill", "none")
+.attr("stroke", "red")
+.attr("stroke-width", 3)
+.attr("d", valuedth)
+.attr("class", "line")
+//end deaths
+//console.log(data)
+
+// draw new
+
+var valuenw = d3.line()
+.x(d => xscale(d.date))
+.y(d => yscale(d.new))
+.defined(d => !!d.new)
+
+body
+.append("path")
+.datum(data)
+.attr("fill", "none")
+.attr("stroke", "blue")
+.attr("stroke-width", 3)
+.attr("d", valuenw)
+.attr("class", "line")
+//end new
+
+}
         
         loadData().then(showData);
         
