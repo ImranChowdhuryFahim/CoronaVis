@@ -378,7 +378,7 @@ label{
           total_case_print(groupbyCountry(store.coronadat))
           total_case_print1(groupbyCountryDeath(store.death))
           total_case_print2(groupbyCountryRecovered(store.recovered))
-          console.log(store.done)
+          
           
         
         }
@@ -478,7 +478,7 @@ label{
                   else if(d.confirmed>mc*.004) return "#6baed6";
                   else if (d.confirmed>mc*.001)return "#9ecae1";
                   else if(d.confirmed>0) return "#c6dbef";
-                  else return "gray"
+                  else return "#f7fbff"
                 }
                 else if(currentvis=="death")
                 {
@@ -489,7 +489,7 @@ label{
                   else if(d.deaths>mc*.005)return '#fc9272';
                   else if(d.deaths>mc*.001)return "#fcbba1";
                   else if(d.deaths>0)return "#fcbba1";
-                  else return "gray";
+                  else return "#fff5f0";
                 }
                 else if(currentvis=="recovered")
                 { 
@@ -499,7 +499,7 @@ label{
                   else if(d.recovered>mc*.004) return "#74c476";
                   else if (d.recovered>mc*.001)return "#a1d99b";
                   else if(d.recovered>0) return "#c7e9c0";
-                  else return "gray"
+                  else return "#f7fcf5"
                 }
                   
               })
@@ -507,7 +507,7 @@ label{
             .attr("stroke-width", .5)
             .attr("stroke-linejoin", "round")
             .on("mousemove", function(d) {
-                 // d3.select(this).attr("fill", "#229a5b")
+                 d3.select(this).attr("fill", "purple")
                  div
                 .transition()
                 .duration(200)
@@ -530,7 +530,42 @@ label{
                 .style("top", d3.event.clientY - 28 + "px");
                  
                 })
-              .on("mouseleave",function(){
+              .on("mouseleave",function(d){
+                d3.select(this).attr("fill", function(d)
+                {
+                  if (currentvis=="confirm")
+                {                                                              //
+
+                  if (d.confirmed>mc*.9) return '#084594';
+                  else if(d.confirmed>mc*.09) return '#2171b5';
+                  else if(d.confirmed>mc*.01) return "#4292c6";
+                  else if(d.confirmed>mc*.004) return "#6baed6";
+                  else if (d.confirmed>mc*.001)return "#9ecae1";
+                  else if(d.confirmed>0) return "#c6dbef";
+                  else return "#f7fbff"
+                }
+                else if(currentvis=="death")
+                {
+                  if(d.deaths>mc*.5) return '#99000d';
+                  else if(d.deaths>mc*.1) return '#cb181d';
+                  else if(d.deaths>mc*.03)return "#ef3b2c";
+                  else if(d.deaths>mc*.01)return "#fb6a4a";
+                  else if(d.deaths>mc*.005)return '#fc9272';
+                  else if(d.deaths>mc*.001)return "#fcbba1";
+                  else if(d.deaths>0)return "#fcbba1";
+                  else return "#fff5f0";
+                }
+                else if(currentvis=="recovered")
+                { 
+                  if (d.confirmed>mc*.9) return '#005a32';
+                  else if(d.recovered>mc*.09) return '#238b45';
+                  else if(d.recovered>mc*.01) return "#41ab5d";
+                  else if(d.recovered>mc*.004) return "#74c476";
+                  else if (d.recovered>mc*.001)return "#a1d99b";
+                  else if(d.recovered>0) return "#c7e9c0";
+                  else return "#f7fcf5"
+                }
+                })
                 div
                 .attr("class","tooltip1")
                 .transition()
@@ -1167,8 +1202,9 @@ label{
         }
         
         
-        
-        total_case_print1(d)
+        total_case_print(d);
+        total_case_print1(d);
+        total_case_print2(d);
         
                 };
                 
@@ -1285,8 +1321,9 @@ label{
         }
         
         
-        
-        total_case_print2(d)
+        total_case_print(d);
+        total_case_print1(d);
+        total_case_print2(d);
         
                 };
                 
@@ -1373,18 +1410,16 @@ label{
             var selectedValue = selectBox.options[selectBox.selectedIndex].value;
           
            let c=selectedValue;
-           sd=d3.selectAll("rect")
-            for(j=0;j<206;j++)
+           for(j=0;j<206;j++)
             {
               i=d3.selectAll("rect")._groups[0][j];
-              if(i.__data__.country==c){
-                    d3.select(i).attr("fill","#992a5b")
-                    break;
-              }
-              // else{
-              //   d3.select(i).attr("fill","#2a5599")
-              // }
+              
+                    d3.select(i).attr("fill","#2a5599")
+                    
+              
+              
             }
+            
            if(c=="All")
            {
             total_case_print(groupbyCountry(store.coronadat))
@@ -1424,6 +1459,17 @@ label{
                 .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
                 .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
                 .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed)).transition().duration(1000).attr("r",.5).attr("fill","blue")
+                for(j=0;j<206;j++)
+            {
+              i=d3.selectAll("rect")._groups[0][j];
+              if(i.__data__.country==c){
+                    d3.select(i).attr("fill","#992a5b")
+                    break;
+              }
+              // else{
+              //   d3.select(i).attr("fill","#2a5599")
+              // }
+            }
                 break;
             }
              }
@@ -1448,6 +1494,19 @@ label{
                 .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
                 .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
                 .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths)).transition().duration(1000).attr("r",.5).attr("fill","red")
+              
+                for(j=0;j<206;j++)
+            {
+              i=d3.selectAll("rect")._groups[0][j];
+              if(i.__data__.country==c){
+                    d3.select(i).attr("fill","#992a5b")
+                    break;
+              }
+              // else{
+              //   d3.select(i).attr("fill","#2a5599")
+              // }
+            }
+
               break;
               }
 
@@ -1471,9 +1530,25 @@ label{
                 )
                 d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.recovered))
                .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
-               .transition().duration(1000).attr("r",radius(i.__data__d.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
+               .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
                .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered))
                .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered)).transition().duration(1000).attr("r",.5).attr("r",.5).attr("fill","green")
+               
+
+
+               for(j=0;j<206;j++)
+            {
+              i=d3.selectAll("rect")._groups[0][j];
+              if(i.__data__.country==c){
+                    d3.select(i).attr("fill","#992a5b")
+                    break;
+              }
+              // else{
+              //   d3.select(i).attr("fill","#2a5599")
+              // }
+            }
+               
+               
                break;
               }
              }
@@ -1626,6 +1701,7 @@ label{
             //drawCircles(groupbyCountryDeath(store.death),)
             if(selectedValue=="Death Cases"){
               currentvis="death";
+            
             d3.select("#G").remove()
             d3.select("#Map").append("g").attr("id","G")
             d3.select("#BarChart").remove()
@@ -1633,6 +1709,9 @@ label{
             drawbar(store.done.sort((a,b)=>b.deaths - a.deaths))
             drawMap(store.geoJSON)
             drawCirclesdeath(store.done,"red")
+            total_case_print(groupbyCountry(store.coronadat))
+          total_case_print1(groupbyCountryDeath(store.death))
+          total_case_print2(groupbyCountryRecovered(store.recovered))
             }
             else if(selectedValue=="Confirmed Cases")
         
@@ -1645,6 +1724,9 @@ label{
             drawbar(store.done.sort((a,b)=>b.confirmed - a.confirmed))
             drawMap(store.geoJSON)
             drawCircles(store.done,"blue")
+            total_case_print(groupbyCountry(store.coronadat))
+          total_case_print1(groupbyCountryDeath(store.death))
+          total_case_print2(groupbyCountryRecovered(store.recovered))
             }
             else if(selectedValue=="Recovered Cases")
             {
@@ -1656,6 +1738,9 @@ label{
             drawbar(store.done.sort((a,b)=>b.recovered - a.recovered))
             drawMap(store.geoJSON)
             drawCirclesRecovered(store.done,"red")
+            total_case_print(groupbyCountry(store.coronadat))
+          total_case_print1(groupbyCountryDeath(store.death))
+          total_case_print2(groupbyCountryRecovered(store.recovered))
             }
             
         }
