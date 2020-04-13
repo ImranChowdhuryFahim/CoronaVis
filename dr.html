@@ -138,7 +138,7 @@ label{
     fill : yellow;
     fill-opacity: 1;
     stroke: black;
-    stroke-width: 2;
+    stroke-width: 1.5;
 }
 
 .isselected {
@@ -916,7 +916,14 @@ label{
                         j.confirmed=a[i].confirmed;
                         j.deaths=a[i].deaths;
                         j.recovered=a[i].recovered;
+                        j.country=a[i].country
                         break;
+                    }
+                    else {
+                      if(!('country' in j))
+                      {
+                        j.country=""
+                      }
                     }
                     
                 }
@@ -1068,16 +1075,29 @@ label{
                         .classed("selected",true);
                     
                     let d=[];
+                    let cn=[];
                     for(i of lasso.selectedItems()._groups[0]){
                 if(i.__data__!=null)
                 {
                   d.push(i.__data__)
+                  cn.push(i.__data__.country)
                 }
         }
         total_case_print(d)
         total_case_print1(d)
         total_case_print2(d)
-        
+
+        l= d3.selectAll("rect")._groups[0]
+       for(i=0;i<205;i++)
+       {
+         if(cn.includes(l[i].__data__.country))
+         {
+           d3.select(l[i]).classed("selected",true)
+         }
+         else{
+           d3.select(l[i]).classed("selected",false)
+         }
+       }
                 };
                 
                 var lasso = d3.lasso()
@@ -1194,6 +1214,7 @@ label{
                         .classed("selected",true);
                     
                     let d=[];
+                    let cn=[];
                     for(i of lasso.selectedItems()._groups[0]){
                 if(i.__data__!=null)
                 {
@@ -1206,6 +1227,17 @@ label{
         total_case_print1(d);
         total_case_print2(d);
         
+        l= d3.selectAll("rect")._groups[0]
+       for(i=0;i<205;i++)
+       {
+         if(cn.includes(l[i].__data__.country))
+         {
+           d3.select(l[i]).classed("selected",true)
+         }
+         else{
+           d3.select(l[i]).classed("selected",false)
+         }
+       }
                 };
                 
                 var lasso = d3.lasso()
@@ -1313,6 +1345,7 @@ label{
                         .classed("selected",true);
                     
                     let d=[];
+                    let cn=[];
                     for(i of lasso.selectedItems()._groups[0]){
                 if(i.__data__!=null)
                 {
@@ -1324,6 +1357,18 @@ label{
         total_case_print(d);
         total_case_print1(d);
         total_case_print2(d);
+
+        l= d3.selectAll("rect")._groups[0]
+       for(i=0;i<205;i++)
+       {
+         if(cn.includes(l[i].__data__.country))
+         {
+           d3.select(l[i]).classed("selected",true)
+         }
+         else{
+           d3.select(l[i]).classed("selected",false)
+         }
+       }
         
                 };
                 
@@ -1410,7 +1455,7 @@ label{
             var selectedValue = selectBox.options[selectBox.selectedIndex].value;
           
            let c=selectedValue;
-           for(j=0;j<206;j++)
+           for(j=0;j<205;j++)
             {
               i=d3.selectAll("rect")._groups[0][j];
               
@@ -1425,7 +1470,7 @@ label{
             total_case_print(groupbyCountry(store.coronadat))
           total_case_print1(groupbyCountryDeath(store.death))
           total_case_print2(groupbyCountryRecovered(store.recovered))
-          for(j=0;j<206;j++)
+          for(j=0;j<205;j++)
             {
               i=d3.selectAll("rect")._groups[0][j];
                     d3.select(i).attr("fill","#2a5599")
@@ -1459,7 +1504,7 @@ label{
                 .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
                 .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed))
                 .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed)).transition().duration(1000).attr("r",.5).attr("fill","blue")
-                for(j=0;j<206;j++)
+                for(j=0;j<205;j++)
             {
               i=d3.selectAll("rect")._groups[0][j];
               if(i.__data__.country==c){
@@ -1495,7 +1540,7 @@ label{
                 .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths))
                 .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths)).transition().duration(1000).attr("r",.5).attr("fill","red")
               
-                for(j=0;j<206;j++)
+                for(j=0;j<205;j++)
             {
               i=d3.selectAll("rect")._groups[0][j];
               if(i.__data__.country==c){
@@ -1536,7 +1581,7 @@ label{
                
 
 
-               for(j=0;j<206;j++)
+               for(j=0;j<205;j++)
             {
               i=d3.selectAll("rect")._groups[0][j];
               if(i.__data__.country==c){
@@ -1900,6 +1945,73 @@ bars.selectAll("rect")
         console.log(brush.extent)
       }
       
+
+      var lasso_start = function() {
+                    lasso.items() // reset size
+                        .classed("not_possible",true)
+                        .classed("selected",false);
+                };
+        
+                var lasso_draw = function() {
+                
+                    // Style the possible dots
+                    lasso.possibleItems()
+                        .classed("not_possible",false)
+                        .classed("possible",true);
+            
+                    // Style the not possible dot
+                    lasso.notPossibleItems()
+                        .classed("not_possible",true)
+                        .classed("possible",false)
+                };
+        
+                var lasso_end = function() {
+                    // Reset the color of all dots
+                    lasso.items()
+                        .classed("not_possible",false)
+                        .classed("possible",false)
+                        .classed("isselected",false);
+        
+                    // Style the selected dots
+                    lasso.selectedItems()
+                        .classed("selected",true);
+                    
+                    let d=[];
+                    let cn=[]
+                    for(i of lasso.selectedItems()._groups[0]){
+                if(i.__data__!=null)
+                {
+                  d.push(i.__data__)
+                  cn.push(i.__data__.country)
+                }
+        }
+        total_case_print(d)
+        total_case_print1(d)
+        total_case_print2(d)
+        
+       l= d3.select("#G").selectAll("path")._groups[0]
+       for(i=0;i<180;i++)
+       {
+         if(cn.includes(l[i].__data__.country))
+         {
+           d3.select(l[i]).classed("selected",true)
+         }
+         else{
+           d3.select(l[i]).classed("selected",false)
+         }
+       }
+                };
+                
+                var lasso = d3.lasso()
+                    .closePathSelect(true)
+                    .closePathDistance(100)
+                    .targetArea(svg)
+                    .on("start",lasso_start)
+                    .on("draw",lasso_draw)
+                    .on("end",lasso_end);
+        
+                svg.call(lasso)
+                lasso.items(svg.selectAll('rect'))
 
             
   
