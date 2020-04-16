@@ -234,8 +234,8 @@ div.tooltip1{
           </div>
           <div>
               
-            <svg height="450px" width="480px">
-              <g id="body2" style="transform: translate(50px,10px);margin-top:50px ;"></g>
+            <svg id="container" height="450px" width="580px">
+              <g id="body2" style="transform: translate(60px,10px);margin-top:50px ;"></g>
           </svg>
 
 
@@ -2209,7 +2209,7 @@ function drawline(data){
 let body = d3.select("#body2")
 document.getElementById("body2").innerHTML="";
 let height = 400;
-let width = 400;
+let width = 500;
 
 function showtool(data, coord){ console.log(data)
 d3.select("#tooltip")
@@ -2307,9 +2307,95 @@ body
 .attr("class", "line")
 //end new
 
+body.append('g')
+    .selectAll("dot")
+    .data(data)
+    .enter()
+    .append("circle")
+      .attr("cx", function (d) { return xscale(d.date); } )
+      .attr("cy", function (d) { return yscale(d.confirmed); } )
+      .attr("r", 0)
+      .style("fill", "red")//#69b3a2
+      body.append('g')
+    .selectAll("dot")
+    .data(data)
+    .enter()
+    .append("circle")
+      .attr("cx", function (d) { return xscale(d.date); } )
+      .attr("cy", function (d) { return yscale(d.recovered); } )
+      .attr("r", 0)
+      .style("fill", "red")//#69b3a2
+      body.append('g')
+    .selectAll("dot")
+    .data(data)
+    .enter()
+    .append("circle")
+      .attr("cx", function (d) { return xscale(d.date); } )
+      .attr("cy", function (d) { return yscale(d.deaths); } )
+      .attr("r", 0)
+      .style("fill", "red")//#69b3a2
+lasso()
+
 }
       
       loadData().then(showData);
+  
+//lasso here
+function lasso(){
+  let body = d3.select("#container")
+  var circles = body.selectAll("circle")
+  console.log(circles)
+  // Lasso functions
+        var lasso_start = function() {
+            lasso.items()
+                .attr("r",0) // reset size
+                .classed("not_possible",true)
+                .classed("selected",false);
+        };
+
+        var lasso_draw = function() {
+        
+            
+            lasso.possibleItems()
+                .classed("not_possible",false)
+                .classed("possible",true);
+
+            
+            lasso.notPossibleItems()
+                .classed("not_possible",true)
+                .classed("possible",false);
+        };
+
+        var lasso_end = function() {
+            // Reset the color of all dots
+            lasso.items()
+                .classed("not_possible",false)
+                .classed("possible",false);
+
+            // Style the selected dots
+            lasso.selectedItems()
+                .classed("selected",true)
+                .attr("r",3.5)
+                .style("fill", "blue");
+
+            // Reset the style of the not selected dots
+            lasso.notSelectedItems()
+                .attr("r",0);
+
+        };
+        
+        var lasso = d3.lasso()
+            .closePathSelect(true)
+            .closePathDistance(100)
+            .items(circles)
+            .targetArea(body)
+            .on("start",lasso_start)
+            .on("draw",lasso_draw)
+            .on("end",lasso_end);
+        
+        body.call(lasso);
+}
+ //end lasso
       
       
       </script>
