@@ -183,6 +183,10 @@ div.tooltip1{
                   fill-opacity: .5;
                   overflow-y: scroll;
               }
+    #slide{
+      width: 400px;
+
+    }
       </style>
       <script src="./d3-lasso.min.js"></script>
       <script src="d3.js"></script>
@@ -192,6 +196,9 @@ div.tooltip1{
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
   </head>
   
@@ -251,15 +258,21 @@ div.tooltip1{
                   </div>
               <svg id="s"></svg>
           </div> -->
-        
           
   
       </div>
+      <p>
+        <label for="amount">Date range:</label>
+        <input type="text" id="amount" style="border: 0; color: #f6931f; font-weight: bold;" size="100"/>
+      </p>
+       
+      <div id="slider-range"></div>
       
   
   </body>
   <script>
       let store={}
+      let slidedata;
       store.done=[];
           let x=0
           let y=0
@@ -368,6 +381,8 @@ div.tooltip1{
        groupbytime()
         drawMap(prep(store.geoJSON))
         stackprocess()
+        slidedata = store.sumdate;
+   
         drawline(store.sumdate)
       // groupbyCountryDeath(store.death)
           drawCircles(store.done,"blue")
@@ -1796,6 +1811,7 @@ div.tooltip1{
           
       }
 
+
       function drawbar(data){
 
     
@@ -1936,6 +1952,13 @@ bars.selectAll("rect")
               //console.log(d.country);
                myScript1(d.country);
              // drawline(d.country, store.coronadat)
+
+             for ( s of store.time){
+         if( s.key == d.country){ linedata = s; break}
+       }
+      // console.log(linedata.values)
+      slidedata = linedata.values;
+       drawline(linedata.values)
       });
 
     let brush=   d3.brush()                     // Add the brush feature using the d3.brush function
@@ -2290,22 +2313,7 @@ body
 //end deaths
 //console.log(data)
 
-// draw new
 
-var valuenw = d3.line()
-.x(d => xscale(d.date))
-.y(d => yscale(d.new))
-.defined(d => !!d.new)
-
-body
-.append("path")
-.datum(data)
-.attr("fill", "none")
-.attr("stroke", "blue")
-.attr("stroke-width", 3)
-.attr("d", valuenw)
-.attr("class", "line")
-//end new
 
 body.append('g')
     .selectAll("dot")
@@ -2344,7 +2352,7 @@ lasso()
 function lasso(){
   let body = d3.select("#container")
   var circles = body.selectAll("circle")
-  console.log(circles)
+  //console.log(circles)
   // Lasso functions
         var lasso_start = function() {
             lasso.items()
@@ -2395,8 +2403,38 @@ function lasso(){
         
         body.call(lasso);
 }
+setTimeout(slide,1000)
  //end lasso
+ function slide(){
+   var len = slidedata.length
+  /*var d1 = new Date(data[2].date)
+  var d2 = new Date(data[0].date)
+  Math.abs(d1-d2)/86400000*/
+  //console.log(slidedata[len-1].date)
+   
+  $(function() {
+    $( "#slider-range" ).slider({
+      range: true,
+      min: new Date(slidedata[0].date).getTime() / 1000,
+      max: new Date(slidedata[len-1].date).getTime() / 1000,
+      step: 86400,
+      values: [ new Date(slidedata[0].date).getTime() / 1000, new Date(slidedata[len-1].date).getTime() / 1000 ],
+      slide: function( event, ui ) { console.log((new Date(ui.values[ 0 ] *1000) ))
+        var d1 = new Date(ui.values[ 0 ] *1000)
+        var d2 = new Date(ui.values[ 1 ] *1000)
+        var d3 = new Date(slidedata[0].date).getTime()
+        var str = Math.abs(d1-d3)/86400000
+        var end = Math.abs(d2-d3)/86400000
+        //console.log(slidedata.slice(str,end)) 
+        drawline(slidedata.slice(str,end))
+        $( "#amount" ).val( (new Date(ui.values[ 0 ] *1000).toDateString() ) + " - " + (new Date(ui.values[ 1 ] *1000)).toDateString() );
+      }
+    });
+    $( "#amount" ).val( (new Date($( "#slider-range" ).slider( "values", 0 )*1000).toDateString()) +
+      " - " + (new Date($( "#slider-range" ).slider( "values", 1 )*1000)).toDateString());
       
+  });
+ }
       
       </script>
   </html>
