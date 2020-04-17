@@ -197,8 +197,7 @@ div.tooltip1{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 
   </head>
   
@@ -240,10 +239,13 @@ div.tooltip1{
               </svg>
           </div>
           <div>
-              
-            <svg id="container" height="450px" width="580px">
-              <g id="body2" style="transform: translate(60px,10px);margin-top:50px ;"></g>
-          </svg>
+              <div> 
+                <svg id="container" height="450px" width="580px"> 
+                  <g id="body2" style="transform: translate(60px,10px);margin-top:50px ;"></g>
+              </svg>
+              </div>
+              <div style="transform: translate(190px,-250px);margin-top:50px ;"></div>
+            
 
 
           </div>
@@ -2342,17 +2344,18 @@ body.append('g')
       .attr("cy", function (d) { return yscale(d.deaths); } )
       .attr("r", 0)
       .style("fill", "red")//#69b3a2
-lasso()
+lasso(yscale(1))
+
 
 }
       
       loadData().then(showData);
   
 //lasso here
-function lasso(){
+var a;
+function lasso(scal){
   let body = d3.select("#container")
   var circles = body.selectAll("circle")
-  //console.log(circles)
   // Lasso functions
         var lasso_start = function() {
             lasso.items()
@@ -2368,6 +2371,16 @@ function lasso(){
                 .classed("not_possible",false)
                 .classed("possible",true);
 
+                var lassod = lasso.possibleItems()._groups[0]
+                a= lassod
+                var sum=0;
+                if( lassod != null){
+                  for( x of lassod){
+                  sum += x.cy.baseVal.value
+                }
+                }
+                console.log("I am from lasso data")
+                
             
             lasso.notPossibleItems()
                 .classed("not_possible",true)
@@ -2419,7 +2432,7 @@ setTimeout(slide,1000)
       max: new Date(slidedata[len-1].date).getTime() / 1000,
       step: 86400,
       values: [ new Date(slidedata[0].date).getTime() / 1000, new Date(slidedata[len-1].date).getTime() / 1000 ],
-      slide: function( event, ui ) { console.log((new Date(ui.values[ 0 ] *1000) ))
+      slide: function( event, ui ) { //console.log((new Date(ui.values[ 0 ] *1000) ))
         var d1 = new Date(ui.values[ 0 ] *1000)
         var d2 = new Date(ui.values[ 1 ] *1000)
         var d3 = new Date(slidedata[0].date).getTime()
