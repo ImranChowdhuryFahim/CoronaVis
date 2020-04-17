@@ -187,6 +187,10 @@ div.tooltip1{
       width: 400px;
 
     }
+    #slider-range{
+         width: 380px;
+         margin: 15px;
+    }
       </style>
       <script src="./d3-lasso.min.js"></script>
       <script src="d3.js"></script>
@@ -197,8 +201,8 @@ div.tooltip1{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
 
   </head>
   
@@ -208,7 +212,7 @@ div.tooltip1{
               <div class="tc" ></div>
              <div class="tc1"></div>
               <div class="tc2"></div> 
-              <div>
+              <div style="border-right:1px dotted #BDBDBD; padding: 0 1em;">
                   <form >
                       <label>Choose Case:</label>
                     <select id="options" name="cars" onchange="ddl()">
@@ -219,13 +223,18 @@ div.tooltip1{
                     </select>
                   </form>
                 </div>
-                <div>
+                <div style="border-right:1px dotted #BDBDBD; padding: 0 1em;">
                   <form >
                       <label>Select Country:</label>
                     <select id="countries" class="chosen" name="countries" onchange="myScript()">
                       
                     </select>
                   </form>
+                </div>
+                <div>
+                    <label for="amount">Date range:</label>
+                    <input type="text" id="amount" style="border: 0; color: blue; font-weight: bold;" size="30"/>     
+                  <div id="slider-range"></div>
                 </div>
       </div>
       <div class="mainView">
@@ -241,10 +250,10 @@ div.tooltip1{
           </div>
           <div>
               
-            <svg id="container" height="450px" width="580px">
+            <svg id="container" height="450px" width="500px">
               <g id="body2" style="transform: translate(60px,10px);margin-top:50px ;"></g>
           </svg>
-
+        
 
           </div>
           <!-- <div>
@@ -261,12 +270,7 @@ div.tooltip1{
           
   
       </div>
-      <p>
-        <label for="amount">Date range:</label>
-        <input type="text" id="amount" style="border: 0; color: #f6931f; font-weight: bold;" size="100"/>
-      </p>
-       
-      <div id="slider-range"></div>
+      
       
   
   </body>
@@ -2232,7 +2236,7 @@ function drawline(data){
 let body = d3.select("#body2")
 document.getElementById("body2").innerHTML="";
 let height = 400;
-let width = 500;
+let width = 430;
 
 function showtool(data, coord){ console.log(data)
 d3.select("#tooltip")
