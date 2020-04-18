@@ -3,6 +3,16 @@
 
   <head>
       <style>
+.legend{
+              margin-right: 5px;
+          }
+#tooltip{
+	border: solid 2px black;
+	padding: 5px;
+	position: absolute;
+	display: none;
+	background-color: white;
+}
           body {
               font-family: Helvetica, Arial, sans-serif
           }
@@ -187,6 +197,10 @@ div.tooltip1{
       width: 400px;
 
     }
+    #slider-range{
+         width: 380px;
+         margin: 15px;
+    }
       </style>
       <script src="./d3-lasso.min.js"></script>
       <script src="d3.js"></script>
@@ -197,7 +211,8 @@ div.tooltip1{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
+<!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
 
   </head>
   
@@ -207,7 +222,7 @@ div.tooltip1{
               <div class="tc" ></div>
              <div class="tc1"></div>
               <div class="tc2"></div> 
-              <div>
+              <div style="border-right:1px dotted #BDBDBD; padding: 0 1em;">
                   <form >
                       <label>Choose Case:</label>
                     <select id="options" name="cars" onchange="ddl()">
@@ -218,13 +233,18 @@ div.tooltip1{
                     </select>
                   </form>
                 </div>
-                <div>
+                <div style="border-right:1px dotted #BDBDBD; padding: 0 1em;">
                   <form >
                       <label>Select Country:</label>
                     <select id="countries" class="chosen" name="countries" onchange="myScript()">
                       
                     </select>
                   </form>
+                </div>
+                <div>
+                    <label for="amount">Date range:</label>
+                    <input type="text" id="amount" style="border: 0; color: blue; font-weight: bold;" size="30"/>     
+                  <div id="slider-range"></div>
                 </div>
       </div>
       <div class="mainView">
@@ -244,6 +264,7 @@ div.tooltip1{
                   <g id="body2" style="transform: translate(60px,10px);margin-top:50px ;"></g>
               </svg>
               </div>
+              <div id="tooltip"></div>
               <div style="transform: translate(190px,-250px);margin-top:50px ;"></div>
             
 
@@ -263,12 +284,7 @@ div.tooltip1{
           
   
       </div>
-      <p>
-        <label for="amount">Date range:</label>
-        <input type="text" id="amount" style="border: 0; color: #f6931f; font-weight: bold;" size="100"/>
-      </p>
-       
-      <div id="slider-range"></div>
+      
       
   
   </body>
@@ -2213,6 +2229,12 @@ function display () {
           .on("click", d=>{
               //console.log(d.country);
                myScript1(d.country);
+               for ( s of store.time){
+         if( s.key == d.country){ linedata = s; break}
+       }
+      // console.log(linedata.values)
+      slidedata = linedata.values;
+       drawline(linedata.values)
              // drawline(d.country, store.coronadat)
       });
 
@@ -2234,18 +2256,7 @@ function drawline(data){
 let body = d3.select("#body2")
 document.getElementById("body2").innerHTML="";
 let height = 400;
-let width = 500;
-
-function showtool(data, coord){ console.log(data)
-d3.select("#tooltip")
-.html("Price: "+data[0]+"<br> Date: "+data[1])
-.style('top', coord[1]-15+"px")
-.style("left", coord[0]+15+"px")
-.style("display", "block")
-.style("color", "blue")
-
-}
-
+let width = 430;
 data.map(d=> {
  d.date= new Date(d.date)
  d.confirmed = +d.confirmed
@@ -2270,7 +2281,17 @@ var valueline = d3.line()
 .y(d => yscale(d.confirmed))
 .defined(d => !!d.confirmed)
 
+//for tooltip
 
+          
+body.append('rect')
+    .style("fill", "none")
+    .style("pointer-events", "all")
+    .attr('width', width)
+    .attr('height', height)
+    .on('mousemove', mousemove);
+
+//tool tip
 body
 .append("path")
 .datum(data)
@@ -2279,8 +2300,63 @@ body
 .attr("stroke-width", 3)
 .attr("d", valueline)
 .attr("class", "line")
+.on("mouseenter", d=>{
+			
+      showtool(1,[d3.event.clientX, d3.event.clientY])
+    })
+.on("mouseleave", d=>{
+      d3.select("#tooltip").style('display', 'none')
+    })
+  .on("mousemove", d=>{
+      showtool(1,[d3.event.clientX, d3.event.clientY])
+    })
 
 //draw line end 
+
+/// for tooltip
+
+var bisect = d3.bisector(function(d) { return d.date; }).left;
+function mousemove() {
+        // recover coordinate we need
+        var x0 = xscale.invert(d3.mouse(this)[0]);
+        var i = bisect(data, x0, 1);
+        selectedData = data[i]
+        a= selectedData
+        
+       
+        
+}
+
+function showtool(check, coord){
+ var val
+ var cas
+ if(check == 1){
+    val = a.confirmed
+    cas = "Confirmed: "
+ }
+ else if(check==2){
+    val = a.recovered
+    cas = "Recovered: "
+
+ }
+ else{
+    val = a.deaths
+    cas = "Deaths: "
+ }
+  var formatDate = d3.timeFormat("%d-%b-%y")
+
+  
+
+		d3.select("#tooltip")
+			.html(cas+val+"<br> Date: "+ formatDate(a.date))
+			.style('top', coord[1]-15+"px")
+			.style("left", coord[0]+15+"px")
+			.style("display", "block")
+			.style("color", "blue")
+			
+	}
+     
+//end tooltip
 
 //recovered case
 var valuerc = d3.line()
@@ -2296,6 +2372,16 @@ body
 .attr("stroke-width", 3)
 .attr("d", valuerc)
 .attr("class", "line")
+.on("mouseenter", d=>{
+			
+      showtool(2,[d3.event.clientX, d3.event.clientY])
+    })
+.on("mouseleave", d=>{
+      d3.select("#tooltip").style('display', 'none')
+    })
+  .on("mousemove", d=>{
+      showtool(2,[d3.event.clientX, d3.event.clientY])
+    })
 // end recov
 
 //draw deaths
@@ -2312,7 +2398,45 @@ body
 .attr("stroke-width", 3)
 .attr("d", valuedth)
 .attr("class", "line")
+.on("mouseenter", d=>{
+			
+      showtool(3,[d3.event.clientX, d3.event.clientY])
+    })
+.on("mouseleave", d=>{
+      d3.select("#tooltip").style('display', 'none')
+    })
+  .on("mousemove", d=>{
+      showtool(3,[d3.event.clientX, d3.event.clientY])
+    })
 //end deaths
+// legend
+var columnHeaders = d3.keys(data[0]).filter(function(key) { return key !== "date"; });
+var color = d3.scaleOrdinal().range(
+  ["blue", "red","green"]);
+
+  var legend = body.selectAll(".legend")
+    .data(columnHeaders.slice().reverse())
+  .enter().append("g")
+    .attr("class", "legend")
+    .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+legend.append("rect")
+    .attr("x", 105)
+    .attr("width", 18)
+    .attr("height", 18)
+    .style("fill", color);
+
+legend.append("text")
+    .attr("x", 90)
+    .attr("y", 5)
+    .attr("dy", ".35em")
+    .style("fill", color)
+    .style("text-anchor", "end")
+    .text(function(d) { return d; });
+
+//
+
+
 //console.log(data)
 
 
@@ -2348,11 +2472,12 @@ lasso(yscale(1))
 
 
 }
-      
+
+ 
       loadData().then(showData);
   
 //lasso here
-var a;
+let a;
 function lasso(scal){
   let body = d3.select("#container")
   var circles = body.selectAll("circle")
