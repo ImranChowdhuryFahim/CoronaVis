@@ -2444,7 +2444,6 @@ body.append('g')
       .attr("r", 0)
       .style("fill", "red")//#69b3a2
 lasso()
-setTimeout(slide,1000)
 
 }
       
@@ -2507,7 +2506,7 @@ function lasso(){
         
         body.call(lasso);
 }
-
+setTimeout(slide,100)
  //end lasso
  function slide(){
    var len = slidedata.length
@@ -2539,11 +2538,10 @@ function lasso(){
       
   });
  }
-      
 
 
-///command/////
-   function command()
+ ///command/////
+ function command()
    {
      let str=document.getElementById('command').value
      if((/^select/).test(str) && (/death cases|confirm cases|recovered cases/).test(str))
@@ -2607,7 +2605,6 @@ function lasso(){
      }
     
    }
-
-
+      
       </script>
   </html>
