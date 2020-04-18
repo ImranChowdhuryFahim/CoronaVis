@@ -3,6 +3,16 @@
 
   <head>
       <style>
+.legend{
+              margin-right: 5px;
+          }
+#tooltip{
+	border: solid 2px black;
+	padding: 5px;
+	position: absolute;
+	display: none;
+	background-color: white;
+}
           body {
               font-family: Helvetica, Arial, sans-serif
           }
@@ -282,11 +292,15 @@ div.tooltip1{
               </svg>
           </div>
           <div>
-              
-            <svg id="container" height="450px" width="500px">
-              <g id="body2" style="transform: translate(60px,10px);margin-top:50px ;"></g>
-          </svg>
-        
+              <div> 
+                <svg id="container" height="450px" width="580px"> 
+                  <g id="body2" style="transform: translate(60px,10px);margin-top:50px ;"></g>
+              </svg>
+              </div>
+              <div id="tooltip"></div>
+              <div style="transform: translate(190px,-250px);margin-top:50px ;"></div>
+            
+
 
           </div>
           <!-- <div>
@@ -2312,6 +2326,12 @@ function display () {
           .on("click", d=>{
               //console.log(d.country);
                myScript1(d.country);
+               for ( s of store.time){
+         if( s.key == d.country){ linedata = s; break}
+       }
+      // console.log(linedata.values)
+      slidedata = linedata.values;
+       drawline(linedata.values)
              // drawline(d.country, store.coronadat)
       });
 
@@ -2334,17 +2354,6 @@ let body = d3.select("#body2")
 document.getElementById("body2").innerHTML="";
 let height = 400;
 let width = 430;
-
-function showtool(data, coord){ console.log(data)
-d3.select("#tooltip")
-.html("Price: "+data[0]+"<br> Date: "+data[1])
-.style('top', coord[1]-15+"px")
-.style("left", coord[0]+15+"px")
-.style("display", "block")
-.style("color", "blue")
-
-}
-
 data.map(d=> {
  d.date= new Date(d.date)
  d.confirmed = +d.confirmed
@@ -2369,7 +2378,17 @@ var valueline = d3.line()
 .y(d => yscale(d.confirmed))
 .defined(d => !!d.confirmed)
 
+//for tooltip
 
+          
+body.append('rect')
+    .style("fill", "none")
+    .style("pointer-events", "all")
+    .attr('width', width)
+    .attr('height', height)
+    .on('mousemove', mousemove);
+
+//tool tip
 body
 .append("path")
 .datum(data)
@@ -2378,8 +2397,63 @@ body
 .attr("stroke-width", 3)
 .attr("d", valueline)
 .attr("class", "line")
+.on("mouseenter", d=>{
+			
+      showtool(1,[d3.event.clientX, d3.event.clientY])
+    })
+.on("mouseleave", d=>{
+      d3.select("#tooltip").style('display', 'none')
+    })
+  .on("mousemove", d=>{
+      showtool(1,[d3.event.clientX, d3.event.clientY])
+    })
 
 //draw line end 
+
+/// for tooltip
+
+var bisect = d3.bisector(function(d) { return d.date; }).left;
+function mousemove() {
+        // recover coordinate we need
+        var x0 = xscale.invert(d3.mouse(this)[0]);
+        var i = bisect(data, x0, 1);
+        selectedData = data[i]
+        a= selectedData
+        
+       
+        
+}
+
+function showtool(check, coord){
+ var val
+ var cas
+ if(check == 1){
+    val = a.confirmed
+    cas = "Confirmed: "
+ }
+ else if(check==2){
+    val = a.recovered
+    cas = "Recovered: "
+
+ }
+ else{
+    val = a.deaths
+    cas = "Deaths: "
+ }
+  var formatDate = d3.timeFormat("%d-%b-%y")
+
+  
+
+		d3.select("#tooltip")
+			.html(cas+val+"<br> Date: "+ formatDate(a.date))
+			.style('top', coord[1]-15+"px")
+			.style("left", coord[0]+15+"px")
+			.style("display", "block")
+			.style("color", "blue")
+			
+	}
+     
+//end tooltip
 
 //recovered case
 var valuerc = d3.line()
@@ -2395,6 +2469,16 @@ body
 .attr("stroke-width", 3)
 .attr("d", valuerc)
 .attr("class", "line")
+.on("mouseenter", d=>{
+			
+      showtool(2,[d3.event.clientX, d3.event.clientY])
+    })
+.on("mouseleave", d=>{
+      d3.select("#tooltip").style('display', 'none')
+    })
+  .on("mousemove", d=>{
+      showtool(2,[d3.event.clientX, d3.event.clientY])
+    })
 // end recov
 
 //draw deaths
@@ -2411,7 +2495,45 @@ body
 .attr("stroke-width", 3)
 .attr("d", valuedth)
 .attr("class", "line")
+.on("mouseenter", d=>{
+			
+      showtool(3,[d3.event.clientX, d3.event.clientY])
+    })
+.on("mouseleave", d=>{
+      d3.select("#tooltip").style('display', 'none')
+    })
+  .on("mousemove", d=>{
+      showtool(3,[d3.event.clientX, d3.event.clientY])
+    })
 //end deaths
+// legend
+var columnHeaders = d3.keys(data[0]).filter(function(key) { return key !== "date"; });
+var color = d3.scaleOrdinal().range(
+  ["blue", "red","green"]);
+
+  var legend = body.selectAll(".legend")
+    .data(columnHeaders.slice().reverse())
+  .enter().append("g")
+    .attr("class", "legend")
+    .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+legend.append("rect")
+    .attr("x", 105)
+    .attr("width", 18)
+    .attr("height", 18)
+    .style("fill", color);
+
+legend.append("text")
+    .attr("x", 90)
+    .attr("y", 5)
+    .attr("dy", ".35em")
+    .style("fill", color)
+    .style("text-anchor", "end")
+    .text(function(d) { return d; });
+
+//
+
+
 //console.log(data)
 
 
@@ -2443,17 +2565,19 @@ body.append('g')
       .attr("cy", function (d) { return yscale(d.deaths); } )
       .attr("r", 0)
       .style("fill", "red")//#69b3a2
-lasso()
+lasso(yscale(1))
+
 
 }
-      
+
+ 
       loadData().then(showData);
   
 //lasso here
-function lasso(){
+let a;
+function lasso(scal){
   let body = d3.select("#container")
   var circles = body.selectAll("circle")
-  //console.log(circles)
   // Lasso functions
         var lasso_start = function() {
             lasso.items()
@@ -2469,6 +2593,16 @@ function lasso(){
                 .classed("not_possible",false)
                 .classed("possible",true);
 
+                var lassod = lasso.possibleItems()._groups[0]
+                a= lassod
+                var sum=0;
+                if( lassod != null){
+                  for( x of lassod){
+                  sum += x.cy.baseVal.value
+                }
+                }
+                console.log("I am from lasso data")
+                
             
             lasso.notPossibleItems()
                 .classed("not_possible",true)
@@ -2522,7 +2656,7 @@ setTimeout(slide,100)
       max: new Date(slidedata[len-1].date).getTime() / 1000,
       step: 86400,
       values: [ new Date(slidedata[0].date).getTime() / 1000, new Date(slidedata[len-1].date).getTime() / 1000 ],
-      slide: function( event, ui ) { console.log((new Date(ui.values[ 0 ] *1000) ))
+      slide: function( event, ui ) { //console.log((new Date(ui.values[ 0 ] *1000) ))
         var d1 = new Date(ui.values[ 0 ] *1000)
         var d2 = new Date(ui.values[ 1 ] *1000)
         var d3 = new Date(slidedata[0].date).getTime()
