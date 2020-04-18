@@ -57,7 +57,7 @@ div.tc2{
   border-right:1px dotted #BDBDBD;
 }
           .mainView {
-              display: flex;
+              display: flexbox;
           }
   
           #filter_countries{
@@ -246,12 +246,14 @@ width: 300px;
       </div>
       <div class="mainView">
           <div id="bar">
-              <svg id="BarChart"  style="transform: rotate(90deg)" >
+              <svg id="BarChart"  style="transform: rotate(90deg)" viewBox="0 0 400 450"
+              preserveAspectRatio="xMidYMid meet" >
                   
               </svg>
           </div>
           <div>
-              <svg id="Map">
+              <svg id="Map" viewBox="0 0 630 450"
+              preserveAspectRatio="xMidYMid meet">
                   <g id="G"></g>
               </svg>
           </div>
@@ -266,25 +268,14 @@ width: 300px;
                       <li class="next"><span></span></li>
                   </ul>
                   <div class="line" id="lnct"> 
-                    <svg id="container" height="246px" width="638px">
+                    <svg id="container" height="246px" width="638px" viewBox="0 0 960 500"
+                    preserveAspectRatio="xMidYMid meet">
                       <g id="body2" style="transform: translate(50px,10px);margin-top:50px ;"></g>
                   </svg>
                   <div id="tooltip"></div><br>
-                  <!--<div style="text-align: center;"><h1>Confirmed cases</h1></div>-->
                   </div>
 
           </div>
-          <!-- <div>
-              <h2 align="right">Search Countries</h2>
-              <div class="search">
-                  <input type="text" placeholder="Search Countries" id="filter_countries"/>
-  
-                   <ul id="countries-list">
-  
-                   </ul>
-                  </div>
-              <svg id="s"></svg>
-          </div> -->
         
           
   
