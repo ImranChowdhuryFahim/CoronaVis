@@ -236,7 +236,7 @@ div.tooltip1{
         <label>Enter Command</label>
         <input type="text" id="command" style="padding: 0 1em;
         line-height: 1.2;" size="40px">
-        <button onclick="">Enter</button>
+        <button onclick="command()">Enter</button>
         </div>
         <div class="res">Showing Results of Confirmed Cases for All Countries</div> 
 
@@ -2444,6 +2444,7 @@ body.append('g')
       .attr("r", 0)
       .style("fill", "red")//#69b3a2
 lasso()
+setTimeout(slide,1000)
 
 }
       
@@ -2506,7 +2507,7 @@ function lasso(){
         
         body.call(lasso);
 }
-setTimeout(slide,100)
+
  //end lasso
  function slide(){
    var len = slidedata.length
@@ -2539,5 +2540,74 @@ setTimeout(slide,100)
   });
  }
       
+
+
+///command/////
+   function command()
+   {
+     let str=document.getElementById('command').value
+     if((/^select/).test(str) && (/death cases|confirm cases|recovered cases/).test(str))
+     {
+            if (str.includes("death cases"))
+            {
+                  currentvis="death";
+                  document.getElementById("options").value="Death Cases"
+          
+          d3.select("#G").remove()
+          d3.select("#Map").append("g").attr("id","G")
+          d3.select("#BarChart").remove()
+          d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
+          drawbar(store.done.sort((a,b)=>b.deaths - a.deaths))
+          drawMap(store.geoJSON)
+          drawCirclesdeath(store.done,"red")
+          total_case_print(groupbyCountry(store.coronadat))
+        total_case_print1(groupbyCountryDeath(store.death))
+        total_case_print2(groupbyCountryRecovered(store.recovered))
+        d3.select(".res").style("background-color","#cb181d").text("Showing Results of Death Cases for All Countries");
+            }
+
+            if (str.includes("recovered cases"))
+            {
+                  
+                  document.getElementById("options").value="Recovered Cases"
+          
+            currentvis="recovered";
+            d3.select("#G").remove()
+          d3.select("#Map").append("g").attr("id","G")
+          d3.select("#BarChart").remove()
+          d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
+          drawbar(store.done.sort((a,b)=>b.recovered - a.recovered))
+          drawMap(store.geoJSON)
+          drawCirclesRecovered(store.done,"red")
+          total_case_print(groupbyCountry(store.coronadat))
+        total_case_print1(groupbyCountryDeath(store.death))
+        total_case_print2(groupbyCountryRecovered(store.recovered))
+        d3.select(".res").style("background-color","green").text("Showing Results of Recovered Cases for All Countries");
+            }       
+            if (str.includes("confirmed cases"))
+            {
+                  
+                  document.getElementById("options").value="Confirmed Cases"
+          
+          
+                    currentvis="confirm";
+            d3.select("#G").remove()
+          d3.select("#Map").append("g").attr("id","G")
+          d3.select("#BarChart").remove()
+          d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
+          drawbar(store.done.sort((a,b)=>b.confirmed - a.confirmed))
+          drawMap(store.geoJSON)
+          drawCircles(store.done,"blue")
+          total_case_print(groupbyCountry(store.coronadat))
+        total_case_print1(groupbyCountryDeath(store.death))
+        total_case_print2(groupbyCountryRecovered(store.recovered))
+        d3.select(".res").style("background-color","#2a5599").text("Showing Results of Confirmed Cases for All Countries");
+            }      
+        
+     }
+    
+   }
+
+
       </script>
   </html>
