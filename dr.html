@@ -184,10 +184,10 @@ label{
   fill: red;
 }
                                                                           /* previousl 55 */
-          div.tooltip {position: absolute; text-align: left; width: 200px; height: 85px; padding: 15px;font: 14px calibri; background: #d60f23; color: white; border: 2px; border-radius: 8px; pointer-events: none;}
+          div.tooltip {position: absolute; text-align: left; width: 200px; height: 85px; padding: 15px;font: 14px calibri; background: gray; color:black; border: 2px; border-radius: 8px; pointer-events: none;}
 div.tooltip1{
 
-  position: absolute; text-align: left; width: 200px; height: 95px; padding: 15px;font: 14px calibri; background: purple; color: white; border: 2px; border-radius: 8px; pointer-events: none;
+  position: absolute; text-align: left; width: 200px; height: 95px; padding: 15px;font: 14px calibri; background: gray; color: black; border: 2px; border-radius: 8px; pointer-events: none;
  
 }
 /* 
@@ -586,9 +586,10 @@ div.tooltip1{
             })
           .attr("stroke", "gray")
           .attr("stroke-width", .5)
-          .attr("stroke-linejoin", "round")
           .on("mousemove", function(d) {
-               d3.select(this).attr("stroke-width", "2px")
+               d3.select(this)
+               .attr("stroke","black")
+               .attr("stroke-width", "1px")
                div
               .transition()
               .duration(200)
@@ -607,13 +608,13 @@ div.tooltip1{
                 store.date
               )
               .attr("class","tooltip1")
-              .style("left", d3.event.clientX + "px")
-              .style("top", d3.event.clientY - 28 + "px");
+              .style("left", 790 + "px")
+              .style("top", 235 + "px");
                
               })
             .on("mouseleave",function(d){
 
-              d3.select(this).attr("stroke-width",".5px").attr("fill", function(d)
+              d3.select(this).attr("stroke","gray").attr("stroke-width",".5px").attr("fill", function(d)
               {
                 if (currentvis=="confirm")
               {                                                              //
