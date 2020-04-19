@@ -752,9 +752,13 @@ if(currentvis!="death"){
       .style("fill", "url(#gradient)")
       .attr("transform", "translate(10,10)");
 
+    a=[]
+    if(currentvis=="confirm")a= [Math.round((mc*.9)/1000)+"k",Math.round((mc*.09)/1000)+"k",Math.round((mc*.01)/1000)+"k",Math.round((mc*.004)/1000)+"k",Math.round((mc*.001)/1000)+"k",Math.round((mc*.0009)/1000)+"k" , 0];
+    else if(currentvis=="recovered")a= [Math.round((mc*.9)/1000)+"k",Math.round((mc*.09)/1000)+"k",Math.round((mc*.01)/1000)+"k",Math.round((mc*.004)),Math.round(mc*.001),Math.round((mc*.0009)) , 0]
     var y = d3.scaleBand()
       .range([300, 0])
-      .domain([Math.round((mc*.9)/1000)+"k",Math.round((mc*.09)/1000)+"k",Math.round((mc*.01)/1000)+"k",Math.round((mc*.004)/1000)+"k",Math.round((mc*.001)/1000)+"k",Math.round((mc*.0009)/1000)+"k" , 0]);
+      .domain(a
+        );
 
     var yAxis = d3.axisBottom()
       .scale(y)
@@ -2928,7 +2932,7 @@ setTimeout(slide,100)
  function command()
    {
      let str=document.getElementById('command').value
-     if((/^select/).test(str) && (/death cases|confirm cases|recovered cases/).test(str))
+     if((/^select/).test(str) && (/death cases|confirmed cases|recovered cases/).test(str))
      {
             if (str.includes("death cases"))
             {
