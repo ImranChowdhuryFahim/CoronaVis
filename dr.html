@@ -1820,6 +1820,8 @@ else{
           
          if(c=="All")
          {
+          
+       drawline(store.sumdate)
           total_case_print(groupbyCountry(store.coronadat))
         total_case_print1(groupbyCountryDeath(store.death))
         total_case_print2(groupbyCountryRecovered(store.recovered))
@@ -1837,6 +1839,10 @@ else{
            if(currentvis=="confirm"){
           if(i.__data__.country==c)
           {
+            for ( s of store.time){
+         if( s.key == c){ linedata = s; break}
+       }
+       drawline(linedata.values)
             d3.select(".tc").html(
 "<span style='font-weight:bold;font-size:1.5em;color:maroon'>"+i.__data__.confirmed+"</span>"+
 "</br>"+"Confirmed Cases"
@@ -1877,6 +1883,10 @@ else{
            }
            else if(currentvis=="death"){
             if(i.__data__.country==c){
+              for ( s of store.time){
+         if( s.key == c){ linedata = s; break}
+       }
+       drawline(linedata.values)
               d3.select(".tc").html(
 "<span style='font-weight:bold;font-size:1.5em;color:maroon'>"+i.__data__.confirmed+"</span>"+
 "</br>"+"Confirmed Cases"
@@ -1920,6 +1930,10 @@ else{
            }
            else if(currentvis=="recovered"){
             if(i.__data__.country==c){
+              for ( s of store.time){
+         if( s.key == c){ linedata = s; break}
+       }
+       drawline(linedata.values)
               d3.select(".tc").html(
 "<span style='font-weight:bold;font-size:1.5em;color:maroon'>"+i.__data__.confirmed+"</span>"+
 "</br>"+"Confirmed Cases"
@@ -2101,13 +2115,15 @@ else{
           //drawCircles(groupbyCountryDeath(store.death),)
           if(selectedValue=="Death Cases"){
             currentvis="death";
-          
+          document.getElementById("countries").value="All";
+          $("#countries").trigger("chosen:updated");
           d3.select("#G").remove()
           d3.select("#Map").append("g").attr("id","G")
           d3.select("#BarChart").remove()
           d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
           drawbar(store.done.sort((a,b)=>b.deaths - a.deaths))
           drawMap(store.geoJSON)
+          drawline(store.sumdate)
           drawCirclesdeath(store.done,"red")
           total_case_print(groupbyCountry(store.coronadat))
         total_case_print1(groupbyCountryDeath(store.death))
@@ -2119,12 +2135,15 @@ else{
       
           {
             currentvis="confirm";
+            document.getElementById("countries").value="All";
+          $("#countries").trigger("chosen:updated");
             d3.select("#G").remove()
           d3.select("#Map").append("g").attr("id","G")
           d3.select("#BarChart").remove()
           d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
           drawbar(store.done.sort((a,b)=>b.confirmed - a.confirmed))
           drawMap(store.geoJSON)
+          drawline(store.sumdate)
           drawCircles(store.done,"blue")
           total_case_print(groupbyCountry(store.coronadat))
         total_case_print1(groupbyCountryDeath(store.death))
@@ -2134,12 +2153,15 @@ else{
           else if(selectedValue=="Recovered Cases")
           {
             currentvis="recovered";
+            document.getElementById("countries").value="All";
+          $("#countries").trigger("chosen:updated");
             d3.select("#G").remove()
           d3.select("#Map").append("g").attr("id","G")
           d3.select("#BarChart").remove()
           d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
           drawbar(store.done.sort((a,b)=>b.recovered - a.recovered))
           drawMap(store.geoJSON)
+          drawline(store.sumdate)
           drawCirclesRecovered(store.done,"red")
           total_case_print(groupbyCountry(store.coronadat))
         total_case_print1(groupbyCountryDeath(store.death))
