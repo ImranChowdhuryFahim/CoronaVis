@@ -3,12 +3,16 @@
 
   <head>
       <style>
-        .y_axis path{
-          stroke: white;
-        }
-        .lg{
-          margin-left: 20px;
-        }
+
+.selectedL{
+  opacity: .5;
+}
+.y_axis path{
+  stroke: white;
+}
+.lg{
+  margin-left: 20px;
+}
 .legend{
               margin-right: 5px;
           }
@@ -348,6 +352,7 @@ div.tooltip1{
       let slidedata;
       store.done=[];
       store.afterlasso=[];
+      store.mapafterlinelasso={}
           let x=0
           let y=0
           let k=1
@@ -1249,6 +1254,7 @@ else{
 
           store.done=a
           store.date=a[0].date;
+          store.mapafterlinelasso=store.geoJSON
           return store.geoJSON;
           
 
@@ -1424,6 +1430,9 @@ else{
          d3.select(l[i]).classed("selected",false)
        }
      }
+console.log()
+     if(d.length>0)aftermaplasso(d);
+     else drawline(store.sumdate)
               };
               
               var lasso = d3.lasso()
@@ -1580,6 +1589,9 @@ else{
          d3.select(l[i]).classed("selected",false)
        }
      }
+
+     if(d.length>0)aftermaplasso(d);
+     else drawline(store.sumdate)
               };
               
               var lasso = d3.lasso()
@@ -1727,6 +1739,9 @@ else{
          d3.select(l[i]).classed("selected",false)
        }
      }
+
+     if(d.length>0)aftermaplasso(d);
+     else drawline(store.sumdate)
       
               };
               
@@ -1814,7 +1829,8 @@ else{
           
         
          let c=selectedValue;
-         d3.select(".res").text("Showing Results Cases for "+c);
+         if(c=="All")d3.select(".res").text("Showing Results for All Countries");
+         else d3.select(".res").text("Showing Results for "+c);
         
          for(j=0;j<205;j++)
           {
@@ -2144,7 +2160,7 @@ else{
           d3.select("#BarChart").remove()
           d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
           drawbar(store.done.sort((a,b)=>b.deaths - a.deaths))
-          drawMap(store.geoJSON)
+          drawMap(prep(store.geoJSON))
           drawline(store.sumdate)
           drawCirclesdeath(store.done,"red")
           total_case_print(groupbyCountry(store.coronadat))
@@ -2164,7 +2180,7 @@ else{
           d3.select("#BarChart").remove()
           d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
           drawbar(store.done.sort((a,b)=>b.confirmed - a.confirmed))
-          drawMap(store.geoJSON)
+          drawMap(prep(store.geoJSON))
           drawline(store.sumdate)
           drawCircles(store.done,"blue")
           total_case_print(groupbyCountry(store.coronadat))
@@ -2182,7 +2198,7 @@ else{
           d3.select("#BarChart").remove()
           d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
           drawbar(store.done.sort((a,b)=>b.recovered - a.recovered))
-          drawMap(store.geoJSON)
+          drawMap(prep(store.geoJSON))
           drawline(store.sumdate)
           drawCirclesRecovered(store.done,"red")
           total_case_print(groupbyCountry(store.coronadat))
@@ -2193,10 +2209,10 @@ else{
           
       }
 
-
+let lassobar;
       function drawbar(data){
-
-    
+   //console.log(data)
+    lassobar = data;
              
 var margin =  {top: 10, right: 0, bottom: 70, left: 50};
 var marginOverview = {top: 10, right: 0, bottom: 70, left: 50};
@@ -2353,19 +2369,7 @@ bars.selectAll("rect")
        drawline(linedata.values)
       });
 
-    let brush=   d3.brush()                     // Add the brush feature using the d3.brush function
-      .extent( [ [0,0], [400,400] ] )
-    brush.on("end",function(d)
-    {
-
-    })       // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
-
-    //bars.call(brush) 
-    function brushend()
-    {
-      console.log(brush.extent)
-    }
-    
+  
 
     var lasso_start = function() {
                   lasso.items() // reset size
@@ -2418,6 +2422,7 @@ bars.selectAll("rect")
                 cn.push(i.__data__.country)
               }
       }
+      
       total_case_print(d)
       total_case_print1(d)
       total_case_print2(d)
@@ -2437,6 +2442,9 @@ bars.selectAll("rect")
          d3.select(l[i]).classed("selected",false)
        }
      }
+
+     if(d.length>0)afterbarlasso(lasso.selectedItems()._groups[0]);
+     else drawline(store.sumdate)
               };
               
               var lasso = d3.lasso()
@@ -2700,6 +2708,12 @@ body
 .attr("stroke-width", 3)
 .attr("d", valueline)
 .attr("class", "line")
+.classed("selectedL",function (d) { 
+  if(currentvis == "confirm"){ return false;}
+  else{ return true; }
+  
+
+  })//here we
 .on("mouseenter", d=>{
 			
       showtool(1,[d3.event.clientX -180, d3.event.clientY-30])
@@ -2722,7 +2736,7 @@ function mousemove() {
         var i = bisect(data, x0, 1);
         selectedData = data[i]
         a= selectedData
-        
+
        
         
 }
@@ -2771,7 +2785,14 @@ body
 .attr("stroke", '#238b45')
 .attr("stroke-width", 3)
 .attr("d", valuerc)
+.attr("id", "rcv")
 .attr("class", "line")
+.classed("selectedL",function (d) { 
+  if(currentvis == "recovered"){ return false;}
+  else{ return true; }
+  
+
+  })
 .on("mouseenter", d=>{
 			
       showtool(2,[d3.event.clientX -180, d3.event.clientY-30])
@@ -2798,6 +2819,12 @@ body
 .attr("stroke-width", 3)
 .attr("d", valuedth)
 .attr("class", "line")
+.classed("selectedL",function (d) {
+  if(currentvis == "death"){ return false;}
+  else{ return true; }
+  
+
+  })
 .on("mouseenter", d=>{
 			
       showtool(3,[d3.event.clientX -180, d3.event.clientY-30])
@@ -2810,7 +2837,7 @@ body
     })
 //end deaths
 // legend
-var columnHeaders = d3.keys(data[0]).filter(function(key) { return key !== "date"; });
+var columnHeaders = ["Confirmed", "Deaths", "Recovered"];
 var color = d3.scaleOrdinal().range(
   ["#2a5599" ,'#cb181d','#238b45']);
 
@@ -2868,7 +2895,7 @@ body.append('g')
       .attr("cy", function (d) { return yscale(d.deaths); } )
       .attr("r", 0)
       .style("fill", "red")//#69b3a2
-lasso(yscale(1))
+lasso(yscale(1), data, xscale)
 
 
 }
@@ -2878,7 +2905,7 @@ lasso(yscale(1))
   
 //lasso here
 let a;
-function lasso(scal){
+function lasso(scal, data, xscale){
   let body = d3.select("#container")
   var circles = body.selectAll("circle")
   // Lasso functions
@@ -2895,16 +2922,13 @@ function lasso(scal){
             lasso.possibleItems()
                 .classed("not_possible",false)
                 .classed("possible",true);
+                
+               
+                
+              
+               
+                //console.log("I am from lasso data")
 
-                var lassod = lasso.possibleItems()._groups[0]
-                a= lassod
-                var sum=0;
-                if( lassod != null){
-                  for( x of lassod){
-                  sum += x.cy.baseVal.value
-                }
-                }
-                console.log("I am from lasso data")
                 
             
             lasso.notPossibleItems()
@@ -2923,7 +2947,28 @@ function lasso(scal){
                 .classed("selected",true)
                 .attr("r",3.5)
                 .style("fill", "blue");
-
+                var lassod = lasso.selectedItems()._groups[0]
+                var bisect = d3.bisector(function(d) { return d.date; }).left;
+                let a = lassod;
+                if(a.length){
+                var x1 =xscale.invert(a[0].cx.baseVal.value);
+                var x2 =xscale.invert(a[a.length-1].cx.baseVal.value);
+                afterlasso(x1,x2)
+                var formatDate = d3.timeFormat("%d/%b/%y")
+                d3.select(".res").text("Showing Results from "+formatDate(x1)+" to "+formatDate(x2));
+                }
+                if(!a.length){
+                  clearmap()
+                  drawMap(prep(store.geoJSON))
+                  clearbar()
+                  total_case_print(store.done);
+          total_case_print1(store.done);
+          total_case_print2(store.done);
+                  d3.select(".res").text("Showing Results for All Countries");
+                  if(currentvis=="confirm")drawbar(store.done.sort((a,b)=>b.confirmed - a.confirmed));
+                  else if(currentvis=="death")drawbar(store.done.sort((a,b)=>b.deaths - a.deaths));
+                  else if(currentvis=="recovered")drawbar(store.done.sort((a,b)=>b.recovered - a.recovered));
+                }
             // Reset the style of the not selected dots
             lasso.notSelectedItems()
                 .attr("r",0);
@@ -2943,7 +2988,7 @@ function lasso(scal){
         
         body.call(lasso);
 }
-setTimeout(slide,100)
+setTimeout(slide,1000)
  //end lasso
  function slide(){
    var len = slidedata.length
@@ -2965,7 +3010,7 @@ setTimeout(slide,100)
         var d3 = new Date(slidedata[0].date).getTime()
         var str = Math.abs(d1-d3)/86400000
         var end = Math.abs(d2-d3)/86400000
-        //console.log(slidedata.slice(str,end)) 
+        afterlasso(d1, d2)
         drawline(slidedata.slice(str,end))
         $( "#amount" ).val( (new Date(ui.values[ 0 ] *1000).toDateString() ) + " - " + (new Date(ui.values[ 1 ] *1000)).toDateString() );
       }
@@ -2993,8 +3038,9 @@ setTimeout(slide,100)
           d3.select("#BarChart").remove()
           d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
           drawbar(store.done.sort((a,b)=>b.deaths - a.deaths))
-          drawMap(store.geoJSON)
+          drawMap(prep(store.geoJSON))
           drawCirclesdeath(store.done,"red")
+          drawline(store.sumdate)
           total_case_print(groupbyCountry(store.coronadat))
         total_case_print1(groupbyCountryDeath(store.death))
         total_case_print2(groupbyCountryRecovered(store.recovered))
@@ -3012,8 +3058,9 @@ setTimeout(slide,100)
           d3.select("#BarChart").remove()
           d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
           drawbar(store.done.sort((a,b)=>b.recovered - a.recovered))
-          drawMap(store.geoJSON)
+          drawMap(prep(store.geoJSON))
           drawCirclesRecovered(store.done,"red")
+          drawline(store.sumdate)
           total_case_print(groupbyCountry(store.coronadat))
         total_case_print1(groupbyCountryDeath(store.death))
         total_case_print2(groupbyCountryRecovered(store.recovered))
@@ -3031,8 +3078,9 @@ setTimeout(slide,100)
           d3.select("#BarChart").remove()
           d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
           drawbar(store.done.sort((a,b)=>b.confirmed - a.confirmed))
-          drawMap(store.geoJSON)
+          drawMap(prep(store.geoJSON))
           drawCircles(store.done,"blue")
+          drawline(store.sumdate)
           total_case_print(groupbyCountry(store.coronadat))
         total_case_print1(groupbyCountryDeath(store.death))
         total_case_print2(groupbyCountryRecovered(store.recovered))
@@ -3246,11 +3294,45 @@ setTimeout(slide,100)
 
 
     }
+
+
+    else if((/from/).test(str) && (/to/).test(str))
+    {
+
+      
+      let d=[]
+      a=str;
+      a=a.split(" ")
+      for(i of a){
+        if(i=="from" || i=="to")continue
+        else d.push(i)
+      }
+
+      d3.select(".res").text("Showing Results from "+d[0]+" to "+d[1]);  
+   
+      afterlasso(new Date(d[0]) ,new Date(d[1]))
+
+     for (i=0;i<d3.select("#container").selectAll('circle')._groups[0].length -1 ;i++)
+     {
+       let b=d3.select("#container").selectAll('circle')._groups[0][i]
+      if( b.__data__.date>=new Date(d[0]) && b.__data__.date<=new Date(d[1]))
+      {
+        d3.select(b).classed("selected",true)
+                .attr("r",3.5)
+                .style("fill", "blue");
+        //console.log(b)
+      }
+     }
+      
+    }
      
      else if((/^select/).test(str)){
         a=str.split(" ")
         a=a[1]
         a= a.split(",")
+
+      
+      drawline(commandline(a))
 
  if(a[0]=="All") d3.select(".res").text("Showing Results for all countries");
  else d3.select(".res").text("Showing Results for "+a);
@@ -3305,7 +3387,12 @@ setTimeout(slide,100)
       d3.select(".res").text("Showing Results for All countries");
 
        store.afterlasso=[]
-
+    
+      drawline(store.sumdate)
+      clearbar()
+      drawbar(store.done)
+      clearmap()
+      drawMap(prep(store.geoJSON))
       l= d3.selectAll("rect")._groups[0]
      for(i=0;i<205;i++)
      {
@@ -3332,6 +3419,242 @@ setTimeout(slide,100)
      
      
    }
+
+   //after lasso
+
+   function afterlasso(d1,d2){
+              
+         console.log(d1,d2)
+        var d3 = new Date(slidedata[0].date).getTime()
+        var str = Math.abs(d1-d3)/86400000
+        var end = Math.abs(d2-d3)/86400000
+        let a = [];
+        
+        str = Math.floor(str)
+        end = Math.floor(end)
+        var j = 0;
+        //console.log(store.time)
       
+        for( x of store.time){
+          let c=0;
+          let d=0;
+          let r=0;
+          
+             c += x.values[end].confirmed - x.values[str].confirmed
+             d += x.values[end].deaths - x.values[str].deaths
+             r += x.values[end].recovered - x.values[str].recovered
+          
+          a[j] = {
+            "country" : x.values[0].country,
+            "confirmed" : c,
+            "recovered" : r,
+            "deaths" : d,
+            "date" :   x.values[end].date       }
+          j++;
+        }
+        //console.log(a)
+        // sdate = new Date(d1);
+        // sdate.getDate()+ '/' + (sdate.getMonth()+1) + '/' +sdate.getFullYear();
+        // edate = new Date(d2);
+        // edate.getDate()+ '/' + (edate.getMonth()+1) + '/' +edate.getFullYear();
+        // console.log(d1,d2)
+        // console.log(sdate,edate)
+        
+        if(currentvis=="confirm")a = a.sort((a,b)=>b.confirmed-a.confirmed);
+        else if(currentvis=="death")a = a.sort((a,b)=>b.deaths - a.deaths);
+        else if(currentvis=="recovered")a = a.sort((a,b)=>b.recovered -a.recovered)
+        
+
+
+        
+          for(i=0;i<a.length;i++)
+          {
+              
+              b=a[i].country;
+              // a[i].deaths=k[i].deaths;
+              // a[i].recovered=z[i].recovered;
+              if(b=="US"){
+                  b="United States of America"
+              }
+              for (j of store.mapafterlinelasso.features)
+              {
+                  if(j.properties.name==b)
+                  {
+                      j.confirmed=a[i].confirmed;
+                      j.deaths=a[i].deaths;
+                      j.recovered=a[i].recovered;
+                      j.country=a[i].country
+                      break;
+                  }
+                  else {
+                    if(!('country' in j))
+                    {
+                      j.country=""
+                    }
+                  }
+                  
+              }
+          }
+          for (i of store.mapafterlinelasso.features)
+          {
+              if(!('confirmed' in i)){
+                  i.confirmed=0;
+                  i.deaths=0
+                  i.recovered=0
+              }
+          }
+
+          total_case_print(a);
+          total_case_print1(a);
+          total_case_print2(a);
+          
+          clearmap()
+          drawMap(store.mapafterlinelasso)
+
+        clearbar()
+        drawbar(a)
+        
+        
+       
+   }
+
+  function clearmap()
+  {
+    d3.select("#G").remove()
+          d3.select("#Map").append("g").attr("id","G")
+  }
+   //end after lasso
+   // after bar lasso
+
+    function afterbarlasso(data){
+      var pdata = []
+      var finald = []
+      let i = 0;
+      for(x of data ){
+        for (d of store.time){
+          
+              if(x.__data__.country == d.key){
+                pdata[i] = d.values;
+                break;
+              }
+         }
+      
+         ++i;
+    }
+    i=0;
+      //console.log(pdata)
+      for( x of pdata[0]){
+        finald[i] = {
+            "confirmed" : x.confirmed,
+            "recovered" : x.recovered,
+            "deaths" : x.deaths,
+            "date" :   x.date 
+        }
+        ++i;
+      }
+
+      for( var k =1; k< pdata.length; ++k){
+        let j=0;
+        for( x of pdata[k]){
+          finald[j].confirmed += x.confirmed;
+          finald[j].recovered += x.recovered;
+          finald[j].deaths += x.deaths
+          ++j;
+        }
+      }
+      
+      drawline(finald)
+    }
+
+
+    function aftermaplasso(data){
+      var pdata = []
+      var finald = []
+      let i = 0;
+      for(x of data ){
+        for (d of store.time){
+          
+              if(x.country == d.key){
+                pdata[i] = d.values;
+                break;
+              }
+         }
+      
+         ++i;
+    }
+    i=0;
+      //console.log(pdata)
+      for( x of pdata[0]){
+        finald[i] = {
+            "confirmed" : x.confirmed,
+            "recovered" : x.recovered,
+            "deaths" : x.deaths,
+            "date" :   x.date 
+        }
+        ++i;
+      }
+
+      for( var k =1; k< pdata.length; ++k){
+        let j=0;
+        for( x of pdata[k]){
+          finald[j].confirmed += x.confirmed;
+          finald[j].recovered += x.recovered;
+          finald[j].deaths += x.deaths
+          ++j;
+        }
+      }
+      drawline(finald)
+    }
+
+   //end bar lasso
+      
+// clear bar
+
+   function clearbar(){
+    document.getElementById("BarChart").innerHTML="";
+   }
+
+   function commandline(a)
+   {
+    var pdata = []
+      var finald = []
+      
+    
+        for(i of store.time)
+        {
+          if(a.includes(i.key.toLowerCase()))
+          {
+            pdata.push(i.values)
+          }
+          
+        }
+
+  
+    i=0;
+      console.log(pdata)
+      for( x of pdata[0]){
+        finald[i] = {
+            "confirmed" : x.confirmed,
+            "recovered" : x.recovered,
+            "deaths" : x.deaths,
+            "date" :   x.date 
+        }
+        ++i;
+      }
+
+      for( var k =1; k< pdata.length; ++k){
+        let j=0;
+        for( x of pdata[k]){
+          finald[j].confirmed += x.confirmed;
+          finald[j].recovered += x.recovered;
+          finald[j].deaths += x.deaths
+          ++j;
+        }
+      }
+      return finald;
+   }
+
+//end
+
       </script>
   </html>
