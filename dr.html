@@ -3,12 +3,16 @@
 
   <head>
       <style>
-        .y_axis path{
-          stroke: white;
-        }
-        .lg{
-          margin-left: 20px;
-        }
+
+.selectedL{
+  opacity: .5;
+}
+.y_axis path{
+  stroke: white;
+}
+.lg{
+  margin-left: 20px;
+}
 .legend{
               margin-right: 5px;
           }
@@ -308,7 +312,7 @@ div.tooltip1{
           </div>
           <div>
               <div> 
-                <svg id="container" height="450px" width="500px"> 
+                <svg id="container" height="450px" width="560px"> 
                   <g id="body2" style="transform: translate(60px,10px);margin-top:50px ;"></g>
               </svg>
               </div>
@@ -2171,10 +2175,10 @@ else{
           
       }
 
-
+let lassobar;
       function drawbar(data){
-
-    
+   //console.log(data)
+    lassobar = data;
              
 var margin =  {top: 10, right: 0, bottom: 70, left: 50};
 var marginOverview = {top: 10, right: 0, bottom: 70, left: 50};
@@ -2382,6 +2386,7 @@ bars.selectAll("rect")
                     if(currentvis=="confirm")d3.select(".res").style("background-color","#2a5599").text("Showing Results of Confirmed Cases for All Countries");
          if(currentvis=="death")d3.select(".res").style("background-color","#cb181d").text("Showing Results of Death Cases for All Countries");
          if(currentvis=="recovered")d3.select(".res").style("background-color","green").text("Showing Results of Recovered Cases for All Countries");
+                  drawline(slidedata)
                   }
                   if(lasso.selectedItems()._groups[0].length>0)
                   {
@@ -2396,6 +2401,7 @@ bars.selectAll("rect")
                 cn.push(i.__data__.country)
               }
       }
+      afterbarlasso(lasso.selectedItems()._groups[0])
       total_case_print(d)
       total_case_print1(d)
       total_case_print2(d)
@@ -2630,7 +2636,7 @@ function drawline(data){
 let body = d3.select("#body2")
 document.getElementById("body2").innerHTML="";
 let height = 400;
-let width = 430;
+let width = 490;
 data.map(d=> {
  d.date= new Date(d.date)
  d.confirmed = +d.confirmed
@@ -2674,6 +2680,12 @@ body
 .attr("stroke-width", 3)
 .attr("d", valueline)
 .attr("class", "line")
+.classed("selectedL",function (d) { 
+  if(currentvis == "confirm"){ return false;}
+  else{ return true; }
+  
+
+  })//here we
 .on("mouseenter", d=>{
 			
       showtool(1,[d3.event.clientX -180, d3.event.clientY-30])
@@ -2696,7 +2708,7 @@ function mousemove() {
         var i = bisect(data, x0, 1);
         selectedData = data[i]
         a= selectedData
-        
+
        
         
 }
@@ -2745,7 +2757,14 @@ body
 .attr("stroke", '#238b45')
 .attr("stroke-width", 3)
 .attr("d", valuerc)
+.attr("id", "rcv")
 .attr("class", "line")
+.classed("selectedL",function (d) { 
+  if(currentvis == "recovered"){ return false;}
+  else{ return true; }
+  
+
+  })
 .on("mouseenter", d=>{
 			
       showtool(2,[d3.event.clientX -180, d3.event.clientY-30])
@@ -2772,6 +2791,12 @@ body
 .attr("stroke-width", 3)
 .attr("d", valuedth)
 .attr("class", "line")
+.classed("selectedL",function (d) {
+  if(currentvis == "death"){ return false;}
+  else{ return true; }
+  
+
+  })
 .on("mouseenter", d=>{
 			
       showtool(3,[d3.event.clientX -180, d3.event.clientY-30])
@@ -2784,7 +2809,7 @@ body
     })
 //end deaths
 // legend
-var columnHeaders = d3.keys(data[0]).filter(function(key) { return key !== "date"; });
+var columnHeaders = ["Confirmed", "Deaths", "Recovered"];
 var color = d3.scaleOrdinal().range(
   ["#2a5599" ,'#cb181d','#238b45']);
 
@@ -2842,7 +2867,7 @@ body.append('g')
       .attr("cy", function (d) { return yscale(d.deaths); } )
       .attr("r", 0)
       .style("fill", "red")//#69b3a2
-lasso(yscale(1))
+lasso(yscale(1), data, xscale)
 
 
 }
@@ -2852,7 +2877,7 @@ lasso(yscale(1))
   
 //lasso here
 let a;
-function lasso(scal){
+function lasso(scal, data, xscale){
   let body = d3.select("#container")
   var circles = body.selectAll("circle")
   // Lasso functions
@@ -2869,16 +2894,13 @@ function lasso(scal){
             lasso.possibleItems()
                 .classed("not_possible",false)
                 .classed("possible",true);
+                
+               
+                
+              
+               
+                //console.log("I am from lasso data")
 
-                var lassod = lasso.possibleItems()._groups[0]
-                a= lassod
-                var sum=0;
-                if( lassod != null){
-                  for( x of lassod){
-                  sum += x.cy.baseVal.value
-                }
-                }
-                console.log("I am from lasso data")
                 
             
             lasso.notPossibleItems()
@@ -2897,7 +2919,18 @@ function lasso(scal){
                 .classed("selected",true)
                 .attr("r",3.5)
                 .style("fill", "blue");
-
+                var lassod = lasso.selectedItems()._groups[0]
+                var bisect = d3.bisector(function(d) { return d.date; }).left;
+                let a = lassod;
+                if(a.length){
+                var x1 =xscale.invert(a[0].cx.baseVal.value);
+                var x2 =xscale.invert(a[a.length-1].cx.baseVal.value);
+                afterlasso(x1,x2)
+                }
+                if(!a.length){
+                  clearbar()
+                  drawbar(store.done.sort((a,b)=>b.confirmed - a.confirmed))
+                }
             // Reset the style of the not selected dots
             lasso.notSelectedItems()
                 .attr("r",0);
@@ -2917,7 +2950,7 @@ function lasso(scal){
         
         body.call(lasso);
 }
-setTimeout(slide,100)
+setTimeout(slide,1000)
  //end lasso
  function slide(){
    var len = slidedata.length
@@ -2939,7 +2972,7 @@ setTimeout(slide,100)
         var d3 = new Date(slidedata[0].date).getTime()
         var str = Math.abs(d1-d3)/86400000
         var end = Math.abs(d2-d3)/86400000
-        //console.log(slidedata.slice(str,end)) 
+        afterlasso(d1, d2)
         drawline(slidedata.slice(str,end))
         $( "#amount" ).val( (new Date(ui.values[ 0 ] *1000).toDateString() ) + " - " + (new Date(ui.values[ 1 ] *1000)).toDateString() );
       }
@@ -3016,6 +3049,97 @@ setTimeout(slide,100)
      }
     
    }
+
+   //after lasso
+
+   function afterlasso(d1,d2){
+
+        var d3 = new Date(slidedata[0].date).getTime()
+        var str = Math.abs(d1-d3)/86400000
+        var end = Math.abs(d2-d3)/86400000
+        let a = [];
+        
+        str = Math.floor(str)
+        end = Math.floor(end)
+        var j = 0;
+        //console.log(store.time)
+        for( x of store.time){
+          let c=0;
+          let d=0;
+          let r=0;
+          
+             c += x.values[end].confirmed - x.values[str].confirmed
+             d += x.values[end].deaths - x.values[str].deaths
+             r += x.values[end].recovered - x.values[str].recovered
+          
+          a[j] = {
+            "country" : x.values[0].country,
+            "confirmed" : c,
+            "recovered" : r,
+            "deaths" : d,
+            "date" :   x.values[end].date       }
+          j++;
+        }
+        //console.log(a)
+        a = a.sort((a,b)=>b.confirmed-a.confirmed)
+        clearbar()
+        drawbar(a)
+        
+        
+       
+   }
+
+   //end after lasso
+   // after bar lasso
+
+    function afterbarlasso(data){
+      var pdata = []
+      var finald = []
+      let i = 0;
+      for(x of data ){
+        for (d of store.time){
+          
+              if(x.__data__.country == d.key){
+                pdata[i] = d.values;
+                break;
+              }
+         }
       
+         ++i;
+    }
+    i=0;
+      //console.log(pdata)
+      for( x of pdata[0]){
+        finald[i] = {
+            "confirmed" : x.confirmed,
+            "recovered" : x.recovered,
+            "deaths" : x.deaths,
+            "date" :   x.date 
+        }
+        ++i;
+      }
+
+      for( var k =1; k< pdata.length; ++k){
+        let j=0;
+        for( x of pdata[k]){
+          finald[j].confirmed += x.confirmed;
+          finald[j].recovered += x.recovered;
+          finald[j].deaths += x.deaths
+          ++j;
+        }
+      }
+      drawline(finald)
+    }
+
+   //end bar lasso
+      
+// clear bar
+
+   function clearbar(){
+    document.getElementById("BarChart").innerHTML="";
+   }
+
+//end
+
       </script>
   </html>
