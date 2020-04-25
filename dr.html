@@ -2917,8 +2917,8 @@ function lasso(scal, data, xscale){
             // Style the selected dots
             lasso.selectedItems()
                 .classed("selected",true)
-                .attr("r",3.5)
-                .style("fill", "blue");
+                .attr("r",2.5)
+                .style("fill", "#666600");
                 var lassod = lasso.selectedItems()._groups[0]
                 var bisect = d3.bisector(function(d) { return d.date; }).left;
                 let a = lassod;
