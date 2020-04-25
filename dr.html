@@ -2809,9 +2809,9 @@ body
     })
 //end deaths
 // legend
-var columnHeaders = ["Confirmed", "Deaths", "Recovered"];
+var columnHeaders = ["Deaths", "Recovered", "Confirmed"];
 var color = d3.scaleOrdinal().range(
-  ["#2a5599" ,'#cb181d','#238b45']);
+  ["#2a5599" ,'#238b45','#cb181d']);
 
   var legend = body.selectAll(".legend")
     .data(columnHeaders.slice().reverse())
@@ -2950,7 +2950,7 @@ function lasso(scal, data, xscale){
         
         body.call(lasso);
 }
-setTimeout(slide,1000)
+setTimeout(slide,2000)
  //end lasso
  function slide(){
    var len = slidedata.length
@@ -3081,7 +3081,16 @@ setTimeout(slide,1000)
           j++;
         }
         //console.log(a)
-        a = a.sort((a,b)=>b.confirmed-a.confirmed)
+        if( currentvis == "confirm"){
+          a = a.sort((a,b)=>b.confirmed-a.confirmed)
+        }
+        else if( currentvis == "recovered"){
+          a = a.sort((a,b)=>b.recovered-a.recovered)
+        }
+        else{
+          a = a.sort((a,b)=>b.deaths-a.deaths)
+        }
+        
         clearbar()
         drawbar(a)
         
