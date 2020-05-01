@@ -21,16 +21,20 @@
 	padding: 5px;
 	position: absolute;
 	display: none;
-	background-color: white;
+	background-color: whitesmoke;
 }
           body {
-              font-family: Helvetica, Arial, sans-serif
+              font-family: Helvetica, Arial, sans-serif;
+              background-color: #DCDCDC;
           }
           h1 {
               background-color: #2a5599;
               color: white;
               padding: 5px;
-              margin: 0px;
+              margin-top: -8px;
+              margin-left: -8px;
+              margin-right: -8px;
+              margin-bottom: 0px;
           }
           svg {
               border: solid 1px black;
@@ -97,7 +101,7 @@ div.res{
 
           .mainView {
               display: flex;
-              
+              flex-direction: row;
           }
   
           #filter_countries{
@@ -198,10 +202,10 @@ label{
   fill: red;
 }
                                                                           /* previousl 55 */
-          div.tooltip {position: absolute; text-align: left; width: 200px; height: 85px; padding: 15px;font: 14px calibri; background: gray; color:black; border: 2px; border-radius: 8px; pointer-events: none;}
+          div.tooltip {position: absolute; text-align: left; width: 200px; height: 85px; padding: 15px;font: 14px calibri; background: whitesmoke; color:black; border: 2px; border-radius: 8px; pointer-events: none;}
 div.tooltip1{
 
-  position: absolute; text-align: left; width: 200px; height: 95px; padding: 15px;font: 14px calibri; background: gray; color: black; border: 2px; border-radius: 8px; pointer-events: none;
+  position: absolute; text-align: left; width: 200px; height: 95px; padding: 15px;font: 14px calibri; background:whitesmoke; color: black; border: 2px; border-radius: 8px; pointer-events: none;
  
 }
 /* 
@@ -683,6 +687,7 @@ if(currentvis!="death"){
             var w = 300, h = 50;
 
     d3.select("#s").remove()
+
     var key = d3.select("#Map")
       .append("svg")
       .attr("id","s")
@@ -697,6 +702,8 @@ if(currentvis!="death"){
       .attr("x2", "100%")
       .attr("y2", "100%")
       .attr("spreadMethod", "pad");
+
+    
 
     legend.append("stop")
       .attr("offset", "0%")
@@ -773,7 +780,7 @@ if(currentvis!="death"){
       .attr("width", w)
       .attr("height", h - 30)
       .style("fill", "url(#gradient)")
-      .attr("transform", "translate(10,10)");
+      .attr("transform", "translate(20,10)");
 
     a=[]
     if(currentvis=="confirm")a= [Math.round((mc*.9)/1000)+"k",Math.round((mc*.09)/1000)+"k",Math.round((mc*.01)/1000)+"k",Math.round((mc*.004)/1000)+"k",Math.round((mc*.001)/1000)+"k",Math.round((mc*.0009)/1000)+"k" , 0];
@@ -783,21 +790,31 @@ if(currentvis!="death"){
       .domain(a
         );
 
-    var yAxis = d3.axisBottom()
-      .scale(y)
+   d3.select("#a").remove()
+   d3.select("#b").remove()     
 
-
-    key.append("g")
+    d3.select("#Map").append("g")
+      .attr("id","a")
       .attr("class", "y_axis")
       .attr("color","black")
-      .attr("transform", "translate(10,30)")
-      .call(yAxis)
+      .attr("transform", "translate(15,15)")
       .append("text")
-      .attr("transform", "rotate(-90)")
       .attr("y", 0)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("axis title");
+      .text(0);
+
+      d3.select("#Map").append("g")
+      .attr("id","b")
+      .attr("class", "y_axis")
+      .attr("color","black")
+      .attr("transform", "translate(305,15)")
+      .append("text")
+      .attr("y", 0)
+      .attr("dy", ".71em")
+      .text((mc/1000000).toFixed(2) + "M");
+
+
 
 
 }
@@ -873,27 +890,33 @@ else{
       .attr("width", w)
       .attr("height", h - 30)
       .style("fill", "url(#gradient)")
-      .attr("transform", "translate(10,10)");
+      .attr("transform", "translate(20,10)");
 
-    var y = d3.scaleBand()
-      .range([300, 0])
-      .domain([Math.round((mc*.9)/1000)+"k",Math.round((mc*.5)/1000)+"k",Math.round((mc*.1)/1000)+"k",Math.round((mc*.03)/1000)+"k",Math.round((mc*.019)/1000)+"k",Math.round((mc*.019)/1000)+"k" , 0]);
+      d3.select("#a").remove()
+   d3.select("#b").remove()     
 
-    var yAxis = d3.axisBottom()
-      .scale(y)
-
-
-    key.append("g")
+    d3.select("#Map").append("g")
+      .attr("id","a")
       .attr("class", "y_axis")
       .attr("color","black")
-      .attr("transform", "translate(10,30)")
-      .call(yAxis)
+      .attr("transform", "translate(15,15)")
       .append("text")
-      .attr("transform", "rotate(-90)")
       .attr("y", 0)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("axis title");
+      .text(0);
+
+      d3.select("#Map").append("g")
+      .attr("id","b")
+      .attr("class", "y_axis")
+      .attr("color","black")
+      .attr("transform", "translate(305,15)")
+      .append("text")
+      .attr("y", 0)
+      .attr("dy", ".71em")
+      .text((mc/1000000).toFixed(2) + "M");
+
+    
 }
 
       
@@ -1778,13 +1801,14 @@ console.log()
       let countries = [
         
       ];
-      countries.push("All");
+      // countries.push("All");
       for(i of data1)
       {
         
         countries.push(i.country);
       }
-      
+     countries= countries.sort()
+     countries.unshift("All")
       ul = document.getElementById("countries");
       
       let render_lists = function(lists){
@@ -2260,7 +2284,10 @@ var yscale = d3.scaleLinear()
             .range([height, 0]);
 
 var xAxis  = d3.axisBottom(xscale);
-var yAxis  = d3.axisLeft(yscale);
+var yAxis  = d3.axisLeft(yscale).tickFormat(function(d)
+{
+  return (d/1000000).toFixed(2) + "M";
+});
 
 var svg = d3.select("#BarChart")
           .attr("width", width + margin.left + margin.right)
@@ -2283,8 +2310,10 @@ diagram.append("g")
 
 diagram.append("g")
      .attr("class", "y axis")
-     .call(yAxis);
-
+     .call(yAxis)
+     .selectAll("text")	
+          .style("text-anchor", "end")
+          .style("font-size","12px")
 var bars = diagram.append("g");
 
 bars.selectAll("rect")
@@ -2846,9 +2875,9 @@ body
     })
 //end deaths
 // legend
-var columnHeaders = ["Confirmed", "Deaths", "Recovered"];
+var columnHeaders = ["Deaths", "Recovered", "Confirmed"];
 var color = d3.scaleOrdinal().range(
-  ["#2a5599" ,'#cb181d','#238b45']);
+  ["#2a5599" ,'#238b45','#cb181d']);
 
   var legend = body.selectAll(".legend")
     .data(columnHeaders.slice().reverse())
@@ -2954,8 +2983,8 @@ function lasso(scal, data, xscale){
             // Style the selected dots
             lasso.selectedItems()
                 .classed("selected",true)
-                .attr("r",3.5)
-                .style("fill", "blue");
+                .attr("r",2.5)
+                .style("fill", "#666600");
                 var lassod = lasso.selectedItems()._groups[0]
                 var bisect = d3.bisector(function(d) { return d.date; }).left;
                 let a = lassod;
@@ -2997,7 +3026,7 @@ function lasso(scal, data, xscale){
         
         body.call(lasso);
 }
-setTimeout(slide,1000)
+setTimeout(slide,2000)
  //end lasso
  function slide(){
    var len = slidedata.length
@@ -3187,6 +3216,7 @@ setTimeout(slide,1000)
         
             }
             else if(1){
+              console.log("thik ase")
               if(str.includes("death"))
               {
                  a=store.done.sort((a,b) => b.deaths - a.deaths);
@@ -3202,7 +3232,7 @@ setTimeout(slide,1000)
                  a=store.done.sort((a,b) => b.confirmed - a.confirmed);
                  d3.select(".res").text("maximum confirmed cases occured in "+a[0].country); 
               }
-
+              
               
             }
             
@@ -3254,8 +3284,9 @@ setTimeout(slide,1000)
           }
 
          c=a[0].country
+         ii=d3.select("#G").selectAll("circle")._groups[0];
           for( j=0;j<=180;j++){
-          i=d3.select("#G").selectAll("circle")._groups[0][j]
+            i=ii[j];
           if(currentvis=="confirm"){
          if(i.__data__.country==c)
          {
@@ -3279,7 +3310,8 @@ setTimeout(slide,1000)
          }  
 
           l= d3.selectAll("rect")._groups[0]
-     for(i=0;i<205;i++)
+          let ln=d3.selectAll("rect")._groups[0].length-6
+     for(i=0;i<ln;i++)
      {
        if(l[i].__data__.country==a[0].country)
        {
@@ -3337,8 +3369,19 @@ setTimeout(slide,1000)
                 .attr("r",3.5)
                 .style("fill", "blue");
         //console.log(b)
+        
+        
       }
      }
+
+     l= d3.selectAll("rect")._groups[0]
+        ln=d3.selectAll("rect")._groups[0].length
+        for(i=0;i<ln;i++)
+     {
+       store.afterlasso.push(l[i].__data__);
+     }
+
+    
       
     }
      
@@ -3366,7 +3409,7 @@ setTimeout(slide,1000)
 
        }
        else{
-        d3.select(l[i]).classed("selected",true)
+        d3.select(l[i]).classed("selected1",false)
          d3.select(l[i]).classed("selected",false)
        }
      }
@@ -3399,6 +3442,10 @@ setTimeout(slide,1000)
 
      else if((/clear|cls|clear all/).test(str))
      {
+       let bar;
+      if(currentvis=="confirm")bar= store.done.sort((a,b) => b.confirmed - a.confirmed);
+        else if(currentvis=="death")bar= store.done.sort((a,b) => b.deaths - a.deaths);
+        else if(currentvis=="recovered")bar= store.done.sort((a,b) => b.recovered - a.recovered);
 
       d3.select(".res").text("Showing Results for All countries");
 
@@ -3406,7 +3453,7 @@ setTimeout(slide,1000)
     
       drawline(store.sumdate)
       clearbar()
-      drawbar(store.done)
+      drawbar(bar)
       clearmap()
       drawMap(prep(store.geoJSON))
       l= d3.selectAll("rect")._groups[0]
@@ -3430,6 +3477,11 @@ setTimeout(slide,1000)
          d3.select(l[i]).classed("selected1",false)
        
      }
+
+     if(currentvis=="confirm")drawCircles(store.done,"blue");
+     else if(currentvis=="death")drawCirclesdeath(store.done,"red")
+     else if(currentvis=="recovered")drawCirclesRecovered(store.done,"red")
+     
           
      }
      
@@ -3529,6 +3581,10 @@ setTimeout(slide,1000)
 
         clearbar()
         drawbar(a)
+
+         drawCircles(store.done,"red")
+     drawCirclesRecovered(store.done,"red")
+     drawCirclesdeath(store.done,"red")
         
         
        
