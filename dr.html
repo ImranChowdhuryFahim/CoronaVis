@@ -2646,7 +2646,10 @@ let yscale = d3.scaleLinear()
 .domain([0,max])
 .range([height,0])
 body.append("g")
-.call(d3.axisLeft(yscale))
+.call(d3.axisLeft(yscale)
+        .ticks(15)
+        .tickFormat(d3.format(".0s")));
+
 
 let xscale = d3.scaleTime()
 .domain(d3.extent(data,d=>d.date))
@@ -2654,7 +2657,12 @@ let xscale = d3.scaleTime()
 body.append("g")
 .attr("transform", "translate(0,"+height+")")
 .call(d3.axisBottom(xscale)
-.tickFormat(d3.timeFormat("%d%b")))
+.tickFormat(d3.timeFormat("%d %b")))
+.selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-65)" );
 
 var valueline = d3.line()
 .x(d => xscale(d.date))
@@ -2757,7 +2765,6 @@ body
 .attr("stroke", '#238b45')
 .attr("stroke-width", 3)
 .attr("d", valuerc)
-.attr("id", "rcv")
 .attr("class", "line")
 .classed("selectedL",function (d) { 
   if(currentvis == "recovered"){ return false;}
@@ -2847,6 +2854,7 @@ body.append('g')
     .append("circle")
       .attr("cx", function (d) { return xscale(d.date); } )
       .attr("cy", function (d) { return yscale(d.confirmed); } )
+      .attr("case", "confirm")
       .attr("r", 0)
       .style("fill", "red")//#69b3a2
       body.append('g')
@@ -2856,6 +2864,7 @@ body.append('g')
     .append("circle")
       .attr("cx", function (d) { return xscale(d.date); } )
       .attr("cy", function (d) { return yscale(d.recovered); } )
+      .attr("case", "recovered")
       .attr("r", 0)
       .style("fill", "red")//#69b3a2
       body.append('g')
@@ -2865,6 +2874,7 @@ body.append('g')
     .append("circle")
       .attr("cx", function (d) { return xscale(d.date); } )
       .attr("cy", function (d) { return yscale(d.deaths); } )
+      .attr("case", "death")
       .attr("r", 0)
       .style("fill", "red")//#69b3a2
 lasso(yscale(1), data, xscale)
@@ -2907,19 +2917,20 @@ function lasso(scal, data, xscale){
                 .classed("not_possible",true)
                 .classed("possible",false);
         };
-
         var lasso_end = function() {
             // Reset the color of all dots
             lasso.items()
                 .classed("not_possible",false)
                 .classed("possible",false);
-
+                let fcircle = lasso.selectedItems()
+                let newcir = lasso.selectedItems()._groups[0].filter(function(d){ return d.getAttribute("case") == currentvis})
+                fcircle._groups[0] = newcir;
             // Style the selected dots
-            lasso.selectedItems()
+            fcircle
                 .classed("selected",true)
                 .attr("r",2.5)
-                .style("fill", "#666600");
-                var lassod = lasso.selectedItems()._groups[0]
+                .style("fill", "yellow");
+                var lassod = fcircle._groups[0]
                 var bisect = d3.bisector(function(d) { return d.date; }).left;
                 let a = lassod;
                 if(a.length){
