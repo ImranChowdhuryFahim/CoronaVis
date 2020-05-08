@@ -1565,6 +1565,7 @@ else{
                   }
                   if(lasso.selectedItems()._groups[0].length>0)
                   {
+
                   d3.select(".res").text("Showing Results for selected Countries");
                   }
                   
@@ -1577,6 +1578,12 @@ else{
                 cn.push(i.__data__.country)
               }
       }
+    
+      if(lasso.selectedItems()._groups[0].length>0)
+                  {
+                    
+                  scrollbar(cn[0])
+                  }
       store.currentselectedcountries=cn;
       store.afterlasso=d
       total_case_print(d)
@@ -1744,6 +1751,12 @@ console.log()
                 cn.push(i.__data__.country)
               }
       }
+
+      if(lasso.selectedItems()._groups[0].length>0)
+                  {
+                    
+                  scrollbar(cn[0])
+                  }
       store.currentselectedcountries=cn;
       store.afterlasso=d
       total_case_print(d)
@@ -1902,6 +1915,11 @@ console.log()
                 cn.push(i.__data__.country)
               }
       }
+      if(lasso.selectedItems()._groups[0].length>0)
+                  {
+                    
+                  scrollbar(cn[0])
+                  }
       store.currentselectedcountries=cn;
       store.afterlasso=d
       total_case_print(d)
@@ -2020,6 +2038,8 @@ console.log()
          
           store.currentselectedcountries=[];
           store.currentselectedcountries.push(selectedValue);
+
+           if(selectedValue!="All" && selectedValue!="selected from searchbox")scrollbar(selectedValue)
         
          let c=selectedValue;
          
@@ -4167,10 +4187,12 @@ store.position=0
        k++;
       if( i.country.toLowerCase()==data.toLowerCase())
       {
+        console.log(i.country)
+        console.log(k)
         break;
       }
      }
-     store.position=k
+     store.position=k+k*.9
      store.scroll=true
      clearbar()
      drawbar(store.done)
