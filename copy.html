@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html {
+  height: 100%;
+}
+
+body {
+  align-items: center;
+  display: grid;
+  height: calc(100% - 50px);
+  justify-items: center;
+  padding: 20px 75px;
+}
+
+form#search * {
+  font-family: sans-serif;
+}
+
+form#search {
+  align-items: center;
+  display: flex;
+  max-width: 600px;
+  width: 100%;
+}
+
+form#search label {
+  display: none;
+  font-weight: 500;
+  margin: 0 10px 0 0;
+}
+
+form#search input {
+  border: solid #ccc;
+  border-width: 1px 0 1px 1px;
+  border-radius: 2px 0 0 2px;
+  flex: 1;
+  font-size: 16px;
+  font-weight: 200;
+  height: 33px;
+  margin: 0;
+  min-width: 90px;
+  padding: 5px;
+  background-image: url("voice.png"); /* all icons in a single file */
+  background-repeat: no-repeat;
+  background-position: -48px 0px; 
+  -webkit-appearance: textfield;
+}
+
+form#search button {
+  border: none;
+  cursor: pointer;
+  height: 33px;
+  padding: 0;
+}
+
+form#search svg {
+  background-color: blue;
+  border-radius: 0 2px 2px 0;
+  fill:white;
+  height: 33px;
+  min-width: 24px;
+  padding: 0 7px;
+  width: 24px;
+}
+
+form#search svg:hover {
+  background-color: #1d6823;
+  fill: white;
+}
+
+@media all and (min-width: 1500px) {
+  form#search label {
+    display: inline;
+  }  
+  form#search input::placeholder {
+    opacity: 0;
+  }  
+}
+
+      </style>
+    <title>Document</title>
+</head>
+<body>
+    <form autocomplete="on" id="search" method="POST">
+        <label for="search-input"></label>
+        <!-- In practice, e-commerce sites generally don't set minimum query length -->
+        <input aria-label="Search" id="search-input" minlength="3" name="query" placeholder="Search" type="search">
+        <button>
+          <svg viewbox="0 0 24 24">
+            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z">
+              <path d="M0 0h24v24H0z" fill="none">
+                </svg>
+              </button>
+            </form>
+  
+</body>
+
+</html>
