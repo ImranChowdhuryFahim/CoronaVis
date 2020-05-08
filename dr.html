@@ -329,8 +329,13 @@ div.tooltip1{
 }
 
 #mybtn{
-  margin-left: 32%;
+  margin-left: 31%;
   position: absolute;
+
+}
+body {font-family: Arial, Helvetica, sans-serif;}
+h4{
+  color: white;
 }
 
       </style>
@@ -344,8 +349,6 @@ div.tooltip1{
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
 
   </head>
   
@@ -354,32 +357,26 @@ div.tooltip1{
       <div id="myModal" class="modal">
 
         <!-- Modal content -->
-        <div class="modal-content">
+        <div class="modal-content" style="background-color: #2a6592; color:rgb(209, 178, 178);">
           <span class="close">&times;</span>
-          <p style="color: black; font-weight: bold; font-size: 16px;">1. To select a single country<br>
-            ***select country_name<br>
-            <br>
-            2. To select multiple countries<br>
-            ***select country_name1,country_name2,..<br>
-            <br>
-            3. To choose a particular case<br>
-            ***select/show death/recovered/confirmed cases<br>
-            <br>
-            4. To find minimum/maximum death/recovered/confirmed cases<br>
-            ***find maximum/minimum death/recovered/confirmed cases<br>
-            <br>
-            5. To select a particular date range<br>
-            ***from m/d/y to m/d/y<br>
-            <br>
-            6.To find minimum/maximum death/recovered/confirmed cases among some selected countries<br>
-            *** first select some countries by using lasso/select command then use the find maximum command
-            <br><br>
-            7.To find minimum/maximum death/recovered/confirmed cases in particular date range<br>
-            *** first select a date range by using lasso/slider/from to command then use the find maximum command
-            <br><br>
-            8. To reset or clear the window<br>
-            ***cls/clear/clear all<br>
-            <br>
+          <p style="color: white; font-weight: 1em; font-size: 16px; letter-spacing: .3em; ">
+            
+            <h4>1. To select a single country.</h4> 
+              --> select "Bangladesh"
+            <h4>2. To select multiple countries.</h4>
+            --> select "China","USA",..
+            <h4>3. To choose a particular case.</h4>
+              --> select/show death/recovered/confirmed cases
+            <h4>4. To find minimum/maximum death/recovered/confirmed cases.</h4>
+              --> find maximum/minimum death/recovered/confirmed cases
+            <h4>5. To select a particular date range.</h4>
+            --> from m/d/y to m/d/y
+            <h4>6. To find minimum/maximum death/recovered/confirmed cases among some selected countries.</h4>
+            --> first select some countries by using lasso/select command then use the find maximum command
+            <h4>7. To find minimum/maximum death/recovered/confirmed cases in particular date range.</h4>
+            --> first select a date range by using lasso/slider/from to command then use the find maximum command
+            <h4>8. To reset or clear the window.</h4>
+            --> cls/clear/clear all
           
           </p>
         </div>
@@ -393,7 +390,7 @@ div.tooltip1{
         <i class="fa fa-microphone"  id="button" aria-hidden="true"></i>
         <!-- <input type="image" id="button" src="image.png" width="20" height="20"> -->
         <!-- <!-- <button onclick="command()">Enter</button> -->
-        <button id="myBtn">Supported Commands</button>
+        <button id="myBtn"><img src="1200px-Torchlight_help_icon.svg.png" alt="" style="width: 25px;"></button>
         </div>
         <div class="res" id="res">Showing Results for All Countries</div> 
 
