@@ -3512,6 +3512,7 @@ setTimeout(slide,2000)
      d3.select(".res").text("Showing Results from "+d[0]+" to "+d[1]);  
    
       afterlasso(new Date(d[0]) ,new Date(d[1]))
+      slideraftervoice(d[0],d[1])
 
      for (i=0;i<d3.select("#container").selectAll('circle')._groups[0].length -1 ;i++)
      {
@@ -3999,5 +4000,37 @@ String.prototype.replaceAt=function(index, replacement) {
 }
 
 //end of voice recogition
+
+// change slider after voice 
+  function slideraftervoice(x1,x2){
+    {
+
+  var len = slidedata.length
+  $(function() {
+    $( "#slider-range" ).slider({
+      range: true,
+      min: new Date(slidedata[0].date).getTime() / 1000,
+      max: new Date(slidedata[len-1].date).getTime() / 1000,
+      step: 86400,
+      values: [ new Date(x1).getTime() / 1000, new Date(x2).getTime() / 1000 ],
+      slide: function( event, ui ) { //console.log((new Date(ui.values[ 0 ] *1000) ))
+        var d1 = new Date(ui.values[ 0 ] *1000)
+        var d2 = new Date(ui.values[ 1 ] *1000)
+        var d3 = new Date(slidedata[0].date).getTime()
+        var str = Math.abs(d1-d3)/86400000
+        var end = Math.abs(d2-d3)/86400000
+        afterlasso(d1, d2)
+        drawline(slidedata.slice(str,end))
+        $( "#amount" ).val( (new Date(ui.values[ 0 ] *1000).toDateString() ) + " - " + (new Date(ui.values[ 1 ] *1000)).toDateString() );
+      }
+    });
+    $( "#amount" ).val( (new Date($( "#slider-range" ).slider( "values", 0 )*1000).toDateString()) +
+      " - " + (new Date($( "#slider-range" ).slider( "values", 1 )*1000)).toDateString());
+      
+  });
+ }
+  }
+
+//
       </script>
   </html>
