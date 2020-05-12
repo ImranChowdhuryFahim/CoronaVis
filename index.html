@@ -1,345 +1,3727 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Covid-19</title>
-    <script src="./d3-lasso.min.js"></script>
-    <script src="d3.js"></script>
-    <style>
 
-        svg {
-          font: 10px sans-serif;
-        }
-        
-        
-        .bar {
-          fill: steelblue;
-          clip-path: url(#clip);
-        }
+
+<html>
+
+  <head>
+      <style>
+.result{
+  flex:auto;
+}
+.selectedL{
+  opacity: .5;
+}
+.y_axis path{
+  stroke: black;
+}
+.lg{
+  margin-left: 20px;
+}
+.legend{
+              margin-right: 5px;
+          }
+#tooltip{
+	border: solid 2px black;
+	padding: 5px;
+	position: absolute;
+	display: none;
+	background-color: whitesmoke;
+}
+          body {
+              font-family: Helvetica, Arial, sans-serif;
+              background-color: #DCDCDC;
+          }
+          h1 {
+              background-color: #2a5599;
+              color: white;
+              padding: 5px;
+              margin-top: -8px;
+              margin-left: -8px;
+              margin-right: -8px;
+              margin-bottom: 0px;
+              width: 100%;
+          }
+          svg {
+              border: solid 1px black;
+          }
+
+          .result{
+            padding: 5px;
+            margin-bottom: 10px;
+            margin-left: 15px;
+
+            
+          }
           
-        .subBar { 
-          fill: gray;
-          opacity: 0.5;
-        }
-        
-        .axis path,
-        .axis line {
-          fill: none;
-          stroke: #000;
-          shape-rendering: crispEdges;
-        }
-        
-        .brush .extent {
-          stroke: #fff;
-          fill: steelblue;
-          fill-opacity: .25;
-          shape-rendering: crispEdges;
-        }
-        
-          rect.mover {
-                    stroke: red;
-                    stroke-opacity: .1;
-                    fill: lightSteelBlue;
-                    fill-opacity: .5;
-                }
-        </style>
-</head>
-<body>
-    <div class="body">
-        <div class="container_12">
-            <div class="grid_1" id="body" style="transform: rotate(90deg)">
-                
-            </div>
-            <div class="grid_2">
-              <input type="text" placeholder="Search Countries" id="filter_countries"/>
-
-                 <ul id="countries-list">
-
-                 </ul>
-
-                <svg id="Map" height="500" width="600"
-            >
-                    <g id="G"></g>
-                </svg>
-                
-            </div>
-            <div class="grid_3">
-                <svg id="container" height="500px" width="500px">
-                    <g id="body2" style="transform: translate(50px,10px);margin-top:50px ;"></g>
-                </svg>
-                <div id="tooltip"></div><br>
-                <div style="text-align: center;"><h1>Confirmed cases</h1></div>
-            </div>
-        </div>
-    </div>
-</body>
-<script>
-let store={}
-    let x=0
-    let y=0
-    let k=1
-    let deg=0
-    let svg=d3.select("#Map")
-    div = d3
-  .select("body")
-  .append("div")
-  .attr("class", "tooltip")
-  .style("opacity", 0)
-
-
-  function loadData() {
-    return Promise.all([
-    d3.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv', (d, rows, cols) => { 
+          .info{
+              display: flex;
+              margin-bottom: 30px;
+          }
+           div.tc{
+  width: 100px;
+  text-align: center;
+  color:#808080;
+  width: 100px;
+  padding: 0 1em;
+  line-height: 1.2;
+  font-size: .9em;
+  vertical-align: top;
+  border-right:1px dotted #BDBDBD;
+}
+div.tc1{
+  width: 100px;
+  text-align: center;
+  color:#808080;
+  width: 100px;
+  padding: 0 1em;
+  line-height: 1.2;
+  font-size: .9em;
+  vertical-align: top;
+  border-right:1px dotted #BDBDBD;
+}
+div.tc2{
+  width: 100px;
+  text-align: center;
+  color:#808080;
+  width: 100px;
+  padding: 0 1em;
+  line-height: 1.2;
+  font-size: .9em;
+  vertical-align: top;
+  border-right:1px dotted #BDBDBD;
+}
+div.res{
+  height: 40px;
+  width: 350px;
+  text-align: left;
+  color:grey;
+  padding: 0 1em;
+  margin-left: 10px;
+  line-height: 1.2;
+  font-size: 1em;
+  margin-top: 30px;
   
-  const dates = cols.slice(4, cols.length);
-  const data = [];
-    
-  dates.forEach((dd, i)=> {
-    const match = d['Country/Region'];
-    const country = d['Country/Region'];
-    const short = d['Country/Region'];
-    const region = d['Province/State'];
-    const iso = (match !== undefined)?match.iso:'';
-    const lat = d['Lat'];
-    const lon = d['Long'];
-    const date = dd;
-    const confirmed = +d[dd];
-    const pivot = {
-      country: country, short: short, region: region, lat: lat, lon: lon, date: date, confirmed: confirmed, iso: iso
+}
+
+          .mainView {
+              display: flex;
+              flex-direction: row;
+          }
+  
+          #filter_countries{
+  width:15%;
+  padding:10px;
+  position: absolute;
+  right: 0%;
+  
+}
+
+#Map{
+  background:#DCDCDC;
+  margin-left: 0px;
+  margin-right: 8px;
+}
+
+#countries-list{
+
+  right: 0%;
+  overflow: hidden;
+  overflow-y:scroll;
+  margin-top: 40px;
+  padding:5px;
+  position: absolute;
+  height:450px; width:198px;
+  background-color: transparent;
+  color: black;
+  fill-opacity: .1;
+  
+}
+#countries-list li{
+  
+  position: relative; 
+  list-style:none;
+  padding:0px;
+  margin:5px;
+  border: 1px solid #e4e4e4;
+ 
+}
+#s{
+  border: none;
+}
+circle {
+  fill-opacity: .55;
+  stroke-width: .5;
+}
+label{
+  padding: 5px;
+  color:#808080;
+  font-size: 1.2em;
+  
+}
+
+.lasso path {
+  stroke: rgb(80,80,80);
+  stroke-width:2px;
+}
+
+.lasso .drawn {
+  fill-opacity:.05 ;
+}
+
+.lasso .loop_close {
+  fill:none;
+  stroke-dasharray: 4,4;
+}
+
+.lasso .origin {
+  fill:#3399FF;
+  fill-opacity:.5;
+}
+
+.not_possible {
+  fill:#415679;
+  
+}
+
+.possible {
+  fill: violet;
+}
+
+.selected {
+  fill : yellow;
+  fill-opacity: 1;
+  stroke: black;
+  stroke-width: 1.5;
+}
+
+.selected1 {
+  fill : purple;
+  fill-opacity: 1;
+  stroke: black;
+  stroke-width: 1.5;
+}
+
+
+.isselected {
+  fill: red;
+}
+                                                                          /* previousl 55 */
+          div.tooltip {position: absolute; text-align: left; width: 200px; height: 85px; padding: 15px;font: 14px calibri; background: whitesmoke; color:black; border: 2px; border-radius: 8px; pointer-events: none;}
+div.tooltip1{
+
+  position: absolute; text-align: left; width: 200px; height: 95px; padding: 15px;font: 14px calibri; background:whitesmoke; color: black; border: 2px; border-radius: 8px; pointer-events: none;
+ 
+}
+/* 
+.bar {
+        fill: steelblue;
+        clip-path: url(#clip);
+      } */
+#Bar{
+  width: 390px;
+}
+      #BarChart{
+        margin-top: 35px;
+        margin-left: -35px;
+        margin-right: 0px;
+        margin-bottom: 0px;
+        background-color: #DCDCDC;
+        
+      }
+
+      #container{
+        background-color: #DCDCDC;
+      }
+        
+      .subBar { 
+        fill: gray;
+        opacity: 0.5;
+      }
+      
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+      
+      .brush .extent {
+        stroke: #fff;
+        fill: steelblue;
+        fill-opacity: .25;
+        shape-rendering: crispEdges;
+      }
+      
+        rect.mover {
+                  stroke: black;
+                  stroke-opacity: .5;
+                  fill:white;
+                  fill-opacity: .8;
+                  overflow-y: scroll;
+              }
+    #slide{
+      width: 400px;
+
     }
+    #slider-range{
+         width: 380px;
+         margin: 15px;
+    }
+
+    /* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 40%;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.round{
+  width: 30%;
+    border-radius: 15px;
+    border: 1px #000 solid;
+    padding: 5px 5px 5px 25px;
+    position: absolute;
+    height: 30px;
     
-    data.push(pivot)
-    
-  })
-  
-
-  return data
- 
-}),
-        d3.json("countries.geo.json")
-    ]).then(datasets => {
-        
-        store.coronadat=datasets[0];
-        store.geoJSON = datasets[1];
-        return store;
-    })
-}
-//console.log(store)
-
-  function showData() { 
-
-  drawMap(store.geoJSON)
-  drawCircles(groupbyCountry(store.coronadat))
-  generate_country_list(store.geoJSON)
 
 }
 
-  
-    function getMapConfig(){
-  let width = 600;
-  let height = 550;
-  let container=d3.select("#G")
-  let zoom = d3.zoom()
-       .scaleExtent([1, 40])
-       .translateExtent([[0,0], [width, height]])
-       .extent([[0, 0], [width, height]])
-    .on("zoom",function(){
-        zoomed(container)
-    })
-  
-
-  let containe = d3.select("#Map")
-                  .attr("height",height)
-                  .attr("width",width)
-                  .call(zoom)
-
-  
-  return {width, height, container}
+#search{
+  position: absolute;
+  margin-top: 7px;
+  left: 35px;
 }
 
+#button{
+  position: absolute;
+  margin-top: 7px;
+  left: 30%;
+}
 
-function zoomed(container)
-  {
-    x=d3.event.transform.x
-    y=d3.event.transform.y
-    k=d3.event.transform.k
- 
-container.attr(
-      "transform","translate(" + [d3.event.transform.x, d3.event.transform.y] + ")scale(" + d3.event.transform.k + ")rotate("+deg+",300,150)")
-     console.log(x,y,k)
+#mybtn{
+  margin-left: 32%;
+  position: absolute;
+  color: #2a5599;
+}
+
+body {font-family: Arial, Helvetica, sans-serif;}
+  h4{
+    color: white;
   }
 
-function getMapProjection(config) {
-  let {width, height} = config;
-  let projection = d3.geoMercator()
-  projection.scale(95)
-            .translate([width / 2, height / 2 + 100])
-            .rotate([0,0,0])
+      </style>
+      <script src="./d3-lasso.min.js"></script>
+      <script src="d3.js"></script>
+      <title>COVID-19 Dashboard</title>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+      <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
+
+  </head>
+  
+  <body>
+      <h1>COVID-19 Dashboard</h1>
+      <div id="myModal" class="modal">
+  
+        <!-- Modal content -->
+        <div class="modal-content" style="background-color: #2a6592; color:rgb(209, 178, 178);">
+          <span class="close">&times;</span>
+          <p style="color: white; font-weight: 1em; font-size: 16px; letter-spacing: .3em; ">
             
-  store.mapProjection = projection;
-  return projection;
-}
-
-function drawBaseMap(container, countries, projection){
-  let path =d3.geoPath()
-             .projection(projection)
-   //console.log(countries)
-
-  container.selectAll("path").data(countries)
-      .enter().append("path")
-      .attr("d",d=>path(d) )
-      .attr("fill", "#fff")
-    .attr("stroke", '#bdbdbd')
-    .attr("stroke-width", .5)
-    .attr("stroke-linejoin", "round")
-      .on("mouseenter", function(d) {
-         // d3.select(this).attr("fill", "#229a5b")
-         div
-        .transition()
-        .duration(200)
-        .style("opacity", .9);
-      div
-        .html(
-            d.properties.name
-        )
-        .attr("class","tooltip1")
-        .style("left", d3.event.pageX + "px")
-        .style("top", d3.event.pageY - 28 + "px");
-         
-        })
-      .on("mouseleave",function(){
-       // d3.select(this).attr("fill", "#eee")
-       div
-       .attr("class","tooltip1")
-        .transition()
-        .duration(500)
-        .style("opacity", 0);
-       
-      })
-
-
-     
-     
+            <h4>1. To select a single country.</h4> 
+              --> select "Bangladesh"
+            <h4>2. To select multiple countries.</h4>
+            --> select "China","USA",..
+            <h4>3. To choose a particular case.</h4>
+              --> select/show death/recovered/confirmed cases
+            <h4>4. To find minimum/maximum death/recovered/confirmed cases.</h4>
+              --> find maximum/minimum death/recovered/confirmed cases
+            <h4>5. To select a particular date range.</h4>
+            --> from m/d/y to m/d/y
+            <h4>6. To find minimum/maximum death/recovered/confirmed cases among some selected countries.</h4>
+            --> first select some countries by using lasso/select command then use the find maximum command
+            <h4>7. To find minimum/maximum death/recovered/confirmed cases in particular date range.</h4>
+            --> first select a date range by using lasso/slider/from to command then use the find maximum command
+            <h4>8. To reset or clear the window.</h4>
+            --> cls/clear/clear all
+          
+          </p>
+        </div>
       
-      
-}
-
-function drawMap(geoJeon) {
-    let config = getMapConfig();
-    let projection = getMapProjection(config)
-    drawBaseMap(config.container, geoJeon.features, projection)
-}
-
-let myData;
-function groupbyCountry(data) {
-  //console.log(data)
-    confirmedLatest = data.map(d => d[d.length-1]).sort((a,b) => b.confirmed - a.confirmed);
-    myData = confirmedLatest;
-    //console.log(myData);
-    let result = confirmedLatest.reduce((result, d) => {
-        //The || sign in the line below means that in case the first option is anything that Javascript consider false (this insclude undefined, null and 0), the second option will be used. Here if result[d.DestAirportID] is false, it means that this is the first time we are seeing the airport, so we will create a new one (second part after ||)
+      </div>
+      <div class="result">
         
-        let grpbycounty = result[d.country] || {
-            country: d.country,
-            short: d.short,
-            lat: d.lat,
-            lon: d.lon,
-            iso: d.iso,
-            date: d.date,
-            confirmed: 0
-        }
-        grpbycounty.confirmed += d.confirmed
-        result[d.country] = grpbycounty
+        <div>
+        <input type="text" id="command"  placeholder="Enter Command Here" class="round">
+        <i class="fa fa-search" id="search" aria-hidden="true" onclick="command()" ></i>
+        <i class="fa fa-microphone"  id="button" aria-hidden="true"></i>
+        <!-- <input type="image" id="button" src="image.png" width="20" height="20"> -->
+        <!-- <!-- <button onclick="command()">Enter</button> -->
+        <i class="fa fa-question-circle fa-2x" aria-hidden="true" id="myBtn"></i>
+        <!-- <button id="myBtn">Supported Commands</button> -->
+        </div>
+        <div class="res" id="res">Showing Results for All Countries</div> 
 
-        return result
-    }, {})
-    result = Object.keys(result).map(key => result[key])
-    //console.log(result)
-    drawbar(myData);
-    return result;
-}
+      </div>
+      <div class="info">
+              <div class="tc" ></div>
+             <div class="tc1"></div>
+              <div class="tc2"></div> 
+              <div style="border-right:1px dotted #BDBDBD; padding: 0 1em;">
+                  <form >
+                      <label>Choose Case:</label>
+                    <select id="options" name="cars" onchange="ddl()">
+                      <option value="Confirmed Cases">Confirmed Cases</option>
+                      <option value="Death Cases">Death Cases</option>
+                      <option value="Recovered Cases">Recovered Cases</option>
+                      <!-- <option value="New Cases">New Cases</option> -->
+                    </select>
+                  </form>
+                </div>
+                <div style="border-right:1px dotted #BDBDBD; padding: 0 1em;">
+                  <form >
+                      <label>Select Country:</label>
+                    <select id="countries" class="chosen" name="countries" onchange="myScript()">
+                      
+                    </select>
+                  </form>
+                </div>
+                <div>
+                    <label for="amount">Date range:</label>
+                    <input type="text" id="amount" style="border: 0; color: blue; font-weight: bold; background-color: #DCDCDC;" size="30"/>     
+                  <div id="slider-range"></div>
+                </div>
+      </div>
+      <div class="mainView">
+          <div id="bar">
+              <svg id="BarChart"  style="transform: rotate(90deg)" >
+                  
+              </svg>
+          </div>
+          <div>
+              <svg id="Map">
+                  <g id="G"></g>
+              </svg>
+          </div>
+          <div>
+              <div> 
+                <svg id="container" height="450px" width="500px"> 
+                  <g id="body2" style="transform: translate(60px,10px);margin-top:50px ;"></g>
+              </svg>
+              </div>
+              <div id="tooltip"></div>
+              <div style="transform: translate(190px,-250px);margin-top:50px ;"></div>
+            
 
-function drawCircles(countrycircle) {
-  let config = getMapConfig(); 
-  let projection = getMapProjection(config)
-  let container = config.container; 
-  radius = d3.scaleSqrt([0,d3.max(countrycircle, d=> d.confirmed)], [.5, config.width/40])
-  let circles = container.selectAll("circle")
-    .data(confirmedLatest)
-    .enter()
-  .append("circle")
-  .attr("class", "confirmed")
-    .attr("fill", "#ff9500")
-    .attr("fill-opacity", ".15")
-    .attr("stroke", "#ff9500")
-    .attr("stroke-width", 1)
-    .join("circle")
-    .attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
-    .attr("r", d => radius(d.confirmed))
-    .on("mouseenter", function(d) {
-         // d3.select(this).attr("fill", "#229a5b")
-         div
-        .transition()
-        .duration(200)
-        .style("opacity", .9);
-      div
-        .html(
-          "<b>COUNTRY: </b>" +
-            d.country +
-            "</br><b>CONFIRMED CASES: </b>" +
-          d.confirmed +
-            "</br>AS OF " +
-          d.date
-        )
-        .attr("class","tooltip")
-        .style("left", d3.event.pageX + "px")
-        .style("top", d3.event.pageY - 28 + "px");
-         
+
+          </div>
+          <!-- <div>
+              <h2 align="right">Search Countries</h2>
+              <div class="search">
+                  <input type="text" placeholder="Search Countries" id="filter_countries"/>
+  
+                   <ul id="countries-list">
+  
+                   </ul>
+                  </div>
+              <svg id="s"></svg>
+          </div> -->
+          
+  
+      </div>
+      
+      
+  
+  </body>
+  <script>
+      let store={}
+      let slidedata;
+      store.done=[];
+      store.afterlasso=[];
+      store.currentcommand=null;
+      store.currentselectedcountries=[];
+      store.mapafterlinelasso={}
+      store.scroll=false
+          let x=0
+          let y=0
+          let k=1
+          let deg=0
+          let svg=d3.select("#Map")
+          let currentvis="";
+          div = d3
+        .select("body")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0)
+      
+      
+        function loadData() {
+          return Promise.all([
+          d3.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv', (d, rows, cols) => { 
+        
+        const dates = cols.slice(4, cols.length);
+        const data = [];
+          
+        dates.forEach((dd, i)=> {
+          const match = d['Country/Region'];
+          const country = d['Country/Region'];
+          const short = d['Country/Region'];
+          const region = d['Province/State'];
+          const iso = (match !== undefined)?match.iso:'';
+          const lat = d['Lat'];
+          const lon = d['Long'];
+          const date = dd;
+          const confirmed = +d[dd];
+          const pivot = {
+            country: country, short: short, region: region, lat: lat, lon: lon, date: date, confirmed: confirmed, iso: iso
+          }
+          
+          data.push(pivot)
+          
         })
-      .on("mouseleave",function(){
-        div
-        .attr("class","tooltip")
-        .transition()
-        .duration(500)
-        .style("opacity", 0);
+        //console.log(data)
+      
+        return data
+       
+      }),
+              d3.json("countries.geo.json"),
+              d3.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv', (d, rows, cols) => { 
+        
+        const dates = cols.slice(4, cols.length);
+        const data = [];
+        
+        dates.forEach(dd=> {
+          const match = d['Country/Region']
+          const country = d['Country/Region'];
+          const region = d['Province/State'];
+          const iso = (match !== undefined)?match.iso:'';
+          const lat = d['Lat'];
+          const lon = d['Long'];
+          const date = dd;
+          const deaths = +d[dd];
+          const pivot = {
+            country: country, region: region, lat: lat, lon: lon, date: date, deaths: deaths, iso: iso
+          }
+          
+          data.push(pivot)
+          
+        })
+        
+        return data
+        
+      }),d3.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv', (d, rows, cols) => { 
+        
+        const dates = cols.slice(4, cols.length);
+        const data = [];
+        
+        dates.forEach(dd=> {
+          const match = d['Country/Region']
+          const country = d['Country/Region'];
+          const region = d['Province/State'];
+          const iso = (match !== undefined)?match.iso:'';
+          const lat = d['Lat'];
+          const lon = d['Long'];
+          const date = dd;
+          const recovered = +d[dd];
+          const pivot = {
+            country: country, region: region, lat: lat, lon: lon, date: date, recovered: recovered, iso: iso
+          }
+          
+          data.push(pivot)
+          
+        })
+        
+        return data
+        
+      })
+          ]).then(datasets => {
+              
+              store.coronadat=datasets[0];
+              store.geoJSON = datasets[1];
+              store.death=datasets[2];
+              store.recovered=datasets[3];
+              return store;
+          })
+      }
+      
+        function showData() { 
+          currentvis="confirm";
+       groupbytime()
+        drawMap(prep(store.geoJSON))
+        stackprocess()
+        slidedata = store.sumdate;
+   
+        drawline(store.sumdate)
+      // groupbyCountryDeath(store.death)
+          drawCircles(store.done,"blue")
+          drawbar(store.done)
+         generate_country_list(store.coronadat)
+      //   groupbyCountryDeath(store.death)
+       // drawCirclesdeath(groupbyCountryDeath(store.death),"#ff9500")
+        total_case_print(groupbyCountry(store.coronadat))
+        total_case_print1(groupbyCountryDeath(store.death))
+        total_case_print2(groupbyCountryRecovered(store.recovered))
+        //d3.select(".res").style("background-color","#2a5599");
+        
+      
+      }
+      
+        
+          function getMapConfig(){
+        let width = 620;
+        let height = 450;
+        let container=d3.select("#G")
+        let zoom = d3.zoom()
+             .scaleExtent([1, 40])
+             .translateExtent([[0,0], [width, height]])
+             .extent([[0, 0], [width, height]])
+          .on("zoom",function(){
+              zoomed(container)
+          })
+        
+      
+        let containe = d3.select("#Map")
+                        .attr("height",height)
+                        .attr("width",width)
+                        .call(zoom)
+      
+        
+        return {width, height, container}
+      }
+      
+      
+      function zoomed(container)
+        {
+          x=d3.event.transform.x
+          y=d3.event.transform.y
+          k=d3.event.transform.k
+       
+      container.attr(
+            "transform","translate(" + [d3.event.transform.x, d3.event.transform.y] + ")scale(" + d3.event.transform.k + ")rotate("+deg+",300,150)")
+           
+        }
+      
+      function getMapProjection(config) {
+        let {width, height} = config;
+        let projection = d3.geoMercator()
+        projection.scale(98)
+                  .translate([width / 2, height / 2+110])
+                  .rotate([0,0,0])
+                  
+        store.mapProjection = projection;
+        return projection;
+      }
+      
+      function drawBaseMap(container, countries, projection){
+        let path =d3.geoPath()
+                   .projection(projection)
+      mc=0
+      for(i of countries)
+      {
+        if(currentvis=="confirm"){
+        if(mc<i.confirmed){
+            mc=i.confirmed
+        }}
+        else if(currentvis=="death"){
+        if(mc<i.deaths){
+            mc=i.deaths
+        }}
+        else if(currentvis=="recovered"){
+        if(mc<i.recovered){
+            mc=i.recovered
+        }}
+      }
+      //console.log(mc)
+      clr=[]
+      if(currentvis=="confirm"){
+        clr=["white","blue"];
+        }
+        else if(currentvis=="death"){
+          clr=["white","red"];
+          }
+        else if(currentvis=="recovered"){
+          clr=["white","green"];
+          }
+      
+      // var color_scale =d3.scaleLinear().domain([0,mc]).range(["white","red"]);
+      var color_scale=d3.scaleLinear()
+  .domain([0,100])
+  .range(clr);
+      
+        container.selectAll("path").data(countries)
+            .enter().append("path")
+            .attr("d",d=>path(d) )
+            .attr("fill", function(d){
+              if (currentvis=="confirm")
+              {                                                              //
+
+                if (d.confirmed>mc*.9) return '#084594';
+                else if(d.confirmed>mc*.09) return '#2171b5';
+                else if(d.confirmed>mc*.01) return "#4292c6";
+                else if(d.confirmed>mc*.004) return "#6baed6";
+                else if (d.confirmed>mc*.001)return "#9ecae1";
+                else if(d.confirmed>0) return "#c6dbef";
+                else return "#f7fbff"
+              }
+              else if(currentvis=="death")
+              {
+                if(d.deaths>mc*.5) return '#99000d';
+                else if(d.deaths>mc*.1) return '#cb181d';
+                else if(d.deaths>mc*.03)return "#ef3b2c";
+                else if(d.deaths>mc*.01)return "#fb6a4a";
+                else if(d.deaths>mc*.005)return '#fc9272';
+                else if(d.deaths>mc*.001)return "#fcbba1";
+                else if(d.deaths>0)return "#fcbba1";
+                else return "#fff5f0";            
+              }
+              else if(currentvis=="recovered")
+              { 
+                if (d.recovered>mc*.9) return '#005a32';
+                else if(d.recovered>mc*.09) return '#238b45';
+                else if(d.recovered>mc*.01) return "#41ab5d";
+                else if(d.recovered>mc*.004) return "#74c476";
+                else if (d.recovered>mc*.001)return "#a1d99b";
+                else if(d.recovered>0) return "#c7e9c0";
+                else return "#f7fcf5"
+              }
+                
+            })
+          .attr("stroke", "gray")
+          .attr("stroke-width", .5)
+          .on("mousemove", function(d) {
+               d3.select(this)
+               .attr("stroke","black")
+               .attr("stroke-width", "1px")
+               div
+              .transition()
+              .duration(200)
+              .style("opacity", .9);
+            div
+              .html(
+                "<b>COUNTRY: </b>" +
+                  d.properties.name +
+                  "</br><b>CONFIRMED CASES: </b>" +
+                d.confirmed +
+                "</br><b>DEATH CASES: </b>" +
+                d.deaths +
+                "</br><b>RECOVERED CASES: </b>" +
+                d.recovered +
+                  "</br>AS OF " +
+                store.date
+              )
+              .attr("class","tooltip1")
+              .style("left", 790 + "px")
+              .style("top", 235 + "px");
+               
+              })
+            .on("mouseleave",function(d){
+
+              d3.select(this).attr("stroke","gray").attr("stroke-width",".5px").attr("fill", function(d)
+              {
+                if (currentvis=="confirm")
+              {                                                              //
+
+                if (d.confirmed>mc*.9) return '#084594';
+                else if(d.confirmed>mc*.09) return '#2171b5';
+                else if(d.confirmed>mc*.01) return "#4292c6";
+                else if(d.confirmed>mc*.004) return "#6baed6";
+                else if (d.confirmed>mc*.001)return "#9ecae1";
+                else if(d.confirmed>0) return "#c6dbef";
+                else return "#f7fbff"
+              }
+              else if(currentvis=="death")
+              {
+                if(d.deaths>mc*.5) return '#99000d';
+                else if(d.deaths>mc*.1) return '#cb181d';
+                else if(d.deaths>mc*.03)return "#ef3b2c";
+                else if(d.deaths>mc*.01)return "#fb6a4a";
+                else if(d.deaths>mc*.005)return '#fc9272';
+                else if(d.deaths>mc*.001)return "#fcbba1";
+                else if(d.deaths>0)return "#fcbba1";
+                else return "#fff5f0";
+              }
+              else if(currentvis=="recovered")
+              { 
+                if (d.recovered>mc*.9) return '#005a32';
+                else if(d.recovered>mc*.09) return '#238b45';
+                else if(d.recovered>mc*.01) return "#41ab5d";
+                else if(d.recovered>mc*.004) return "#74c476";
+                else if (d.recovered>mc*.001)return "#a1d99b";
+                else if(d.recovered>0) return "#c7e9c0";
+                else return "#f7fcf5"
+              }
+              })
+              div
+              .attr("class","tooltip1")
+              .transition()
+              .duration(500)
+              .style("opacity", 0);
+            })
+
+
+if(currentvis!="death"){
+            var w = 300, h = 50;
+
+    d3.select("#s").remove()
+
+    var key = d3.select("#Map")
+      .append("svg")
+      .attr("id","s")
+      .attr("width", w)
+      .attr("height", h);
+
+    var legend = key.append("defs")
+      .append("svg:linearGradient")
+      .attr("id", "gradient")
+      .attr("x1", "0%")
+      .attr("y1", "100%")                             
+      .attr("x2", "100%")
+      .attr("y2", "100%")
+      .attr("spreadMethod", "pad");
+
+    
+
+    legend.append("stop")
+      .attr("offset", "0%")
+      .attr("stop-color", function(d)
+      {
+        if(currentvis=="confirm")return "#f7fbff";
+        else if(currentvis=="recovered")return "#f7fcf5";
+      }
+      )
+      .attr("stop-opacity", 1);
+
+    legend.append("stop")
+      .attr("offset", "16.67%")
+      .attr("stop-color", function(d)
+      {
+        if(currentvis=="confirm")return "#c6dbef";
+        else if(currentvis=="recovered")return "#c7e9c0";
+      }
+      )
+      .attr("stop-opacity", 1);
+
+    legend.append("stop")
+      .attr("offset", "33.34%")
+      .attr("stop-color",
+      function(d)
+      {
+        if(currentvis=="confirm")return "#9ecae1";
+        else if(currentvis=="recovered")return "#a1d99b";
+      }
+       )
+      .attr("stop-opacity", 1);
+
+    legend.append("stop")
+      .attr("offset", "50.01%")
+      .attr("stop-color", function(d)
+      {
+        if(currentvis=="confirm")return "#6baed6";
+        else if(currentvis=="recovered")return "#74c476";
+      }
+      )
+      .attr("stop-opacity", 1);
+
+      legend.append("stop")
+      .attr("offset", "66.68%")
+      .attr("stop-color",function(d)
+      {
+        if(currentvis=="confirm")return "#4292c6";
+        else if(currentvis=="recovered")return "#41ab5d";
+      }
+       )
+      .attr("stop-opacity", 1);
+
+      legend.append("stop")
+      .attr("offset", "83.35%")
+      .attr("stop-color",function(d)
+      {
+        if(currentvis=="confirm")return "#2171b5";
+        else if(currentvis=="recovered")return '#238b45';
+      }
+       )
+      .attr("stop-opacity", 1);
+
+      legend.append("stop")
+      .attr("offset", "100%")
+      .attr("stop-color",
+      function(d)
+      {
+        if(currentvis=="confirm")return '#084594';
+        else if(currentvis=="recovered")return '#005a32';
+      } )
+      .attr("stop-opacity", 1);
+
+    key.append("rect")
+      .attr("width", w)
+      .attr("height", h - 30)
+      .style("fill", "url(#gradient)")
+      .attr("transform", "translate(20,10)");
+
+    a=[]
+    if(currentvis=="confirm")a= [Math.round((mc*.9)/1000)+"k",Math.round((mc*.09)/1000)+"k",Math.round((mc*.01)/1000)+"k",Math.round((mc*.004)/1000)+"k",Math.round((mc*.001)/1000)+"k",Math.round((mc*.0009)/1000)+"k" , 0];
+    else if(currentvis=="recovered")a= [Math.round((mc*.9)/1000)+"k",Math.round((mc*.09)/1000)+"k",Math.round((mc*.01)/1000)+"k",Math.round((mc*.004)),Math.round(mc*.001),Math.round((mc*.0009)) , 0]
+    var y = d3.scaleBand()
+      .range([300, 0])
+      .domain(a
+        );
+
+   d3.select("#a").remove()
+   d3.select("#b").remove()     
+
+    d3.select("#Map").append("g")
+      .attr("id","a")
+      .attr("class", "y_axis")
+      .attr("color","black")
+      .attr("transform", "translate(15,15)")
+      .append("text")
+      .attr("y", 0)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text(0);
+
+      d3.select("#Map").append("g")
+      .attr("id","b")
+      .attr("class", "y_axis")
+      .attr("color","black")
+      .attr("transform", "translate(305,15)")
+      .append("text")
+      .attr("y", 0)
+      .attr("dy", ".71em")
+      .text(function(d)
+      {
+        if (mc.toString().length >6)return (mc/1000000).toFixed(2) + "M" ;
+        else if(mc.toString().length>=3) return (mc/1000).toFixed(2) +"k";
+        else return mc
       });
 
+
+
+
+}
+
+else{
+  // if(d.deaths>mc*.5) return '#99000d';
+  //               else if(d.deaths>mc*.1) return '#cb181d';
+  //               else if(d.deaths>mc*.03)return "#ef3b2c";
+  //               else if(d.deaths>mc*.01)return "#fb6a4a";
+  //               else if(d.deaths>mc*.005)return '#fc9272';
+  //               else if(d.deaths>mc*.001)return "#fcbba1";
+  //               else if(d.deaths>0)return "#fcbba1";
+  //               else return "#fff5f0";  
+
+
+  var w = 300, h = 50;
+
+    d3.select("#s").remove()
+    var key = d3.select("#Map")
+      .append("svg")
+      .attr("id","s")
+      .attr("width", w)
+      .attr("height", h);
+
+    var legend = key.append("defs")
+      .append("svg:linearGradient")
+      .attr("id", "gradient")
+      .attr("x1", "0%")
+      .attr("y1", "100%")                             
+      .attr("x2", "100%")
+      .attr("y2", "100%")
+      .attr("spreadMethod", "pad");
+
+    legend.append("stop")
+      .attr("offset", "0%")
+      .attr("stop-color", "#fff5f0")
+      .attr("stop-opacity", 1);
+
+    legend.append("stop")
+      .attr("offset", "16.67%")
+      .attr("stop-color", "#fcbba1")
+      .attr("stop-opacity", 1);
+
+    legend.append("stop")
+      .attr("offset", "33.34%")
+      .attr("stop-color",'#fc9272'
+       )
+      .attr("stop-opacity", 1);
+
+    legend.append("stop")
+      .attr("offset", "50.01%")
+      .attr("stop-color", "#fb6a4a" )
+      .attr("stop-opacity", 1);
+
+      legend.append("stop")
+      .attr("offset", "66.68%")
+      .attr("stop-color","#ef3b2c"
+       )
+      .attr("stop-opacity", 1);
+
+      legend.append("stop")
+      .attr("offset", "83.35%")
+      .attr("stop-color",'#cb181d'
+       )
+      .attr("stop-opacity", 1);
+
+      legend.append("stop")
+      .attr("offset", "100%")
+      .attr("stop-color",'#99000d')
+      .attr("stop-opacity", 1);
+
+    key.append("rect")
+      .attr("width", w)
+      .attr("height", h - 30)
+      .style("fill", "url(#gradient)")
+      .attr("transform", "translate(20,10)");
+
+      d3.select("#a").remove()
+   d3.select("#b").remove()     
+
+    d3.select("#Map").append("g")
+      .attr("id","a")
+      .attr("class", "y_axis")
+      .attr("color","black")
+      .attr("transform", "translate(15,15)")
+      .append("text")
+      .attr("y", 0)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text(0);
+
+      d3.select("#Map").append("g")
+      .attr("id","b")
+      .attr("class", "y_axis")
+      .attr("color","black")
+      .attr("transform", "translate(305,15)")
+      .append("text")
+      .attr("y", 0)
+      .attr("dy", ".71em")
+      .text(function(d)
+      {
+        if (mc.toString().length >6)return (mc/1000000).toFixed(2) + "M" ;
+        else if(mc.toString().length>=3) return (mc/1000).toFixed(2) +"k";
+        else return mc
+      });
+
+    
+}
+
+      
+  l=d3.select("#G").selectAll('path')._groups[0]
+  ln=d3.select("#G").selectAll('path')._groups[0].length
+
+  for(let i=0;i<ln;i++)
+  {
+    if(store.currentselectedcountries.includes(l[i].__data__.country.toLowerCase()))
+    {
+      d3.select(l[i]).classed("selected",true)
+    }
+    else{
+      d3.select(l[i]).classed("selected",false)
+    }
+  }
+           
+           
+            
+            
+      }
+      
+      function drawMap(geoJeon) {
+          let config = getMapConfig();
+          let projection = getMapProjection(config)
+          drawBaseMap(config.container, geoJeon.features, projection)
+      }
+      
+      let myData;
+      function groupbyCountry(data) {
+        //console.log(data)
+          confirmedLatest = data.map(d => d[d.length-1]).sort((a,b) => b.confirmed - a.confirmed);
+          myData = confirmedLatest;
+          
+          let result = confirmedLatest.reduce((result, d) => {
+              //The || sign in the line below means that in case the first option is anything that Javascript consider false (this insclude undefined, null and 0), the second option will be used. Here if result[d.DestAirportID] is false, it means that this is the first time we are seeing the airport, so we will create a new one (second part after ||)
+              
+              let grpbycounty = result[d.country] || {
+                  country: d.country,
+                  short: d.short,
+                  lat: d.lat,
+                  lon: d.lon,
+                  iso: d.iso,
+                  date: d.date,
+                  confirmed: 0
+              }
+              grpbycounty.confirmed += d.confirmed
+              result[d.country] = grpbycounty
+      
+              return result
+          }, {})
+          result = Object.keys(result).map(key => result[key])
+          result= result.sort((a,b) => b.confirmed - a.confirmed);
+          
+          return result;
+      }
+      
+      function groupbyCountryDeath(data)
+      {
+        confirmedLatestdeath = data.map(d => d[d.length-1]).sort((a,b) => b.deaths - a.deaths);
+          myData = confirmedLatestdeath;
+          //console.log(myData);
+          let result = confirmedLatestdeath.reduce((result, d) => {
+              //The || sign in the line below means that in case the first option is anything that Javascript consider false (this insclude undefined, null and 0), the second option will be used. Here if result[d.DestAirportID] is false, it means that this is the first time we are seeing the airport, so we will create a new one (second part after ||)
+              
+              let grpbycounty = result[d.country] || {
+                  country: d.country,
+                  lat: d.lat,
+                  lon: d.lon,
+                  iso: d.iso,
+                  date: d.date,
+                  deaths: 0
+              }
+              grpbycounty.deaths += d.deaths
+              result[d.country] = grpbycounty
+      
+              return result
+          }, {})
+          result = Object.keys(result).map(key => result[key])
+          result= result.sort((a,b) => b.deaths - a.deaths);
+          
+          return result;
+      }
+      
+      
+      function groupbyCountryRecovered(data)
+      {
+        confirmedLatestrecovered = data.map(d => d[d.length-1]).sort((a,b) => b.recovered - a.recovered);
+          myData = confirmedLatestrecovered;
+          //console.log(myData);
+          let result = confirmedLatestrecovered.reduce((result, d) => {
+              //The || sign in the line below means that in case the first option is anything that Javascript consider false (this insclude undefined, null and 0), the second option will be used. Here if result[d.DestAirportID] is false, it means that this is the first time we are seeing the airport, so we will create a new one (second part after ||)
+              
+              let grpbycounty = result[d.country] || {
+                  country: d.country,
+                  lat: d.lat,
+                  lon: d.lon,
+                  iso: d.iso,
+                  date: d.date,
+                  recovered: 0
+              }
+              grpbycounty.recovered += d.recovered
+              result[d.country] = grpbycounty
+      
+              return result
+          }, {})
+          result = Object.keys(result).map(key => result[key])
+          result= result.sort((a,b) => b.recovered - a.recovered);
+          
+          return result;
+      }
+      
+      //group by time start
+      function groupbytime()
+      {
+        //console.log("hello")
+        var byCountry = d3.nest()
+          .key(function(d) {
+            return d.country;
+          })
+          .entries(store.coronadat.flat());
+         
+        //console.log(byCountry);
+        b=byCountry[0].values
+        for(i of byCountry)
+        {
+          if(i.values>b){
+            let a={}
+            for(j of i.values)
+            {
+               if (!(j.date in a))
+               {
+                 a[j.date]={
+                  country: j.country,
+                  lat: j.lat,
+                  lon: j.lon,
+                  iso: j.iso,
+                  date: j.date,
+                  confirmed: j.confirmed
+
+                 }
+              
+
+               }
+               else if(j.date in a){
+                
+              a[j.date].confirmed+=j.confirmed;
+               }
+
+            }
+            let l=[]
+            for( h in a)
+            {
+              
+              l.push(a[h])
+            }
+            i.values=l
+          }
+        }
+       
+
+//////death///////
+        var byCountrydeath = d3.nest()
+          .key(function(d) {
+            return d.country;
+          })
+          .entries(store.death.flat());
+         
+        b=byCountrydeath[0].values
+        for(i of byCountrydeath)
+        {
+          if(i.values>b){
+            let a={}
+            for(j of i.values)
+            {
+               if (!(j.date in a))
+               {
+                 a[j.date]={
+                  country: j.country,
+                  lat: j.lat,
+                  lon: j.lon,
+                  iso: j.iso,
+                  date: j.date,
+                  deaths: j.deaths
+
+                 }
+              
+
+               }
+               else if(j.date in a){
+                
+              a[j.date].deaths+=j.deaths;
+               }
+
+            }
+            let l=[]
+            for( h in a)
+            {
+              
+              l.push(a[h])
+            }
+            i.values=l
+          }
+        }
+
+
+/////////recovered////////
+        var byCountryrecoverd = d3.nest()
+          .key(function(d) {
+            return d.country;
+          })
+          .entries(store.recovered.flat());
+         
+        b=byCountryrecoverd[0].values
+        for(i of byCountryrecoverd)
+        {
+          if(i.values>b){
+            let a={}
+            for(j of i.values)
+            {
+               if (!(j.date in a))
+               {
+                 a[j.date]={
+                  country: j.country,
+                  lat: j.lat,
+                  lon: j.lon,
+                  iso: j.iso,
+                  date: j.date,
+                  recovered: j.recovered
+
+                 }
+              
+
+               }
+               else if(j.date in a){
+                
+              a[j.date].recovered+=j.recovered;
+               }
+
+            }
+            let l=[]
+            for( h in a)
+            {
+              
+              l.push(a[h])
+            }
+            i.values=l
+          }
+        }
+
+      
+      for(i=0;i<byCountry.length;i++)
+      {
+        for(j=0;j<byCountry[i].values.length;j++)
+        {
+          byCountry[i].values[j].deaths=byCountrydeath[i].values[j].deaths;
+          // byCountry[i].values[j].recovered=byCountryrecoverd[i].values[j].recovered;
+           byCountry[i].values[j].active=byCountry[i].values[j].confirmed - byCountry[i].values[j].deaths;
+          if (j==0){
+          byCountry[i].values[j].new=0}
+          else{
+            byCountry[i].values[j].new=byCountry[i].values[j].confirmed - byCountry[i].values[j-1].confirmed;
+          }
+        }
+      }
+      for (i of byCountry)
+      {
+         for(j of byCountryrecoverd)
+         {
+           
+              if(i.key==j.key)
+              {
+                for( k=0;k<j.values.length;k++)
+                {
+                  i.values[k].recovered=j.values[k].recovered;
+                  i.values[k].active-=j.values[k].recovered;
+                }
+                break;
+              }
+         }
+         
+      }
+      // console.log(byCountryrecoverd)
+         store.time=byCountry;
+         store.save=byCountry;
+
+      df=byCountry[0].values.length
+      k=[]
+      
+      
+      for(i=0;i<df;i++)
+      {
+        let c=0;
+        let d=0;
+        let r=0;
+        dt=''
+        for(j=0;j<store.time.length;j++)
+        {
+          dt=store.time[j].values[i].date;
+          c+=store.time[j].values[i].confirmed;
+          d+=store.time[j].values[i].deaths;
+          r+=store.time[j].values[i].recovered;
+        }
+        k.push({
+          date:dt,
+          confirmed: c,
+          deaths: d,
+          recovered: r,
+          new_case: 0,
+          new_death: 0
+        })
+          store.sumdate=k
+
+       
+      }
+
+      
+      store.sumdate[0].new_case=store.sumdate[0].confirmed
+      store.sumdate[0].new_death=store.sumdate[0].deaths
+      for(let i=1;i<store.sumdate.length;i++)
+      {
+        store.sumdate[i].new_case=store.sumdate[i].confirmed - store.sumdate[i-1].confirmed
+        store.sumdate[i].new_death=store.sumdate[i].deaths - store.sumdate[i-1].deaths
+      }
+      
+        
+      }
+//// end group by time
+      function prep(){
+          
+          a=groupbyCountry(store.coronadat);
+          k=groupbyCountryDeath(store.death)
+          z=groupbyCountryRecovered(store.recovered)
+          
+          for(f of a)
+          {
+
+              for (g of k){
+                  if(f.country==g.country)
+                  {
+                      f.deaths=g.deaths;
+                      break;
+                  }
+
+              }
+              for(h of z)
+              {
+                 if(f.country==h.country)
+                 {
+                     f.recovered=h.recovered;
+                     break;
+                 }
+              }
+          }
+
+          for(i=0;i<a.length;i++)
+          {
+              
+              b=a[i].country;
+              // a[i].deaths=k[i].deaths;
+              // a[i].recovered=z[i].recovered;
+              if(b=="US"){
+                  b="United States of America"
+              }
+              for (j of store.geoJSON.features)
+              {
+                  if(j.properties.name==b)
+                  {
+                      j.confirmed=a[i].confirmed;
+                      j.deaths=a[i].deaths;
+                      j.recovered=a[i].recovered;
+                      j.country=a[i].country
+                      break;
+                  }
+                  else {
+                    if(!('country' in j))
+                    {
+                      j.country=""
+                    }
+                  }
+                  
+              }
+          }
+          for (i of store.geoJSON.features)
+          {
+              if(!('confirmed' in i)){
+                  i.confirmed=0;
+                  i.deaths=0
+                  i.recovered=0
+              }
+          }
+
+          store.done=a
+          store.date=a[0].date;
+          store.mapafterlinelasso=store.geoJSON
+          return store.geoJSON;
+          
+
+
+      }
+
+      function stackprocess()
+      {
+        if(currentvis=="confirm")
+        {
+          a=store.done.sort((a,b) => b.confirmed - a.confirmed);
+        }
+        else if(currentvis=="death")
+        {
+          a=store.done.sort((a,b) => b.deaths - a.deaths);
+        }
+        else{
+          a=store.done.sort((a,b) => b.recovered - a.recovered);
+        }
+        let l=[]
+          for(i of a)
+          {
+            l.push({
+              country: i.country,
+              cases: "Confirmed",
+              number: i.confirmed
+            })
+            l.push({
+              country: i.country,
+              cases: "Active",
+              number: (i.confirmed - (i.recovered + i.deaths))
+            })
+            l.push({
+              country: i.country,
+              cases: "Recovered",
+              number: i.recovered
+            })
+            l.push({
+              country: i.country,
+              cases: "Death",
+              number: i.deaths
+            })
+          }
+          store.stackbar=l
+          return l
+      }
+      
+      function drawCircles(countrycircle,clr) {
+        let config = getMapConfig(); 
+        let projection = getMapProjection(config)
+        let container = config.container; 
+        container.innerHTML=""
+        radius = d3.scaleSqrt([0,d3.max(countrycircle, d=> d.confirmed)], [.5, config.width/40])
+        let circles = container.selectAll("circle")
+          .data(countrycircle)
+          .enter()               //confiremedlates earlier//
+        .append("circle")
+        .attr("class", "confirmed")
+          .attr("fill", clr)
+          .attr("fill-opacity", ".15")
+          .join("circle")
+          .attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
+          .attr("r", 0)//radius funtion previosly
+          .on("mouseenter", function(d) {
+               // d3.select(this).attr("fill", "#229a5b")
+               div
+              .transition()
+              .duration(200)
+              .style("opacity", .9);
+            div
+              .html(
+                "<b>COUNTRY: </b>" +
+                  d.country +
+                  "</br><b>CONFIRMED CASES: </b>" +
+                d.confirmed +
+                "</br><b>Death CASES: </b>" +
+                d.deaths +
+                "</br><b>Recovered CASES: </b>" +
+                d.recovered +
+                  "</br>AS OF " +
+                d.date
+              )
+              .attr("class","tooltip")
+              .style("left", d3.event.pageX + "px")
+              .style("top", d3.event.pageY - 28 + "px");
+               
+              })
+            .on("mouseleave",function(){
+              div
+              .attr("class","tooltip")
+              .transition()
+              .duration(500)
+              .style("opacity", 0);
+            })
+            // .on("click",function(d){
+            //   d3.select(this).transition().duration(1000).attr("r",radius(d.confirmed)+10).attr("fill","red").transition().duration(1000).attr("r",radius(d.confirmed))
+            //   .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed))
+            //   .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed))
+            //   .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed))
+            //   .transition().duration(1000).attr("r",radius(d.confirmed)+10).transition().duration(1000).attr("r",radius(d.confirmed)).transition().duration(1000).attr("fill","maroon")
+            
+            // })
+      
+      
+      
+            var lasso_start = function() {
+                  lasso.items() // reset size
+                      .classed("not_possible",true)
+                      .classed("selected",false)
+                      .classed("selected1",false);
+              };
+      
+              var lasso_draw = function() {
+              
+                  // Style the possible dots
+                  lasso.possibleItems()
+                      .classed("not_possible",false)
+                      .classed("possible",true)
+                      .classed("selected1",false);
+          
+                  // Style the not possible dot
+                  lasso.notPossibleItems()
+                      .classed("not_possible",true)
+                      .classed("possible",false)
+                      .classed("selected1",false);
+              };
+      
+              var lasso_end = function() {
+                  // Reset the color of all dots
+                  lasso.items()
+                      .classed("not_possible",false)
+                      .classed("possible",false)
+                      .classed("isselected",false);
+      
+                  // Style the selected dots
+                  lasso.selectedItems()
+                      .classed("selected",true);
+
+
+                      if(lasso.selectedItems()._groups[0].length==0)
+                  {
+                    d3.select(".res").text("Showing Results for All Countries");
+                  }
+                  if(lasso.selectedItems()._groups[0].length>0)
+                  {
+
+                  d3.select(".res").text("Showing Results for selected Countries");
+                  }
+                  
+                  let d=[];
+                  let cn=[];
+                  for(i of lasso.selectedItems()._groups[0]){
+              if(i.__data__!=null)
+              {
+                d.push(i.__data__)
+                cn.push(i.__data__.country)
+              }
+      }
+
+      d.sort((a,b)=>b.confirmed - a.confirmed)
+        if(lasso.selectedItems()._groups[0].length>0)
+                    {
+                      
+                    scrollbar(d[0].country)
+                    }
+        else if(lasso.selectedItems()._groups[0].length==0){
+          clearbar()
+        drawbar(store.done)
+        }    
+        for(let i=0;i<cn.length;i++)cn[i]=cn[i].toLowerCase();
+      store.currentselectedcountries=cn;
+      store.afterlasso=d
+      
+      total_case_print(d)
+      total_case_print1(d)
+      total_case_print2(d)
+
+       
+
+      l= d3.selectAll("rect")._groups[0]
+     for(i=0;i<205;i++)
+     {
+       if(cn.includes(l[i].__data__.country.toLowerCase()))
+       {
+        d3.select(l[i]).classed("selected1",false)
+         d3.select(l[i]).classed("selected",true)
+       }
+       else{
+        d3.select(l[i]).classed("selected1",false)
+         d3.select(l[i]).classed("selected",false)
+       }
+     }
+console.log()
+     if(d.length>0)aftermaplasso(d);
+     else drawline(store.sumdate)
+
+     if(store.currentcommand!=null)
+       {
+         console.log("asci")
+         document.getElementById('command').value=store.currentcommand;
+         command();
+       }
+      
+              };
+              
+              var lasso = d3.lasso()
+                  .closePathSelect(true)
+                  .closePathDistance(100)
+                  .targetArea(container)
+                  .on("start",lasso_start)
+                  .on("draw",lasso_draw)
+                  .on("end",lasso_end);
+      
+              container.call(lasso)
+              lasso.items(container.selectAll('path'))
+
+//                 container.selectAll("text")
+//         .data(countrycircle)
+//         .enter().append("svg:text")
+//     .text(function(d){
+//         return d.country;
+//     }).attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
+// .attr("text-anchor","middle")
+//     .attr('font-size','2pt');
+      
+      
+      }
+      
+      
+      
+      function drawCirclesdeath(deathcircle,clr) {
+        let config = getMapConfig(); 
+        let projection = getMapProjection(config)
+        let container = config.container; 
+        container.innerHTML=""
+        radius = d3.scaleSqrt([0,d3.max(deathcircle, d=> d.deaths)], [.5, config.width/40])
+        let circles = container.selectAll("circle")
+          .data(deathcircle)
+          .enter()               //confiremedlates earlier//
+        .append("circle")
+        .attr("class", "confirmed")
+          .attr("fill", clr)
+          .attr("fill-opacity", ".15")
+          .join("circle")
+          .attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
+          .attr("r", 0)//radius funtion previosly
+          // .on("mouseenter", function(d) {
+          //      // d3.select(this).attr("fill", "#229a5b")
+          //      div
+          //     .transition()
+          //     .duration(200)
+          //     .style("opacity", .9);
+          //   div
+          //   .html(
+          //       "<b>COUNTRY: </b>" +
+          //         d.country +
+          //         "</br><b>CONFIRMED CASES: </b>" +
+          //       d.confirmed +
+          //       "</br><b>Death CASES: </b>" +
+          //       d.deaths +
+          //       "</br><b>Recovered CASES: </b>" +
+          //       d.recovered +
+          //         "</br>AS OF " +
+          //       d.date
+          //     )
+          //     .attr("class","tooltip")
+          //     .style("left", d3.event.pageX + "px")
+          //     .style("top", d3.event.pageY - 28 + "px");
+               
+          //     })
+          //   .on("mouseleave",function(){
+          //     div
+          //     .attr("class","tooltip")
+          //     .transition()
+          //     .duration(500)
+          //     .style("opacity", 0);
+          //   })
+          //   .on("click",function(d){
+          //     d3.select(this).transition().duration(1000).attr("r",radius(d.deaths)+10).attr("fill","red").transition().duration(1000).attr("r",radius(d.deaths))
+          //     .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths))
+          //     .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths))
+          //     .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths))
+          //     .transition().duration(1000).attr("r",radius(d.deaths)+10).transition().duration(1000).attr("r",radius(d.deaths)).transition().duration(1000).attr("fill","red")
+            
+          //   })
+      
+      
+      
+            var lasso_start = function() {
+                  lasso.items() // reset size
+                      .classed("not_possible",true)
+                      .classed("selected",false)
+                      .classed("selected1",false);
+              };
+      
+              var lasso_draw = function() {
+              
+                  // Style the possible dots
+                  lasso.possibleItems()
+                      .classed("not_possible",false)
+                      .classed("possible",true)
+                      .classed("selected1",false);
+          
+                  // Style the not possible dot
+                  lasso.notPossibleItems()
+                      .classed("not_possible",true)
+                      .classed("possible",false)
+                      .classed("selected1",false);
+              };
+      
+              var lasso_end = function() {
+                  // Reset the color of all dots
+                  lasso.items()
+                      .classed("not_possible",false)
+                      .classed("possible",false)
+                      .classed("isselected",false);
+      
+                  // Style the selected dots
+                  lasso.selectedItems()
+                      .classed("selected",true);
+
+
+
+                      if(lasso.selectedItems()._groups[0].length==0)
+                  {
+                    d3.select(".res").text("Showing Results for All Countries");
+                  }
+                  if(lasso.selectedItems()._groups[0].length>0)
+                  {
+                  d3.select(".res").text("Showing Results for selected Countries");
+                  }
+                  
+                      let d=[];
+                  let cn=[];
+                  for(i of lasso.selectedItems()._groups[0]){
+              if(i.__data__!=null)
+              {
+                d.push(i.__data__)
+                cn.push(i.__data__.country)
+              }
+      }
+
+      d.sort((a,b)=>b.confirmed - a.confirmed)
+        if(lasso.selectedItems()._groups[0].length>0)
+                    {
+                      
+                    scrollbar(d[0].country)
+                    }
+        else if(lasso.selectedItems()._groups[0].length==0){
+          clearbar()
+        drawbar(store.done)
+        }  
+        for(let i=0;i<cn.length;i++)cn[i]=cn[i].toLowerCase();
+      store.currentselectedcountries=cn;
+      store.afterlasso=d
+      total_case_print(d)
+      total_case_print1(d)
+      total_case_print2(d)
+
+      l= d3.selectAll("rect")._groups[0]
+     for(i=0;i<205;i++)
+     {
+       if(cn.includes(l[i].__data__.country.toLowerCase()))
+       {
+        d3.select(l[i]).classed("selected1",false)
+         d3.select(l[i]).classed("selected",true)
+       }
+       else{
+        d3.select(l[i]).classed("selected1",false)
+         d3.select(l[i]).classed("selected",false)
+       }
+     }
+
+     if(d.length>0)aftermaplasso(d);
+     else drawline(store.sumdate)
+
+     if(store.currentcommand!=null)
+       {
+         console.log("asci")
+         document.getElementById('command').value=store.currentcommand;
+         command();
+       }
+              };
+              
+              var lasso = d3.lasso()
+                  .closePathSelect(true)
+                  .closePathDistance(100)
+                  .items(circles)
+                  .targetArea(container)
+                  .on("start",lasso_start)
+                  .on("draw",lasso_draw)
+                  .on("end",lasso_end);
+      
+              container.call(lasso)
+              lasso.items(container.selectAll('path'))
+      
+      
+      }
+      
+      
+      function drawCirclesRecovered(recoveredcircle,clr) {
+        let config = getMapConfig(); 
+        let projection = getMapProjection(config)
+        let container = config.container; 
+        container.innerHTML=""
+        radius = d3.scaleSqrt([0,d3.max(recoveredcircle, d=> d.recovered)], [.5, config.width/40])
+        let circles = container.selectAll("circle")
+          .data(recoveredcircle)
+          .enter()               //confiremedlates earlier//
+        .append("circle")
+        .attr("class", "confirmed")
+          .attr("fill", clr)
+          .attr("fill-opacity", ".15")
+          .join("circle")
+          .attr("transform", d => `translate(${projection([d.lon,d.lat])[0]},${projection([d.lon,d.lat])[1]})`)
+          .attr("r", 0)//radius funtion previosly
+          // .on("mouseenter", function(d) {
+          //      // d3.select(this).attr("fill", "#229a5b")
+          //      div
+          //     .transition()
+          //     .duration(200)
+          //     .style("opacity", .9);
+          //   div
+          //   .html(
+          //       "<b>COUNTRY: </b>" +
+          //         d.country +
+          //         "</br><b>CONFIRMED CASES: </b>" +
+          //       d.confirmed +
+          //       "</br><b>Death CASES: </b>" +
+          //       d.deaths +
+          //       "</br><b>Recovered CASES: </b>" +
+          //       d.recovered +
+          //         "</br>AS OF " +
+          //       d.date
+          //     )
+          //     .attr("class","tooltip")
+          //     .style("left", d3.event.pageX + "px")
+          //     .style("top", d3.event.pageY - 28 + "px");
+               
+          //     })
+          //   .on("mouseleave",function(){
+          //     div
+          //     .attr("class","tooltip")
+          //     .transition()
+          //     .duration(500)
+          //     .style("opacity", 0);
+          //   })
+          //   .on("click",function(d){
+          //     d3.select(this).transition().duration(1000).attr("r",radius(d.recovered)+10).attr("fill","red").transition().duration(1000).attr("r",radius(d.recovered))
+          //     .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
+          //     .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
+          //     .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered))
+          //     .transition().duration(1000).attr("r",radius(d.recovered)+10).transition().duration(1000).attr("r",radius(d.recovered)).transition().duration(1000).attr("fill","green")
+            
+          //   })
+      
+      
+      
+            var lasso_start = function() {
+                  lasso.items() // reset size
+                      .classed("not_possible",true)
+                      .classed("selected",false)
+                      .classed("selected1",false);
+              };
+      
+              var lasso_draw = function() {
+              
+                  // Style the possible dots
+                  lasso.possibleItems()
+                      .classed("not_possible",false)
+                      .classed("possible",true)
+                      .classed("selected1",false);
+          
+                  // Style the not possible dot
+                  lasso.notPossibleItems()
+                      .classed("not_possible",true)
+                      .classed("possible",false)
+                      .classed("selected1",false);
+              };
+      
+              var lasso_end = function() {
+                  // Reset the color of all dots
+                  lasso.items()
+                      .classed("not_possible",false)
+                      .classed("possible",false)
+                      .classed("isselected",false);
+      
+                  // Style the selected dots
+                  lasso.selectedItems()
+                      .classed("selected",true);
+                  
+
+
+                      if(lasso.selectedItems()._groups[0].length==0)
+                  {
+                    d3.select(".res").text("Showing Results for All Countries");
+                  }
+                  if(lasso.selectedItems()._groups[0].length>0)
+                  {
+                  d3.select(".res").text("Showing Results for selected Countries");
+                  }
+
+                      let d=[];
+                  let cn=[];
+                  for(i of lasso.selectedItems()._groups[0]){
+              if(i.__data__!=null)
+              {
+                d.push(i.__data__)
+                cn.push(i.__data__.country)
+              }
+      }
+      d.sort((a,b)=>b.confirmed - a.confirmed)
+        if(lasso.selectedItems()._groups[0].length>0)
+                    {
+                      
+                    scrollbar(d[0].country)
+                    }
+        else if(lasso.selectedItems()._groups[0].length==0){
+          clearbar()
+          drawbar(store.done)
+        }  
+        for(let i=0;i<cn.length;i++)cn[i]=cn[i].toLowerCase();
+      store.currentselectedcountries=cn;
+      store.afterlasso=d
+      total_case_print(d)
+      total_case_print1(d)
+      total_case_print2(d)
+
+      l= d3.selectAll("rect")._groups[0]
+     for(i=0;i<205;i++)
+     {
+       if(cn.includes(l[i].__data__.country.toLowerCase()))
+       {
+        d3.select(l[i]).classed("selected1",false)
+         d3.select(l[i]).classed("selected",true)
+       }
+       else{
+        d3.select(l[i]).classed("selected1",false)
+         d3.select(l[i]).classed("selected",false)
+       }
+     }
+
+     if(d.length>0)aftermaplasso(d);
+     else drawline(store.sumdate)
+
+     if(store.currentcommand!=null)
+       {
+         console.log("asci")
+         document.getElementById('command').value=store.currentcommand;
+         command();
+       }
+      
+              };
+              
+              var lasso = d3.lasso()
+                  .closePathSelect(true)
+                  .closePathDistance(100)
+                  .items(circles)
+                  .targetArea(container)
+                  .on("start",lasso_start)
+                  .on("draw",lasso_draw)
+                  .on("end",lasso_end);
+      
+              container.call(lasso)
+              lasso.items(container.selectAll('path'))
+      
+      
+      }
+      
+      
+      function generate_country_list(data){
+        let data1=groupbyCountry(data);
+        
+        
+      
+      let countries = [
+        
+      ];
+      // countries.push("All");
+      for(i of data1)
+      {
+        
+        countries.push(i.country);
+      }
+     countries= countries.sort()
+     countries.unshift("All")
+     countries.push("selected from searchbox")
+      ul = document.getElementById("countries");
+      
+      let render_lists = function(lists){
+        let li = "";
+        for(index in lists){
+          li += "<option>" + lists[index] + "</option>";
+        }
+        ul.innerHTML = li;
+      }
+      
+      // let li = document.getElementsByTagName("li");
+      // setTimeout(function(){
+      //   for(let i = 0;i<li.length;i++){
+      //     li[i].addEventListener("click", myScript);
+      // }
+      // },500);
+      
+      
+      
+      render_lists(countries);
+
+      $(".chosen").chosen();
+      
+      // lets filters it
+      // input = document.getElementById('filter_countries');
+      
+      // let filterCountries = function(event){
+      //   keyword = input.value.toLowerCase();
+      //   filtered_countries = countries.filter(function(country){
+      //         country = country.toLowerCase();
+      //        return country.indexOf(keyword) > -1; 
+      //   });
+        
+      //   render_lists(filtered_countries);
+      //   let li = document.getElementsByTagName("li");
+      // setTimeout(function(){
+      //   for(let i = 0;i<li.length;i++){
+      //     li[i].addEventListener("click", myScript);
+      // }
+      // },500);
+      // }
+      
+      // input.addEventListener('keyup', filterCountries);
+      }
+      
+      
+      function myScript(){
+
+          var selectBox = document.getElementById("countries");
+          var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+         
+          store.currentselectedcountries=[];
+          store.currentselectedcountries.push(selectedValue);
+
+           if(selectedValue!="All" && selectedValue!="selected from searchbox")scrollbar(selectedValue)
+        
+         let c=selectedValue;
+         
+         if(c=="All")d3.select(".res").text("Showing Results for All Countries");
+         else d3.select(".res").text("Showing Results for "+c);
+        
+         for(j=0;j<205;j++)
+          {
+            i=d3.selectAll("rect")._groups[0][j];
+            
+            d3.select(i).classed("selected1",false)
+                  d3.select(i).classed("selected",false);
+                  
+            
+            
+          }
+          for(i=0;i<180;i++)
+      {
+        j=d3.select("#G").selectAll("path")._groups[0][i];
+        d3.select(j).classed("selected",false);
+        d3.select(j).classed("selected1",false)
+      }
+          
+         if(c=="All")
+         {
+          
+       drawline(store.sumdate)
+          total_case_print(groupbyCountry(store.coronadat))
+        total_case_print1(groupbyCountryDeath(store.death))
+        total_case_print2(groupbyCountryRecovered(store.recovered))
+        for(j=0;j<205;j++)
+          {
+            i=d3.selectAll("rect")._groups[0][j];
+            d3.select(i).classed("selected",false);
+            d3.select(i).classed("selected1",false)
+          }
+        return;
+         }
+          
+
+          for( j=0;j<=180;j++){
+           i=d3.select("#G").selectAll("circle")._groups[0][j]
+           if(currentvis=="confirm"){
+          if(i.__data__.country==c)
+          {
+            for ( s of store.time){
+         if( s.key == c){ linedata = s; break}
+       }
+       drawline(linedata.values)
+            d3.select(".tc").html(
+"<span style='font-weight:bold;font-size:1.5em;color:maroon'>"+i.__data__.confirmed+"</span>"+
+"</br>"+"Confirmed Cases"
+                
+              )
+
+              d3.select(".tc1").html(
+              "<span style='font-weight:bold;font-size:1.5em;color:red'>"+i.__data__.deaths+"</span>"+
+"</br>"+"Deaths"
+              )
+              d3.select(".tc2").html(
+              "<span style='font-weight:bold;font-size:1.5em;color:green'>"+i.__data__.recovered+"</span>"+
+"</br>"+"People Recovered"
+              )
+
+            d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+              .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed)).transition().duration(1000).attr("r",0).attr("fill","blue")
+              for(j=0;j<205;j++)
+          {
+            i=d3.selectAll("rect")._groups[0][j];
+            if(i.__data__.country==c){
+              d3.select(i).classed("selected1",false)
+                  d3.select(i).classed("selected",true);
+                  break;
+            }
+            // else{
+            //   d3.select(i).attr("fill","#2a5599")
+            // }
+          }
+
+          for(i=0;i<180;i++)
+      {
+        j=d3.select("#G").selectAll("path")._groups[0][i];
+        if(j.__data__.country==c){
+          d3.select(j).classed("selected1",false)
+        d3.select(j).classed("selected",true);}
+      }
+              break;
+          }
+           }
+           else if(currentvis=="death"){
+            if(i.__data__.country==c){
+              for ( s of store.time){
+         if( s.key == c){ linedata = s; break}
+       }
+       drawline(linedata.values)
+              d3.select(".tc").html(
+"<span style='font-weight:bold;font-size:1.5em;color:maroon'>"+i.__data__.confirmed+"</span>"+
+"</br>"+"Confirmed Cases"
+                
+              )
+
+              d3.select(".tc1").html(
+              "<span style='font-weight:bold;font-size:1.5em;color:red'>"+i.__data__.deaths+"</span>"+
+"</br>"+"Deaths"
+              )
+              d3.select(".tc2").html(
+              "<span style='font-weight:bold;font-size:1.5em;color:green'>"+i.__data__.recovered+"</span>"+
+"</br>"+"People Recovered"
+              )
+        d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).attr("fill","blue").transition().duration(1000).attr("r",radius(i.__data__.deaths))
+              .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths)).transition().duration(1000).attr("r",0).attr("fill","red")
+            
+              for(j=0;j<205;j++)
+          {
+            i=d3.selectAll("rect")._groups[0][j];
+            if(i.__data__.country==c){
+              d3.select(i).classed("selected1",false)
+                  d3.select(i).classed("selected",true);
+                  break;
+            }
+            // else{
+            //   d3.select(i).attr("fill","#2a5599")
+            // }
+          }
+
+          for(i=0;i<180;i++)
+      {
+        j=d3.select("#G").selectAll("path")._groups[0][i];
+        if(j.__data__.country==c){
+          d3.select(j).classed("selected1",false)
+        d3.select(j).classed("selected",true);}
+      }
+
+            break;
+            }
+
+            
+           }
+           else if(currentvis=="recovered"){
+            if(i.__data__.country==c){
+              for ( s of store.time){
+         if( s.key == c){ linedata = s; break}
+       }
+       drawline(linedata.values)
+              d3.select(".tc").html(
+"<span style='font-weight:bold;font-size:1.5em;color:maroon'>"+i.__data__.confirmed+"</span>"+
+"</br>"+"Confirmed Cases"
+                
+              )
+
+              d3.select(".tc1").html(
+              "<span style='font-weight:bold;font-size:1.5em;color:red'>"+i.__data__.deaths+"</span>"+
+"</br>"+"Deaths"
+              )
+              d3.select(".tc2").html(
+              "<span style='font-weight:bold;font-size:1.5em;color:green'>"+i.__data__.recovered+"</span>"+
+"</br>"+"People Recovered"
+              )
+              d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.recovered))
+             .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered)).transition().duration(1000).attr("r",0).attr("fill","green")
+             
+
+
+             for(j=0;j<205;j++)
+          {
+            i=d3.selectAll("rect")._groups[0][j];
+            if(i.__data__.country==c){
+              d3.select(i).classed("selected1",false)
+                  d3.select(i).classed("selected",true);
+                  break;
+            }
+          }
+
+            for(i=0;i<180;i++)
+      {
+        j=d3.select("#G").selectAll("path")._groups[0][i];
+        if(j.__data__.country==c){
+          d3.select(j).classed("selected1",false)
+        d3.select(j).classed("selected",true);}
+      }
+           
+          
+             
+             
+             break;
+            }
+           }
+          }
+          
+      }
+
+      function myScript1(e){
+        
+        let c=e
+         for( j=0;j<=180;j++){
+          i=d3.select("#G").selectAll("circle")._groups[0][j]
+          if(currentvis=="confirm"){
+         if(i.__data__.country==c)
+         {
+          
+           d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+             .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed)).transition().duration(1000).attr("r",0).attr("fill","blue")
+         }
+          }
+          else if(currentvis=="death"){
+           if(i.__data__.country==c){
+       d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).attr("fill","blue").transition().duration(1000).attr("r",radius(i.__data__.deaths))
+             .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths)).transition().duration(1000).attr("r",0).attr("fill","red")
+           }
+          }
+          else if(currentvis=="recovered"){
+           if(i.__data__.country==c){
+          d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.recovered))
+             .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered)).transition().duration(1000).attr("r",).attr("fill","green")
+           }
+          }
+         }
+         
+     }
+      
+      function total_case_print(data)
+      {
+        let cf=0;
+        let d;
+        if(data.length!=0){
+          for(i of data)
+          {
+            cf+=i.confirmed;
+      d=i.date;
+          }
+          d3.select(".tc").html(
+"<span style='font-weight:bold;font-size:1.5em;color:#2a5599'>"+cf+"</span>"+ 
+"</br>"+"Confirmed Cases"
+                
+              )
+          
+      }
+      else{
+        data=groupbyCountry(store.coronadat)
+        for(i of data)
+          {
+            cf+=i.confirmed;
+      d=i.date;
+          }
+          d3.select(".tc").html(
+              "<span style='font-weight:bold;font-size:1.5em;color:#2a5599'>"+cf+"</span>"+
+"</br>"+"Confirmed Cases"
+              )
+        
+        
+      }
+      }
+      
+      function total_case_print1(data)
+      {
+        let cf=0;
+        let d;
+        if(data.length!=0){
+          for(i of data)
+          {
+            cf+=i.deaths;
+      d=i.date;
+          }
+          d3.select(".tc1").html(
+              "<span style='font-weight:bold;font-size:1.5em;color:#cb181d'>"+cf+"</span>"+
+"</br>"+"Deaths"
+              )
+          
+      }
+      else{
+        data=groupbyCountryDeath(store.death)
+        for(i of data)
+          {
+            cf+=i.deaths;
+      d=i.date;
+          }
+          d3.select(".tc1").html(
+              "<span style='font-weight:bold;font-size:1.5em;color:#cb181d'>"+cf+"</span>"+
+"</br>"+"Deaths"
+              )
+          
+        
+      }
+      }
+      
+      
+      function total_case_print2(data)
+      {
+        let cf=0;
+        let d;
+        if(data.length!=0){
+          for(i of data)
+          {
+            cf+=i.recovered;
+      d=i.date;
+          }
+          d3.select(".tc2").html(
+              "<span style='font-weight:bold;font-size:1.5em;color:#238b45'>"+cf+"</span>"+
+"</br>"+"People Recovered"
+              )
+          
+      }
+      else{
+        data=groupbyCountryRecovered(store.recovered)
+        for(i of data)
+          {
+            cf+=i.recovered;
+      d=i.date;
+          }
+          d3.select(".tc2").html(
+              "<span style='font-weight:bold;font-size:1.5em;color:#238b45'>"+cf+"</span>"+
+"</br>"+"People Recovered"
+              )
+          
+        
+      }
+      }
+      
+      function ddl()
+      {
+        var selectBox = document.getElementById("options");
+          var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+          //console.log("hello")
+          //drawCirclesdeath(groupbyCountryDeath(store.death),"#ff9500")
+          //drawCircles(groupbyCountryDeath(store.death),)
+          if(selectedValue=="Death Cases"){
+            currentvis="death";
+          document.getElementById("countries").value="All";
+          $("#countries").trigger("chosen:updated");
+          d3.select("#G").remove()
+          d3.select("#Map").append("g").attr("id","G")
+          d3.select("#BarChart").remove()
+          d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
+          drawbar(store.done.sort((a,b)=>b.deaths - a.deaths))
+          drawMap(prep(store.geoJSON))
+          drawline(store.sumdate)
+          drawCirclesdeath(store.done,"red")
+          total_case_print(groupbyCountry(store.coronadat))
+        total_case_print1(groupbyCountryDeath(store.death))
+        total_case_print2(groupbyCountryRecovered(store.recovered))
+        //d3.select(".res").text("Showing Results of Death Cases for All Countries");
+        
+          }
+          else if(selectedValue=="Confirmed Cases")
+      
+          {
+            currentvis="confirm";
+            document.getElementById("countries").value="All";
+          $("#countries").trigger("chosen:updated");
+            d3.select("#G").remove()
+          d3.select("#Map").append("g").attr("id","G")
+          d3.select("#BarChart").remove()
+          d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
+          drawbar(store.done.sort((a,b)=>b.confirmed - a.confirmed))
+          drawMap(prep(store.geoJSON))
+          drawline(store.sumdate)
+          drawCircles(store.done,"blue")
+          total_case_print(groupbyCountry(store.coronadat))
+        total_case_print1(groupbyCountryDeath(store.death))
+        total_case_print2(groupbyCountryRecovered(store.recovered))
+        //d3.select(".res").text("Showing Results of Confirmed Cases for All Countries");
+          }
+          else if(selectedValue=="Recovered Cases")
+          {
+            currentvis="recovered";
+            document.getElementById("countries").value="All";
+          $("#countries").trigger("chosen:updated");
+            d3.select("#G").remove()
+          d3.select("#Map").append("g").attr("id","G")
+          d3.select("#BarChart").remove()
+          d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
+          drawbar(store.done.sort((a,b)=>b.recovered - a.recovered))
+          drawMap(prep(store.geoJSON))
+          drawline(store.sumdate)
+          drawCirclesRecovered(store.done,"red")
+          total_case_print(groupbyCountry(store.coronadat))
+        total_case_print1(groupbyCountryDeath(store.death))
+        total_case_print2(groupbyCountryRecovered(store.recovered))
+       // d3.select(".res").text("Showing Results of Recovered Cases for All Countries");
+          }
+
+          if(currentvis=="confirm")store.done.sort((a,b) => b.confirmed - a.confirmed);
+     else if(currentvis=="death")store.done.sort((a,b) => b.deaths - a.deaths);
+     else if(currentvis=="recovered")store.done.sort((a,b) => b.recovered - a.recovered);
+          
+      }
+
+let lassobar;
+      function drawbar(data){
+   //console.log(data)
+    lassobar = data;
+             
+var margin =  {top: 10, right: 0, bottom: 70, left: 50};
+var marginOverview = {top: 10, right: 0, bottom: 70, left: 50};
+var selectorHeight = 15;
+var width = 450 - margin.left - margin.right;
+var height = 380 - margin.top - margin.bottom - selectorHeight;
+var heightOverview = 80 - marginOverview.top - marginOverview.bottom;
+     
+var maxLength = d3.max(data.map(function(d){ return d.country.length}))
+var barWidth = 20;
+var numBars = Math.round(width/barWidth);
+var isScrollDisplayed = barWidth * data.length > width;
+     
+
+// console.log(isScrollDisplayed)
+
+var xscale = d3.scaleBand()
+              .domain(data.slice(0,numBars).map(function (d) { return d.country; }))
+              .range([0, width])
+              .padding(.2);
+
+var yscale = d3.scaleLinear()
+            .domain([0, d3.max(data, function (d) { 
+                              if(currentvis=="confirm")
+                              {
+                                  return d.confirmed;
+                              }
+                              else if(currentvis=="death")
+                              {
+                                  return d.deaths;
+                              }
+                              else{
+                                  return d.recovered;
+                              }
+                               })])
+            .range([height, 0]);
+
+var xAxis  = d3.axisBottom(xscale);
+var yAxis  = d3.axisLeft(yscale).tickFormat(d3.format(".02s"));
+
+var svg = d3.select("#BarChart")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom + selectorHeight);
+
+var diagram = svg.append("g")
+               .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+diagram.append("g")
+     .attr("class", "x axis")
+     .attr("transform", "translate(0, " + height + ")")
+     .call(xAxis)
+     .selectAll("text")	
+          .style("text-anchor", "end")
+          .attr("dx", "-.8em")
+          .attr("dy", "-.5em")
+          .attr("transform", function(d) {
+              return "rotate(-90)" 
+              });
+
+diagram.append("g")
+     .attr("class", "y axis")
+     .call(yAxis)
+     .selectAll("text")	
+          .style("text-anchor", "end")
+          .style("font-size","12px")
+var bars = diagram.append("g");
+
+bars.selectAll("rect")
+          .data(data.slice(0, numBars), function (d) {return d.country; })
+          .enter()
+          .append("rect")
+          .attr("fill", function(d)
+          {
+            if(currentvis=="confirm")return "#2a5599";
+            else if(currentvis=="death")return '#cb181d';//'#005a32''#99000d'  '#cb181d''#238b45'
+            else if(currentvis=="recovered") return '#238b45';
+          })                                         //"#2a5599"
+          .attr("x", function (d) { return xscale(d.country); })
+          .attr("y", function (d) { 
+                              if(currentvis=="confirm")
+                              {
+                                  return yscale(d.confirmed);
+                              }
+                              else if(currentvis=="death")
+                              {
+                                  return yscale(d.deaths);
+                              }
+                              else{
+                                  return yscale(d.recovered);
+                              }
+               })
+          .attr("width", xscale.bandwidth())
+          .attr("height", function (d) { 
+                              if(currentvis=="confirm")
+                              {
+                                  return height - yscale(d.confirmed);
+                              }
+                              else if(currentvis=="death")
+                              {
+                                  return height - yscale(d.deaths);
+                              }
+                              else{
+                                  return height - yscale(d.recovered);
+                              }
+               })
+               .on("mouseenter", function(d) {
+                d3.select(this).attr("fill", "#992a5b")
+                //myScript1(d.country);
+               
+               
+              })
+              .on("mousemove",function(d){
+                div
+              .transition()
+              .duration(200)
+              .style("opacity", .9);
+            div
+            .html(
+                "<b>COUNTRY: </b>" +
+                  d.country +
+                  "</br><b>CONFIRMED CASES: </b>" +
+                d.confirmed +
+                "</br><b>Death CASES: </b>" +
+                d.deaths +
+                "</br><b>Recovered CASES: </b>" +
+                d.recovered +
+                  "</br>AS OF " +
+                d.date
+              )
+              .attr("class","tooltip")
+              .style("left", d3.event.clientX + "px")
+              .style("top", d3.event.clientY - 28 + "px");
+              })
+            .on("mouseleave",function(){
+              d3.select(this).attr("fill", function(d)
+          {
+            if(currentvis=="confirm")return "#2a5599";
+            else if(currentvis=="death")return '#cb181d';//'#005a32''#99000d'  '#cb181d''#238b45'
+            else if(currentvis=="recovered") return '#238b45';
+          })   
+              div
+              .attr("class","tooltip")
+              .transition()
+              .duration(500)
+              .style("opacity", 0);
+            })
+          .on("click", d=>{
+              //console.log(d.country);
+               myScript1(d.country);
+             // drawline(d.country, store.coronadat)
+
+             for ( s of store.time){
+         if( s.key == d.country){ linedata = s; break}
+       }
+      // console.log(linedata.values)
+      slidedata = linedata.values;
+       drawline(linedata.values)
+       
+      });
+
+  
+
+    var lasso_start = function() {
+                  lasso.items() // reset size
+                      .classed("not_possible",true)
+                      .classed("selected",false)
+                      .classed("selected1",false);
+              };
+      
+              var lasso_draw = function() {
+              
+                  // Style the possible dots
+                  lasso.possibleItems()
+                      .classed("not_possible",false)
+                      .classed("possible",true)
+                      .classed("selected1",false);
+          
+                  // Style the not possible dot
+                  lasso.notPossibleItems()
+                      .classed("not_possible",true)
+                      .classed("possible",false)
+                      .classed("selected1",false);
+              };
+      
+              var lasso_end = function() {
+                  // Reset the color of all dots
+                  lasso.items()
+                      .classed("not_possible",false)
+                      .classed("possible",false)
+                      .classed("isselected",false)
+                      
+      
+                  // Style the selected dots
+                  lasso.selectedItems()
+                      .classed("selected",true);
+                  
+                  let d=[];
+                  let cn=[]
+                  if(lasso.selectedItems()._groups[0].length==0)
+                  {
+                    d3.select(".res").text("Showing Results for All Countries");
+                  }
+                  if(lasso.selectedItems()._groups[0].length>0)
+                  {
+                  d3.select(".res").text("Showing Results for selected Countries");
+                  }
+                  for(i of lasso.selectedItems()._groups[0]){
+              if(i.__data__!=null)
+              {
+                d.push(i.__data__)
+                cn.push(i.__data__.country)
+              }
+      }
+
+      for(let i=0;i<cn.length;i++)cn[i]=cn[i].toLowerCase();
+      store.currentselectedcountries=cn;
+      total_case_print(d)
+      total_case_print1(d)
+      total_case_print2(d)
+
+      store.afterlasso=d
+      
+     l= d3.select("#G").selectAll("path")._groups[0]
+     for(i=0;i<180;i++)
+     {
+       if(cn.includes(l[i].__data__.country.toLowerCase()))
+       {
+        d3.select(l[i]).classed("selected1",false)
+         d3.select(l[i]).classed("selected",true)
+       }
+       else{
+         d3.select(l[i]).classed("selected1",false)
+         d3.select(l[i]).classed("selected",false)
+       }
+     }
+
+     if(d.length>0)afterbarlasso(lasso.selectedItems()._groups[0]);
+     else drawline(store.sumdate)
+     if(store.currentcommand!=null)
+       {
+         console.log("asci")
+         document.getElementById('command').value=store.currentcommand;
+         command();
+       }
+
+              };
+              
+              var lasso = d3.lasso()
+                  .closePathSelect(true)
+                  .closePathDistance(100)
+                  .targetArea(svg)
+                  .on("start",lasso_start)
+                  .on("draw",lasso_draw)
+                  .on("end",lasso_end);
+      
+              svg.call(lasso)
+              lasso.items(svg.selectAll('rect'))
+
+          
+
+if (isScrollDisplayed)
+{
+var xOverview = d3.scaleBand()
+                .domain(data.map(function (d) { return d.country; }))
+                .range([0, width])
+                .padding(.2);
+yOverview = d3.scaleLinear().range([heightOverview, 0]);
+yOverview.domain(yscale.domain());
+
+var subBars = diagram.selectAll('.subBar')
+    .data(data)
+
+subBars.enter().append("rect")
+    .classed('subBar', true)
+    .attr({
+        height: function(d) {
+                             if(currentvis=="confirm")
+                              {
+                                  return heightOverview - yOverview(d.confirmed);
+                              }
+                              else if(currentvis=="death")
+                              {
+                                  return heightOverview - yOverview(d.deaths);
+                              }
+                              else{
+                                  return heightOverview - yOverview(d.recovered);
+                              }
+
+            
+        },
+        width: function(d) {
+            return xOverview.bandwidth()
+        },
+        x: function(d) {
+
+            return xOverview(d.country);
+        },
+        y: function(d) {
+            
+                              if(currentvis=="confirm")
+                              {
+                                  return height + heightOverview + yOverview(d.confirmed)
+                              }
+                              else if(currentvis=="death")
+                              {
+                                  return height + heightOverview + yOverview(d.deaths)
+                              }
+                              else{
+                                  return height + heightOverview + yOverview(d.recovered)
+                              }
+
+            
+        }
+    })
+
+var displayed = d3.scaleQuantize()
+            .domain([0, width])
+            .range(d3.range(data.length));
+
+diagram.append("rect")
+            .attr("transform", "translate(0, " + (height + margin.bottom) + ")")
+            .attr("class", "mover")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("height", selectorHeight)
+            .attr("width", Math.round(parseFloat(numBars * width)/data.length))
+            .attr("pointer-events", "all")
+            .attr("cursor", "all-scroll")
+            .call(d3.drag().on("drag", display));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if(store.scroll){
+
+  console.log('akane')
+  
+            var x = parseInt(d3.select('.mover').attr("x")),
+      nx = x+store.position,
+      w = parseInt(d3.select('.mover').attr("width")),
+      f, nf, new_data, rects;
+    
+  if ( nx < 0 || nx + w > width ) return;
+
+  d3.select('.mover').transition().duration(1000).attr("x", nx)
+
+  f = displayed(x);
+  nf = displayed(nx);
+
+  if ( f === nf ) return;
+
+  new_data = data.slice(nf, nf + numBars);
+
+  xscale.domain(new_data.map(function (d) { return d.country; }));
+  diagram.select(".x.axis").call(xAxis).selectAll("text")	
+          .style("text-anchor", "end")
+          .attr("dx", "-.8em")
+          .attr("dy", "-.5em")
+          .attr("transform", function(d) {
+              return "rotate(-90)" 
+              });
+console.log('sekane')
+  rects = bars.selectAll("rect")
+    .data(new_data, function (d) {return d.country; });
+
+  rects.attr("x", function (d) { return xscale(d.country); });
+
+  rects.enter().append("rect")
+  .attr("fill", function(d)
+          {
+            if(currentvis=="confirm")return "#2a5599";
+            else if(currentvis=="death")return '#cb181d';//'#005a32''#99000d' 
+            else if(currentvis=="recovered") return '#238b45';
+          })   
+    .attr("x", function (d) { return xscale(d.country); })
+    .attr("y", function (d) { if(currentvis=="confirm")
+                              {
+                                  return yscale(d.confirmed);
+                              }
+                              else if(currentvis=="death")
+                              {
+                                  return yscale(d.deaths);
+                              }
+                              else{
+                                  return yscale(d.recovered);
+                              } })
+    .attr("width", xscale.bandwidth())
+    .attr("height", function (d) {
+                               if(currentvis=="confirm")
+                              {
+                                  return height - yscale(d.confirmed);
+                              }
+                              else if(currentvis=="death")
+                              {
+                                  return height - yscale(d.deaths);
+                              }
+                              else{
+                                  return height - yscale(d.recovered);
+                              }
+          }).on("mouseenter", function(d) {
+                d3.select(this).attr("fill", "#992a5b")
+                // myScript1(d.country);
+               
+               
+              })
+              .on("mousemove",function(d){
+                div
+              .transition()
+              .duration(200)
+              .style("opacity", .9);
+            div
+            .html(
+                "<b>COUNTRY: </b>" +
+                  d.country +
+                  "</br><b>CONFIRMED CASES: </b>" +
+                d.confirmed +
+                "</br><b>Death CASES: </b>" +
+                d.deaths +
+                "</br><b>Recovered CASES: </b>" +
+                d.recovered +
+                  "</br>AS OF " +
+                d.date
+              )
+              .attr("class","tooltip")
+              .style("left", d3.event.clientX + "px")
+              .style("top", d3.event.clientY - 28 + "px");
+              })
+            .on("mouseleave",function(){
+              d3.select(this).attr("fill", function(d)
+          {
+            if(currentvis=="confirm")return "#2a5599";
+            else if(currentvis=="death")return '#cb181d';//'#005a32''#99000d'  '#cb181d''#238b45'
+            else if(currentvis=="recovered") return '#238b45';
+          })   
+              div
+              .attr("class","tooltip")
+              .transition()
+              .duration(500)
+              .style("opacity", 0);
+            })
+          .on("click", d=>{
+              //console.log(d.country);
+               myScript1(d.country);
+               for ( s of store.time){
+         if( s.key == d.country){ linedata = s; break}
+       }
+      // console.log(linedata.values)
+      slidedata = linedata.values;
+       drawline(linedata.values)
+             // drawline(d.country, store.coronadat)
+      });
+
+console.log('dokane')
+
+      
+
       var lasso_start = function() {
-            lasso.items() // reset size
+                  lasso.items() // reset size
+                      .classed("not_possible",true)
+                      .classed("selected",false)
+                      .classed("selected1",false);
+              };
+      
+              var lasso_draw = function() {
+              
+                  // Style the possible dots
+                  lasso.possibleItems()
+                      .classed("not_possible",false)
+                      .classed("possible",true)
+                      .classed("selected1",false);
+          
+                  // Style the not possible dot
+                  lasso.notPossibleItems()
+                      .classed("not_possible",true)
+                      .classed("possible",false)
+                      .classed("selected1",false);
+              };
+      
+              var lasso_end = function() {
+                  // Reset the color of all dots
+                  lasso.items()
+                      .classed("not_possible",false)
+                      .classed("possible",false)
+                      .classed("isselected",false)
+                      
+      
+                  // Style the selected dots
+                  lasso.selectedItems()
+                      .classed("selected",true);
+                  
+                  let d=[];
+                  let cn=[]
+                  if(lasso.selectedItems()._groups[0].length==0)
+                  {
+                    d3.select(".res").text("Showing Results for All Countries");
+                  }
+                  if(lasso.selectedItems()._groups[0].length>0)
+                  {
+                  d3.select(".res").text("Showing Results for selected Countries");
+                  }
+                  for(i of lasso.selectedItems()._groups[0]){
+              if(i.__data__!=null)
+              {
+                d.push(i.__data__)
+                cn.push(i.__data__.country)
+              }
+      }
+      for(let i=0;i<cn.length;i++)cn[i]=cn[i].toLowerCase();
+      store.currentselectedcountries=cn;
+      total_case_print(d)
+      total_case_print1(d)
+      total_case_print2(d)
+
+      store.afterlasso=d
+      
+     l= d3.select("#G").selectAll("path")._groups[0]
+     for(i=0;i<180;i++)
+     {
+       if(cn.includes(l[i].__data__.country.toLowerCase()))
+       {
+        d3.select(l[i]).classed("selected1",false)
+         d3.select(l[i]).classed("selected",true)
+       }
+       else{
+         d3.select(l[i]).classed("selected1",false)
+         d3.select(l[i]).classed("selected",false)
+       }
+     }
+
+     if(d.length>0)afterbarlasso(lasso.selectedItems()._groups[0]);
+     else drawline(store.sumdate)
+     if(store.currentcommand!=null)
+       {
+         console.log("asci")
+         document.getElementById('command').value=store.currentcommand;
+         command();
+       }
+
+              };
+              
+              var lasso = d3.lasso()
+                  .closePathSelect(true)
+                  .closePathDistance(100)
+                  .targetArea(svg)
+                  .on("start",lasso_start)
+                  .on("draw",lasso_draw)
+                  .on("end",lasso_end);
+      
+              svg.call(lasso)
+              lasso.items(svg.selectAll('rect'))
+
+
+
+
+    
+
+      let l= d3.selectAll("rect")._groups[0]
+      let ln=d3.selectAll("rect")._groups[0].length-6
+      
+     for(i=0;i<ln;i++)
+     {
+       
+      
+      
+       if(store.currentselectedcountries.includes(l[i].__data__.country) || store.currentselectedcountries.includes(l[i].__data__.country.toLowerCase()))
+       {
+         
+        
+         d3.select(l[i]).classed("selected",true)
+        
+
+       }
+       else{
+         d3.select(l[i]).classed("selected",false)
+       }
+     }
+
+     for(i=0;i<ln;i++)
+     {
+      
+      
+       if(store.currenthighlight.toLowerCase()==l[i].__data__.country.toLowerCase())
+       {
+         
+        
+         d3.select(l[i]).classed("selected1",true)
+        break;
+
+       }
+      //  else{
+      //    d3.select(l[i]).classed("selected1",false)
+      //  }
+     }
+      
+
+  rects.exit().remove();}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+function  display () {
+  var x = parseInt(d3.select('.mover').attr("x")),
+      nx = x + d3.event.dx,
+      w = parseInt(d3.select('.mover').attr("width")),
+      f, nf, new_data, rects;
+    
+  if ( nx < 0 || nx + w > width ) return;
+
+  d3.select(this).attr("x", nx);
+
+  f = displayed(x);
+  nf = displayed(nx);
+
+  if ( f === nf ) return;
+
+  new_data = data.slice(nf, nf + numBars);
+
+  xscale.domain(new_data.map(function (d) { return d.country; }));
+  diagram.select(".x.axis").call(xAxis).selectAll("text")	
+          .style("text-anchor", "end")
+          .attr("dx", "-.8em")
+          .attr("dy", "-.5em")
+          .attr("transform", function(d) {
+              return "rotate(-90)" 
+              });
+
+  rects = bars.selectAll("rect")
+    .data(new_data, function (d) {return d.country; });
+
+  rects.attr("x", function (d) { return xscale(d.country); });
+
+  rects.enter().append("rect")
+  .attr("fill", function(d)
+          {
+            if(currentvis=="confirm")return "#2a5599";
+            else if(currentvis=="death")return '#cb181d';//'#005a32''#99000d' 
+            else if(currentvis=="recovered") return '#238b45';
+          })   
+    .attr("x", function (d) { return xscale(d.country); })
+    .attr("y", function (d) { if(currentvis=="confirm")
+                              {
+                                  return yscale(d.confirmed);
+                              }
+                              else if(currentvis=="death")
+                              {
+                                  return yscale(d.deaths);
+                              }
+                              else{
+                                  return yscale(d.recovered);
+                              } })
+    .attr("width", xscale.bandwidth())
+    .attr("height", function (d) {
+                               if(currentvis=="confirm")
+                              {
+                                  return height - yscale(d.confirmed);
+                              }
+                              else if(currentvis=="death")
+                              {
+                                  return height - yscale(d.deaths);
+                              }
+                              else{
+                                  return height - yscale(d.recovered);
+                              }
+          }).on("mouseenter", function(d) {
+                d3.select(this).attr("fill", "#992a5b")
+                // myScript1(d.country);
+               
+               
+              })
+              .on("mousemove",function(d){
+                div
+              .transition()
+              .duration(200)
+              .style("opacity", .9);
+            div
+            .html(
+                "<b>COUNTRY: </b>" +
+                  d.country +
+                  "</br><b>CONFIRMED CASES: </b>" +
+                d.confirmed +
+                "</br><b>Death CASES: </b>" +
+                d.deaths +
+                "</br><b>Recovered CASES: </b>" +
+                d.recovered +
+                  "</br>AS OF " +
+                d.date
+              )
+              .attr("class","tooltip")
+              .style("left", d3.event.clientX + "px")
+              .style("top", d3.event.clientY - 28 + "px");
+              })
+            .on("mouseleave",function(){
+              d3.select(this).attr("fill", function(d)
+          {
+            if(currentvis=="confirm")return "#2a5599";
+            else if(currentvis=="death")return '#cb181d';//'#005a32''#99000d'  '#cb181d''#238b45'
+            else if(currentvis=="recovered") return '#238b45';
+          })   
+              div
+              .attr("class","tooltip")
+              .transition()
+              .duration(500)
+              .style("opacity", 0);
+            })
+          .on("click", d=>{
+              //console.log(d.country);
+               myScript1(d.country);
+               for ( s of store.time){
+         if( s.key == d.country){ linedata = s; break}
+       }
+      // console.log(linedata.values)
+      slidedata = linedata.values;
+       drawline(linedata.values)
+             // drawline(d.country, store.coronadat)
+      });
+
+
+
+
+
+      var lasso_start = function() {
+                  lasso.items() // reset size
+                      .classed("not_possible",true)
+                      .classed("selected",false)
+                      .classed("selected1",false);
+              };
+      
+              var lasso_draw = function() {
+              
+                  // Style the possible dots
+                  lasso.possibleItems()
+                      .classed("not_possible",false)
+                      .classed("possible",true)
+                      .classed("selected1",false);
+          
+                  // Style the not possible dot
+                  lasso.notPossibleItems()
+                      .classed("not_possible",true)
+                      .classed("possible",false)
+                      .classed("selected1",false);
+              };
+      
+              var lasso_end = function() {
+                  // Reset the color of all dots
+                  lasso.items()
+                      .classed("not_possible",false)
+                      .classed("possible",false)
+                      .classed("isselected",false)
+                      
+      
+                  // Style the selected dots
+                  lasso.selectedItems()
+                      .classed("selected",true);
+                  
+                  let d=[];
+                  let cn=[]
+                  if(lasso.selectedItems()._groups[0].length==0)
+                  {
+                    d3.select(".res").text("Showing Results for All Countries");
+                  }
+                  if(lasso.selectedItems()._groups[0].length>0)
+                  {
+                  d3.select(".res").text("Showing Results for selected Countries");
+                  }
+                  for(i of lasso.selectedItems()._groups[0]){
+              if(i.__data__!=null)
+              {
+                d.push(i.__data__)
+                cn.push(i.__data__.country)
+              }
+      }
+      for(let i=0;i<cn.length;i++)cn[i]=cn[i].toLowerCase();
+      store.currentselectedcountries=cn;
+      total_case_print(d)
+      total_case_print1(d)
+      total_case_print2(d)
+
+      store.afterlasso=d
+      
+     l= d3.select("#G").selectAll("path")._groups[0]
+     for(i=0;i<180;i++)
+     {
+       if(cn.includes(l[i].__data__.country.toLowerCase()))
+       {
+        d3.select(l[i]).classed("selected1",false)
+         d3.select(l[i]).classed("selected",true)
+       }
+       else{
+         d3.select(l[i]).classed("selected1",false)
+         d3.select(l[i]).classed("selected",false)
+       }
+     }
+
+     if(d.length>0)afterbarlasso(lasso.selectedItems()._groups[0]);
+     else drawline(store.sumdate)
+     if(store.currentcommand!=null)
+       {
+         console.log("asci")
+         document.getElementById('command').value=store.currentcommand;
+         command();
+       }
+
+              };
+              
+              var lasso = d3.lasso()
+                  .closePathSelect(true)
+                  .closePathDistance(100)
+                  .targetArea(svg)
+                  .on("start",lasso_start)
+                  .on("draw",lasso_draw)
+                  .on("end",lasso_end);
+      
+              svg.call(lasso)
+              lasso.items(svg.selectAll('rect'))
+
+
+
+
+
+
+      let l= d3.selectAll("rect")._groups[0]
+      let ln=d3.selectAll("rect")._groups[0].length-6
+     for(i=0;i<ln;i++)
+     {
+      
+      
+       if(store.currentselectedcountries.includes(l[i].__data__.country) || store.currentselectedcountries.includes(l[i].__data__.country.toLowerCase()))
+       {
+         
+        console.log('rong hocce')
+         d3.select(l[i]).classed("selected",true)
+        
+
+       }
+       else{
+         d3.select(l[i]).classed("selected",false)
+       }
+     }
+     for(i=0;i<ln;i++)
+     {
+      
+      
+       if(store.currenthighlight.toLowerCase()==l[i].__data__.country.toLowerCase())
+       {
+         
+        
+         d3.select(l[i]).classed("selected1",true)
+        break;
+
+       }
+      //  else{
+      //    d3.select(l[i]).classed("selected1",false)
+      //  }
+     }
+      
+
+  rects.exit().remove();
+};
+
+
+}
+
+////Bar end
+
+
+
+
+function drawline(data){
+
+// draw line here
+
+let body = d3.select("#body2")
+document.getElementById("body2").innerHTML="";
+let height = 400;
+let width = 430;
+data.map(d=> {
+ d.date= new Date(d.date)
+ d.confirmed = +d.confirmed
+})
+let max = d3.max(data,d=>d.confirmed)
+let yscale = d3.scaleLinear()
+.domain([0,max])
+.range([height,0])
+body.append("g")
+.call(d3.axisLeft(yscale)
+        .ticks(15)
+        .tickFormat(d3.format(".02s")));
+
+        body.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", -55)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Cumulative Cases"); 
+
+
+let xscale = d3.scaleTime()
+.domain(d3.extent(data,d=>d.date))
+.range([0,width])
+body.append("g")
+.attr("transform", "translate(0,"+height+")")
+.call(d3.axisBottom(xscale)
+.tickFormat(d3.timeFormat("%d %b")))
+.selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-65)" );
+
+var valueline = d3.line()
+.x(d => xscale(d.date))
+.y(d => yscale(d.confirmed))
+.defined(d => !!d.confirmed)
+
+//for tooltip
+
+          
+body.append('rect')
+    .style("fill", "none")
+    .style("pointer-events", "all")
+    .attr('width', width)
+    .attr('height', height)
+    .on('mousemove', mousemove);
+
+//tool tip
+body
+.append("path")
+.datum(data)
+.attr("fill", "none")
+.attr("stroke", "#2a5599")
+.attr("stroke-width", 3)
+.attr("d", valueline)
+.attr("class", "line")
+.classed("selectedL",function (d) { 
+  if(currentvis == "confirm"){ return false;}
+  else{ return true; }
+  
+
+  })//here we
+.on("mouseenter", d=>{
+			
+      showtool(1,[d3.event.clientX -180, d3.event.clientY-30])
+    })
+.on("mouseleave", d=>{
+      d3.select("#tooltip").style('display', 'none')
+    })
+  .on("mousemove", d=>{
+      showtool(1,[d3.event.clientX -180, d3.event.clientY-30])
+    })
+
+//draw line end 
+
+/// for tooltip
+
+var bisect = d3.bisector(function(d) { return d.date; }).left;
+function mousemove() {
+        // recover coordinate we need
+        var x0 = xscale.invert(d3.mouse(this)[0]);
+        var i = bisect(data, x0, 1);
+        selectedData = data[i]
+        a= selectedData
+
+       
+        
+}
+
+function showtool(check, coord){
+ var val
+ var cas
+ if(check == 1){
+    val = a.confirmed
+    cas = "Confirmed: "
+ }
+ else if(check==2){
+    val = a.recovered
+    cas = "Recovered: "
+
+ }
+ else{
+    val = a.deaths
+    cas = "Deaths: "
+ }
+  var formatDate = d3.timeFormat("%d-%b-%y")
+
+  
+
+		d3.select("#tooltip")
+			.html(cas+val+"<br> Date: "+ formatDate(a.date))
+			.style('top', coord[1]-15+"px")
+			.style("left", coord[0]+15+"px")
+			.style("display", "block")
+			.style("color", "blue")
+			
+	}
+     
+//end tooltip
+
+//recovered case
+var valuerc = d3.line()
+.x(d => xscale(d.date))
+.y(d => yscale(d.recovered))
+.defined(d => !!d.recovered)
+
+body
+.append("path")
+.datum(data)
+.attr("fill", "none")
+.attr("stroke", '#238b45')
+.attr("stroke-width", 3)
+.attr("d", valuerc)
+.attr("class", "line")
+.classed("selectedL",function (d) { 
+  if(currentvis == "recovered"){ return false;}
+  else{ return true; }
+  
+
+  })
+.on("mouseenter", d=>{
+			
+      showtool(2,[d3.event.clientX -180, d3.event.clientY-30])
+    })
+.on("mouseleave", d=>{
+      d3.select("#tooltip").style('display', 'none')
+    })
+  .on("mousemove", d=>{
+      showtool(2,[d3.event.clientX -180, d3.event.clientY-30])
+    })
+// end recov
+
+//draw deaths
+var valuedth = d3.line()
+.x(d => xscale(d.date))
+.y(d => yscale(d.deaths))
+.defined(d => !!d.deaths)
+
+body
+.append("path")
+.datum(data)
+.attr("fill", "none")
+.attr("stroke", '#cb181d')
+.attr("stroke-width", 3)
+.attr("d", valuedth)
+.attr("class", "line")
+.classed("selectedL",function (d) {
+  if(currentvis == "death"){ return false;}
+  else{ return true; }
+  
+
+  })
+.on("mouseenter", d=>{
+			
+      showtool(3,[d3.event.clientX -180, d3.event.clientY-30])
+    })
+.on("mouseleave", d=>{
+      d3.select("#tooltip").style('display', 'none')
+    })
+  .on("mousemove", d=>{
+      showtool(3,[d3.event.clientX -180, d3.event.clientY-30])
+    })
+//end deaths
+// legend
+var columnHeaders = ["Deaths", "Recovered", "Confirmed"];
+var color = d3.scaleOrdinal().range(
+  ["#2a5599" ,'#238b45','#cb181d']);
+
+  var legend = body.selectAll(".legend")
+    .data(columnHeaders.slice().reverse())
+  .enter().append("g")
+    .attr("class", "legend")
+    .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+legend.append("rect")
+    .attr("x", 105)
+    .attr("width", 18)
+    .attr("height", 18)
+    .style("fill", color);
+
+legend.append("text")
+    .attr("x", 90)
+    .attr("y", 5)
+    .attr("dy", ".35em")
+    .style("fill", color)
+    .style("text-anchor", "end")
+    .text(function(d) { return d; });
+
+//
+
+
+//console.log(data)
+
+
+
+body.append('g')
+    .selectAll("dot")
+    .data(data)
+    .enter()
+    .append("circle")
+      .attr("cx", function (d) { return xscale(d.date); } )
+      .attr("cy", function (d) { return yscale(d.confirmed); } )
+      .attr("case", "confirm")
+      .attr("r", 0)
+      .style("fill", "red")//#69b3a2
+      body.append('g')
+    .selectAll("dot")
+    .data(data)
+    .enter()
+    .append("circle")
+      .attr("cx", function (d) { return xscale(d.date); } )
+      .attr("cy", function (d) { return yscale(d.recovered); } )
+      .attr("case", "recovered")
+      .attr("r", 0)
+      .style("fill", "red")//#69b3a2
+      body.append('g')
+    .selectAll("dot")
+    .data(data)
+    .enter()
+    .append("circle")
+      .attr("cx", function (d) { return xscale(d.date); } )
+      .attr("cy", function (d) { return yscale(d.deaths); } )
+      .attr("case", "death")
+      .attr("r", 0)
+      .style("fill", "red")//#69b3a2
+lasso(yscale(1), data, xscale)
+
+
+}
+
+ 
+      loadData().then(showData);
+  
+//lasso here
+let a;
+function lasso(scal, data, xscale){
+  let body = d3.select("#container")
+  var circles = body.selectAll("circle")
+  // Lasso functions
+        var lasso_start = function() {
+            lasso.items()
+                .attr("r",0) // reset size
                 .classed("not_possible",true)
                 .classed("selected",false);
         };
 
         var lasso_draw = function() {
         
-            // Style the possible dots
+            
             lasso.possibleItems()
                 .classed("not_possible",false)
                 .classed("possible",true);
-    
-            // Style the not possible dot
+                
+               
+                
+              
+               
+                //console.log("I am from lasso data")
+
+                
+            
             lasso.notPossibleItems()
                 .classed("not_possible",true)
-                .classed("possible",false)
+                .classed("possible",false);
         };
-
         var lasso_end = function() {
             // Reset the color of all dots
             lasso.items()
                 .classed("not_possible",false)
-                .classed("possible",false)
-                .classed("isselected",false);
-
+                .classed("possible",false);
+                let fcircle = lasso.selectedItems()
+                let newcir = lasso.selectedItems()._groups[0].filter(function(d){ return d.getAttribute("case") == currentvis})
+                fcircle._groups[0] = newcir;
             // Style the selected dots
-            lasso.selectedItems()
-                .classed("selected",true);
-            
-            
-            
+            fcircle
+                .classed("selected",true)
+                .attr("r",2.5)
+                .style("fill", "yellow");
+                var lassod = fcircle._groups[0]
+                var bisect = d3.bisector(function(d) { return d.date; }).left;
+                let a = lassod;
+                if(a.length){
+                var x1 =xscale.invert(a[0].cx.baseVal.value);
+                var x2 =xscale.invert(a[a.length-1].cx.baseVal.value);
+                afterlasso(x1,x2)
+                var formatDate = d3.timeFormat("%d/%b/%y")
+                d3.select(".res").text("Showing Results from "+formatDate(x1)+" to "+formatDate(x2));
+                }
+                if(!a.length){
+                  clearmap()
+                  drawMap(prep(store.geoJSON))
+                  clearbar()
+                  total_case_print(store.done);
+          total_case_print1(store.done);
+          total_case_print2(store.done);
+                  d3.select(".res").text("Showing Results for All Countries");
+                  if(currentvis=="confirm")drawbar(store.done.sort((a,b)=>b.confirmed - a.confirmed));
+                  else if(currentvis=="death")drawbar(store.done.sort((a,b)=>b.deaths - a.deaths));
+                  else if(currentvis=="recovered")drawbar(store.done.sort((a,b)=>b.recovered - a.recovered));
+                }
+            // Reset the style of the not selected dots
+            lasso.notSelectedItems()
+                .attr("r",0);
 
-                
+          //console.log(lasso.selectedItems());
+          slideraftervoice(x1,x2)
+          if(store.currentcommand!=null)
+          {
+            console.log('asci')
+            document.getElementById("command").innerHTML=store.currentcommand
+            command()
+          }
+          
+
 
         };
         
@@ -347,281 +3729,1326 @@ function drawCircles(countrycircle) {
             .closePathSelect(true)
             .closePathDistance(100)
             .items(circles)
-            .targetArea(container)
+            .targetArea(body)
             .on("start",lasso_start)
             .on("draw",lasso_draw)
             .on("end",lasso_end);
-
-        container.call(lasso)
-        lasso.items(container.selectAll('circle'))
-
-
+        
+        body.call(lasso);
 }
-
-function generate_country_list(data){
-  
-
-let countries = [
-  
-];
-for(i of data.features)
-{
-  countries.push(i.properties.name);
-}
-
-ul = document.getElementById("countries-list");
-
-let render_lists = function(lists){
-  let li = "";
-  for(index in lists){
-    li += "<li>" + lists[index] + "</li>";
-  }
-  ul.innerHTML = li;
-}
-
-render_lists(countries);
-
-// lets filters it
-input = document.getElementById('filter_countries');
-
-let filterCountries = function(event){
-  keyword = input.value.toLowerCase();
-  filtered_countries = countries.filter(function(country){
-        country = country.toLowerCase();
-       return country.indexOf(keyword) > -1; 
+setTimeout(slide,2000)
+ //end lasso
+ function slide(){
+   var len = slidedata.length
+  /*var d1 = new Date(data[2].date)
+  var d2 = new Date(data[0].date)
+  Math.abs(d1-d2)/86400000*/
+  //console.log(slidedata[len-1].date)
+   
+  $(function() {
+    $( "#slider-range" ).slider({
+      range: true,
+      min: new Date(slidedata[0].date).getTime() / 1000,
+      max: new Date(slidedata[len-1].date).getTime() / 1000,
+      step: 86400,
+      values: [ new Date(slidedata[0].date).getTime() / 1000, new Date(slidedata[len-1].date).getTime() / 1000 ],
+      slide: function( event, ui ) { //console.log((new Date(ui.values[ 0 ] *1000) ))
+        var d1 = new Date(ui.values[ 0 ] *1000)
+        var d2 = new Date(ui.values[ 1 ] *1000)
+        var d3 = new Date(slidedata[0].date).getTime()
+        var str = Math.abs(d1-d3)/86400000
+        var end = Math.abs(d2-d3)/86400000
+        afterlasso(d1, d2)
+        if(store.currentselectedcountries.length!=0)
+        {
+          //akane kaj kor//
+          sliderafterbarlasso(str,end,store.time)
+        }
+        else drawline(slidedata.slice(str,end))
+        if(store.currentcommand!=null){
+           command()
+        }
+        
+        $( "#amount" ).val( (new Date(ui.values[ 0 ] *1000).toDateString() ) + " - " + (new Date(ui.values[ 1 ] *1000)).toDateString() );
+      }
+    });
+    $( "#amount" ).val( (new Date($( "#slider-range" ).slider( "values", 0 )*1000).toDateString()) +
+      " - " + (new Date($( "#slider-range" ).slider( "values", 1 )*1000)).toDateString());
+      
   });
+ }
+
+ 
+
+ function sliderafterbarlasso(str,end,dn)
+ {
+
+  // var d3 = new Date(slidedata[0].date).getTime()
+  //       var str = Math.abs(d1-d3)/86400000
+  //       var end = Math.abs(d2-d3)/86400000
+       dh= dn
+       let dim=[]
+
+       
+
+       for(let i=0;i<dh.length;i++)
+       {
+         dim.push({ key : dh[i].key,
+          values:  dh[i].values.slice(str,end)}
+                )       }
+   data=store.currentselectedcountries
+      var pdata = []
+      var finald = []
+      let i = 0;
+      for(x of data ){
+        for (d of dim){
+          
+              if(x.toLowerCase() == d.key.toLowerCase()){
+                pdata[i] = d.values;
+                break;
+              }
+         }
+      
+         ++i;
+    }
+    i=0;
+      //console.log(pdata)
+      for( x of pdata[0]){
+        finald[i] = {
+            "confirmed" : x.confirmed,
+            "recovered" : x.recovered,
+            "deaths" : x.deaths,
+            "date" :   x.date 
+        }
+        ++i;
+      }
+
+      for( var k =1; k< pdata.length; ++k){
+        let j=0;
+        for( x of pdata[k]){
+          finald[j].confirmed += x.confirmed;
+          finald[j].recovered += x.recovered;
+          finald[j].deaths += x.deaths
+          ++j;
+        }
+      }
+      drawline(finald)
+      // store.time=store.save
+ }
+
+store.position=0
+store.currenthighlight=''
+ ///command/////
+ function command()
+   {
+     let str=document.getElementById('command').value.toLowerCase()
+     if((/^(select|show)/).test(str) && (/death cases|confirmed cases|recovered cases/).test(str))
+     {
+            if (str.includes("death cases"))
+            {
+                  currentvis="death";
+                  document.getElementById("options").value="Death Cases"
+          
+          d3.select("#G").remove()
+          d3.select("#Map").append("g").attr("id","G")
+          d3.select("#BarChart").remove()
+          d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
+          drawbar(store.done.sort((a,b)=>b.deaths - a.deaths))
+          drawMap(prep(store.geoJSON))
+          drawCirclesdeath(store.done,"red")
+          drawline(store.sumdate)
+          total_case_print(groupbyCountry(store.coronadat))
+        total_case_print1(groupbyCountryDeath(store.death))
+        total_case_print2(groupbyCountryRecovered(store.recovered))
+        //d3.select(".res").style("background-color","#cb181d").text("Showing Results of Death Cases for All Countries");
+            }
+
+            if (str.includes("recovered cases"))
+            {
+                  
+                  document.getElementById("options").value="Recovered Cases"
+          
+            currentvis="recovered";
+            d3.select("#G").remove()
+          d3.select("#Map").append("g").attr("id","G")
+          d3.select("#BarChart").remove()
+          d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
+          drawbar(store.done.sort((a,b)=>b.recovered - a.recovered))
+          drawMap(prep(store.geoJSON))
+          drawCirclesRecovered(store.done,"red")
+          drawline(store.sumdate)
+          total_case_print(groupbyCountry(store.coronadat))
+        total_case_print1(groupbyCountryDeath(store.death))
+        total_case_print2(groupbyCountryRecovered(store.recovered))
+        //d3.select(".res").style("background-color","green").text("Showing Results of Recovered Cases for All Countries");
+            }       
+            if (str.includes("confirmed cases"))
+            {
+                  
+                  document.getElementById("options").value="Confirmed Cases"
+          
+          
+                    currentvis="confirm";
+            d3.select("#G").remove()
+          d3.select("#Map").append("g").attr("id","G")
+          d3.select("#BarChart").remove()
+          d3.select("#Bar").append("svg").attr("id","BarChart").attr("transform", "rotate(90)")
+          drawbar(store.done.sort((a,b)=>b.confirmed - a.confirmed))
+          drawMap(prep(store.geoJSON))
+          drawCircles(store.done,"blue")
+          drawline(store.sumdate)
+          total_case_print(groupbyCountry(store.coronadat))
+        total_case_print1(groupbyCountryDeath(store.death))
+        total_case_print2(groupbyCountryRecovered(store.recovered))
+        //d3.select(".res").style("background-color","#2a5599").text("Showing Results of Confirmed Cases for All Countries");
+            }    
+
+            d3.select(".res").text("Showing Results for All Countries");  
+            if(currentvis=="confirm")store.done.sort((a,b) => b.confirmed - a.confirmed);
+     else if(currentvis=="death")store.done.sort((a,b) => b.deaths - a.deaths);
+     else if(currentvis=="recovered")store.done.sort((a,b) => b.recovered - a.recovered);
+        
+     }
+
+
+    //  else if((/^(find|show)/).test(str) && (/maximum|minimum/).test(str) && (/selected/).test(str) && (/area|region/).test(str) )
+    //  {
+       
+    //       if(str.includes("maximum"))
+    //       {
+    //         if(store.afterlasso.length>0)
+    //         {
+              
+    //           if(str.includes("death"))
+    //           {
+    //             let a=store.afterlasso.sort((a,b) => b.deaths - a.deaths);
+    //           console.log(a[0])
+    //           }
+    //           else if(str.includes("recovered"))
+    //           {
+    //             let a=store.afterlasso.sort((a,b) => b.recovered - a.recovered);
+    //           console.log(a[0])
+    //           }
+    //           else if(str.includes("confirmed"))
+    //           {
+    //             let a=store.afterlasso.sort((a,b) => b.confirmed - a.confirmed);
+    //           console.log(a[0])
+    //           }
+              
+        
+    //         }
+    //       }
+    //       else if(str.includes("minimum"))
+    //       {
+    //         if(store.afterlasso.length>0)
+    //         {
+              
+    //           if(str.includes("death"))
+    //           {
+    //             let a=store.afterlasso.sort((a,b) => a.deaths - b.deaths);
+    //           console.log(a[0])
+    //           }
+    //           else if(str.includes("recovered"))
+    //           {
+    //             let a=store.afterlasso.sort((a,b) => a.recovered - b.recovered);
+    //           console.log(a[0])
+    //           }
+    //           else if(str.includes("confirmed"))
+    //           {
+    //             let a=store.afterlasso.sort((a,b) => a.confirmed - b.confirmed);
+    //           console.log(a[0])
+    //           }
+              
+        
+    //         }
+    //       }
+
+    //  }   
+
+
+    else if((/find/).test(str) && (/date/).test(str) && (/with/).test(str) && (/maximum|minimum/) && (/death|new|confirmed|deaths|death cases|confirmed cases/))
+   {
+     if(str.includes("death"))
+     {
+         
+     let st
+     let m=0
+     let ln=d3.select("#container").selectAll('circle')._groups[0].length
+     let c=d3.select("#container").selectAll('circle')._groups[0]
+      for (i=0;i<ln-1;i++)
+     {
+       let b=c[i]
+
+      if( b.__data__.new_death>m && b.getAttribute("case")=="death")
+      {
+        // d3.select(b).classed("selected",true)
+        //         .attr("r",2)
+        //         .style("fill", "yellow");
+        // //console.log(b)
+        m=b.__data__.new_death
+        st=b
+
+        
+        
+        
+      }
+
+     }
+
+     d3.select(st).classed("selected",true)
+                .attr("r",2)
+                .style("fill", "yellow");
+
+ 
+
+
+     }
+     else if(str.includes("new case") || str.includes("confirm") ||str.includes("confirmed"))
+     {
+
+     }
+   }
+
+
+     else if((/^(find|show)/).test(str) && (/maximum|minimum/).test(str))
+    {
+      
+      let a=[]
+      store.currentcommand=str;
+      if(str.includes("maximum"))
+          {
+            if(store.afterlasso.length>0)
+            {
+              
+              if(str.includes("death"))
+              {
+                
+                 a=store.afterlasso.sort((a,b) => b.deaths - a.deaths);
+                 d3.select(".res").text("maximum death cases occured in "+a[0].country+" among the selected countries"); 
+              }
+              else if(str.includes("recovered"))
+              {
+                 a=store.afterlasso.sort((a,b) => b.recovered - a.recovered);
+                 d3.select(".res").text("maximum recovered cases occured in "+a[0].country+" among the selected countries"); 
+              }
+              else if(str.includes("confirmed"))
+              {
+                 a=store.afterlasso.sort((a,b) => b.confirmed - a.confirmed);
+                 d3.select(".res").text("maximum confirmed cases occured in "+a[0].country+" among the selected countries"); 
+              }
+              
+
+              
+        
+            }
+            else if(1){
+              console.log("thik ase")
+              if(str.includes("death"))
+              {
+                 a=store.done.sort((a,b) => b.deaths - a.deaths);
+                 d3.select(".res").text("maximum death cases occured in "+a[0].country); 
+              }
+              else if(str.includes("recovered"))
+              {
+                 a=store.done.sort((a,b) => b.recovered - a.recovered);
+                 d3.select(".res").text("maximum recovered cases occured in "+a[0].country); 
+              }
+              else if(str.includes("confirmed"))
+              {
+                 a=store.done.sort((a,b) => b.confirmed - a.confirmed);
+                 d3.select(".res").text("maximum confirmed cases occured in "+a[0].country); 
+              }
+              
+              
+            }
+            
+
+          }
+          else if(str.includes("minimum"))
+          {
+            if(store.afterlasso.length>0)
+            {
+              
+              if(str.includes("death"))
+              {
+                 a=store.afterlasso.sort((a,b) => a.deaths - b.deaths);
+                 d3.select(".res").text("minimum death cases occured in "+a[0].country+" among the selected countries");
+              }
+              else if(str.includes("recovered"))
+              {
+               a=store.afterlasso.sort((a,b) => a.recovered - b.recovered);
+               d3.select(".res").text("minimum recovered cases occured in "+a[0].country+" among the selected countries");
+              }
+              else if(str.includes("confirmed"))
+              {
+                a=store.afterlasso.sort((a,b) => a.confirmed - b.confirmed);
+                d3.select(".res").text("minimum confirmed cases occured in "+a[0].country+" among the selected countries");
+              }
+               
+        
+            }
+            else if(1)
+            {
+              if(str.includes("death"))
+              {
+                a=store.done.sort((a,b) => a.deaths - b.deaths);
+                d3.select(".res").text("minimum death cases occured in "+a[0].country);
+              }
+              else if(str.includes("recovered"))
+              {
+               a=store.done.sort((a,b) => a.recovered - b.recovered);
+               d3.select(".res").text("minimum recovered cases occured in "+a[0].country);
+              }
+              else if(str.includes("confirmed"))
+              {
+               a=store.done.sort((a,b) => a.confirmed - b.confirmed);
+               d3.select(".res").text("minimum confiremd cases occured in "+a[0].country);
+              }
+              
+            }
+            
+          }
+
+         c=a[0].country
+         ii=d3.select("#G").selectAll("circle")._groups[0];
+          for( j=0;j<=180;j++){
+            i=ii[j];
+          if(currentvis=="confirm"){
+         if(i.__data__.country==c)
+         {
+          
+           d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+             .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed)).transition().duration(1000).attr("r",0).attr("fill","blue")
+         }
+          }
+          else if(currentvis=="death"){
+           if(i.__data__.country==c){
+       d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.deaths))
+             .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths)).transition().duration(1000).attr("r",0).attr("fill","red")
+           }
+          }
+          else if(currentvis=="recovered"){
+           if(i.__data__.country==c){
+          d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.recovered))
+             .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered)).transition().duration(1000).attr("r",).attr("fill","green")
+           }
+          }
+         }  
+
+          l= d3.selectAll("rect")._groups[0]
+          let ln=d3.selectAll("rect")._groups[0].length-6
+     for(i=0;i<ln;i++)
+     {
+       if(l[i].__data__.country==a[0].country)
+       {
+         d3.select(l[i]).classed("selected1",true)
+        
+
+       }
+       else{
+         d3.select(l[i]).classed("selected1",false)
+       }
+     }
+    
+
+      l= d3.select("#G").selectAll("path")._groups[0]
+     for(i=0;i<180;i++)
+     {
+       if(l[i].__data__.country==a[0].country)
+       {
+         d3.select(l[i]).classed("selected1",true)
+       }
+       else{
+         d3.select(l[i]).classed("selected1",false)
+       }
+     }
+     store.currenthighlight=a[0].country
+     if(currentvis=="confirm")store.done.sort((a,b) => b.confirmed - a.confirmed);
+     else if(currentvis=="death")store.done.sort((a,b) => b.deaths - a.deaths);
+     else if(currentvis=="recovered")store.done.sort((a,b) => b.recovered - a.recovered);
+
+               
+
+
+
+    }
+
   
-  render_lists(filtered_countries);
-}
 
-input.addEventListener('keyup', filterCountries);
-}
-
-loadData().then(showData);
-
-// draw bar chart
-
-function drawbar(data){
+    else if((/from/).test(str) && (/to/).test(str))
+    {
 
       
-               
-var margin =  {top: 20, right: 10, bottom: 20, left: 50};
-var marginOverview = {top: 30, right: 10, bottom: 20, left: 40};
-var selectorHeight = 40;
-var width = 605 - margin.left - margin.right;
-var height = 500 - margin.top - margin.bottom - selectorHeight;
-var heightOverview = 80 - marginOverview.top - marginOverview.bottom;
-       
-var maxLength = d3.max(data.map(function(d){ return d.country.length}))
-var barWidth = maxLength * 2;
-var numBars = Math.round(width/barWidth);
-var isScrollDisplayed = barWidth * data.length > width;
-       
+      let d=[]
+      a=str;
+      a=a.split(" ")
+      for(i of a){
+        if(i=="from" || i=="to")continue
+        else d.push(i)
+      }
+   
+     d3.select(".res").text("Showing Results from "+d[0]+" to "+d[1]);  
+   
+      afterlasso(new Date(d[0]) ,new Date(d[1]))
+      slideraftervoice(d[0],d[1])
 
-console.log(isScrollDisplayed)
-  
-var xscale = d3.scaleBand()
-                .domain(data.slice(0,numBars).map(function (d) { return d.country; }))
-                .range([0, width])
-                .padding(.2);
+      if(store.currentcommand!=null)
+      {
+        document.getElementById('command').innerHTML=store.currentcommand
+        str=store.currentcommand
+        if((/^(find|show)/).test(str) && (/maximum|minimum/).test(str))
+    {
+      
+      let a=[]
+      store.currentcommand=str;
+      if(str.includes("maximum"))
+          {
+            if(store.afterlasso.length>0)
+            {
+              
+              if(str.includes("death"))
+              {
+                
+                 a=store.afterlasso.sort((a,b) => b.deaths - a.deaths);
+                 d3.select(".res").text("maximum death cases occured in "+a[0].country+" among the selected countries"); 
+              }
+              else if(str.includes("recovered"))
+              {
+                 a=store.afterlasso.sort((a,b) => b.recovered - a.recovered);
+                 d3.select(".res").text("maximum recovered cases occured in "+a[0].country+" among the selected countries"); 
+              }
+              else if(str.includes("confirmed"))
+              {
+                 a=store.afterlasso.sort((a,b) => b.confirmed - a.confirmed);
+                 d3.select(".res").text("maximum confirmed cases occured in "+a[0].country+" among the selected countries"); 
+              }
+              
 
-var yscale = d3.scaleLinear()
-							.domain([0, d3.max(data, function (d) { return d.confirmed; })])
-              .range([height, 0]);
-  
-var xAxis  = d3.axisBottom(xscale);
-var yAxis  = d3.axisLeft(yscale);
-  
-var svg = d3.select("#body").append("svg")
-						.attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom + selectorHeight);
-  
-var diagram = svg.append("g")
-								 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-  
-diagram.append("g")
-  		 .attr("class", "x axis")
-       .attr("transform", "translate(0, " + height + ")")
-       .call(xAxis);
-  
-diagram.append("g")
-       .attr("class", "y axis")
-       .call(yAxis);
-  
-var bars = diagram.append("g");
-  
-bars.selectAll("rect")
-            .data(data.slice(0, numBars), function (d) {return d.country; })
-            .enter().append("rect")
-            .attr("class", "bar")
-            .attr("x", function (d) { return xscale(d.country); })
-            .attr("y", function (d) { return yscale(d.confirmed); })
-            .attr("width", xscale.bandwidth())
-            .attr("height", function (d) { return height - yscale(d.confirmed); })
-            .on("click", d=>{
-                //console.log(d.country);
-                drawline(d.country, store.coronadat)
-		    });
-  
-if (isScrollDisplayed)
-{
-  var xOverview = d3.scaleBand()
-                  .domain(data.map(function (d) { return d.country; }))
-                  .range([0, width])
-                  .padding(.2);
-  yOverview = d3.scaleLinear().range([heightOverview, 0]);
-  yOverview.domain(yscale.domain());
+              
+        
+            }
+            else if(1){
+              console.log("thik ase")
+              if(str.includes("death"))
+              {
+                 a=store.done.sort((a,b) => b.deaths - a.deaths);
+                 d3.select(".res").text("maximum death cases occured in "+a[0].country); 
+              }
+              else if(str.includes("recovered"))
+              {
+                 a=store.done.sort((a,b) => b.recovered - a.recovered);
+                 d3.select(".res").text("maximum recovered cases occured in "+a[0].country); 
+              }
+              else if(str.includes("confirmed"))
+              {
+                 a=store.done.sort((a,b) => b.confirmed - a.confirmed);
+                 d3.select(".res").text("maximum confirmed cases occured in "+a[0].country); 
+              }
+              
+              
+            }
+            
 
-  var subBars = diagram.selectAll('.subBar')
-      .data(data)
-
-  subBars.enter().append("rect")
-      .classed('subBar', true)
-      .attr({
-          height: function(d) {
-              return heightOverview - yOverview(d.confirmed);
-          },
-          width: function(d) {
-              return xOverview.bandwidth()
-          },
-          x: function(d) {
-
-              return xOverview(d.country);
-          },
-          y: function(d) {
-              return height + heightOverview + yOverview(d.confirmed)
           }
-      })
+          else if(str.includes("minimum"))
+          {
+            if(store.afterlasso.length>0)
+            {
+              
+              if(str.includes("death"))
+              {
+                 a=store.afterlasso.sort((a,b) => a.deaths - b.deaths);
+                 d3.select(".res").text("minimum death cases occured in "+a[0].country+" among the selected countries");
+              }
+              else if(str.includes("recovered"))
+              {
+               a=store.afterlasso.sort((a,b) => a.recovered - b.recovered);
+               d3.select(".res").text("minimum recovered cases occured in "+a[0].country+" among the selected countries");
+              }
+              else if(str.includes("confirmed"))
+              {
+                a=store.afterlasso.sort((a,b) => a.confirmed - b.confirmed);
+                d3.select(".res").text("minimum confirmed cases occured in "+a[0].country+" among the selected countries");
+              }
+               
+        
+            }
+            else if(1)
+            {
+              if(str.includes("death"))
+              {
+                a=store.done.sort((a,b) => a.deaths - b.deaths);
+                d3.select(".res").text("minimum death cases occured in "+a[0].country);
+              }
+              else if(str.includes("recovered"))
+              {
+               a=store.done.sort((a,b) => a.recovered - b.recovered);
+               d3.select(".res").text("minimum recovered cases occured in "+a[0].country);
+              }
+              else if(str.includes("confirmed"))
+              {
+               a=store.done.sort((a,b) => a.confirmed - b.confirmed);
+               d3.select(".res").text("minimum confiremd cases occured in "+a[0].country);
+              }
+              
+            }
+            
+          }
 
-  var displayed = d3.scaleQuantize()
-              .domain([0, width])
-              .range(d3.range(data.length));
+         c=a[0].country
+         ii=d3.select("#G").selectAll("circle")._groups[0];
+          for( j=0;j<=180;j++){
+            i=ii[j];
+          if(currentvis=="confirm"){
+         if(i.__data__.country==c)
+         {
+          
+           d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+             .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed)).transition().duration(1000).attr("r",0).attr("fill","blue")
+         }
+          }
+          else if(currentvis=="death"){
+           if(i.__data__.country==c){
+       d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.deaths))
+             .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths)).transition().duration(1000).attr("r",0).attr("fill","red")
+           }
+          }
+          else if(currentvis=="recovered"){
+           if(i.__data__.country==c){
+          d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.recovered))
+             .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered)).transition().duration(1000).attr("r",).attr("fill","green")
+           }
+          }
+         }  
 
-  diagram.append("rect")
-              .attr("transform", "translate(0, " + (height + margin.bottom) + ")")
-              .attr("class", "mover")
-              .attr("x", 0)
-              .attr("y", 0)
-              .attr("height", selectorHeight)
-              .attr("width", Math.round(parseFloat(numBars * width)/data.length))
-              .attr("pointer-events", "all")
-              .attr("cursor", "ew-resize")
-              .call(d3.drag().on("drag", display))
-              .on("click", d=>{
-                //console.log(d.country);
-                drawline(d.country, store.coronadat)
-		    });
+          l= d3.selectAll("rect")._groups[0]
+          let ln=d3.selectAll("rect")._groups[0].length-6
+     for(i=0;i<ln;i++)
+     {
+       if(l[i].__data__.country==a[0].country)
+       {
+         d3.select(l[i]).classed("selected1",true)
+        
+
+       }
+       else{
+         d3.select(l[i]).classed("selected1",false)
+       }
+     }
+    
+
+      l= d3.select("#G").selectAll("path")._groups[0]
+     for(i=0;i<180;i++)
+     {
+       if(l[i].__data__.country==a[0].country)
+       {
+         d3.select(l[i]).classed("selected1",true)
+       }
+       else{
+         d3.select(l[i]).classed("selected1",false)
+       }
+     }
+     store.currenthighlight=a[0].country
+     if(currentvis=="confirm")store.done.sort((a,b) => b.confirmed - a.confirmed);
+     else if(currentvis=="death")store.done.sort((a,b) => b.deaths - a.deaths);
+     else if(currentvis=="recovered")store.done.sort((a,b) => b.recovered - a.recovered);
+
+               
+
+
+
+    }
+      }
+
+     for (i=0;i<d3.select("#container").selectAll('circle')._groups[0].length -1 ;i++)
+     {
+       let b=d3.select("#container").selectAll('circle')._groups[0][i]
+      if( b.__data__.date>=new Date(d[0]) && b.__data__.date<=new Date(d[1]) && b.getAttribute("case")==currentvis)
+      {
+        d3.select(b).classed("selected",true)
+                .attr("r",2)
+                .style("fill", "yellow");
+        //console.log(b)
+
+        
+        
+        
+      }
+     }
+
+   store.afterlasso=[]
+     l= d3.selectAll("rect")._groups[0]
+        ln=d3.selectAll("rect")._groups[0].length
+        for(i=0;i<ln;i++)
+     {
+       store.afterlasso.push(l[i].__data__);
+     }
+
+    
+      
+    }
+     
+     else if((/^select/).test(str)){
+        a=str.split(" ")
+        a=a[1]
+        a= a.split(",")
+        
+        if(a[0].toLowerCase()!="all"){
+          dp=''
+        
+
+          if(currentvis=="confirm")store.done.sort((a,b) => b.confirmed - a.confirmed);
+     else if(currentvis=="death")store.done.sort((a,b) => b.deaths - a.deaths);
+     else if(currentvis=="recovered")store.done.sort((a,b) => b.recovered - a.recovered);
+
+     for(i=0;i<store.done.length;i++)
+     {
+       if(a.includes( store.done[i].country.toLowerCase()))
+       {
+        dp=store.done[i].country
+        break;
+
+       }
+     }
+          scrollbar(dp)
+
+        }
+//akane kaj korte hobe scrollbar after lasso line up
+      
+      store.currentselectedcountries=a;
+      drawline(commandline(a))
+
+ if(a[0]=="All") 
+ {
+   d3.select(".res").text("Showing Results for all countries");
+   document.getElementById("countries").value="All"
+   $("#countries").trigger("chosen:updated");
+ }
+ else{ d3.select(".res").text("Showing Results for "+a);
+ document.getElementById("countries").value="selected from searchbox"
+   $("#countries").trigger("chosen:updated");
+ }
+
+      let d=[]
+
+      l= d3.selectAll("rect")._groups[0]
+     for(i=0;i<205;i++)
+     {
+       if(a.includes( l[i].__data__.country.toLowerCase()))
+       {
+        d3.select(l[i]).classed("selected1",false)
+         d3.select(l[i]).classed("selected",true)
+         d.push(l[i].__data__)
+
+       }
+       else{
+        d3.select(l[i]).classed("selected1",false)
+         d3.select(l[i]).classed("selected",false)
+       }
+     }
+    
+        let s=d.length/2;
+        d.splice(s,s)
+       store.afterlasso=d;
+      //  clearbar()
+      //  drawbar(store.afterlasso)
+        total_case_print(d)
+      total_case_print1(d)
+      total_case_print2(d)
+
+      l= d3.select("#G").selectAll("path")._groups[0]
+     for(i=0;i<180;i++)
+     {
+       if(a.includes(l[i].__data__.country.toLowerCase()))
+       {
+        d3.select(l[i]).classed("selected1",false)
+         d3.select(l[i]).classed("selected",true)
+        
+       }
+       else{
+         d3.select(l[i]).classed("selected",false)
+         d3.select(l[i]).classed("selected1",false)
+       }
+     }
+
+     if(store.currentcommand!=null)
+       {
+         console.log("asci")
+         document.getElementById('command').value=store.currentcommand;
+         command();
+       }
+      
+
+  
+     }
+
+     else if((/clear|cls|clear all/).test(str))
+     {
+
+      document.getElementById("countries").value="All"
+   $("#countries").trigger("chosen:updated");
+       store.currentcommand=null
+       store.currentselectedcountries=[]
+       store.currenthighlight=''
+       store.afterlasso=[]
+       store.afterlinelasso=[]
+       let bar;
+      if(currentvis=="confirm")bar= store.done.sort((a,b) => b.confirmed - a.confirmed);
+        else if(currentvis=="death")bar= store.done.sort((a,b) => b.deaths - a.deaths);
+        else if(currentvis=="recovered")bar= store.done.sort((a,b) => b.recovered - a.recovered);
+
+      d3.select(".res").text("Showing Results for All countries");
+
+       store.afterlasso=[]
+      slideraftervoice(store.time[0].values[0].date,store.time[0].values[store.time[0].values.length-1].date)
+      drawline(store.sumdate)
+      clearbar()
+      drawbar(bar)
+      clearmap()
+      drawMap(prep(store.geoJSON))
+      l= d3.selectAll("rect")._groups[0]
+     for(i=0;i<205;i++)
+     {
+       
+        d3.select(l[i]).classed("selected1",false)
+         d3.select(l[i]).classed("selected",false)
+     }
+    
+        d=store.done
+        total_case_print(d)
+      total_case_print1(d)
+      total_case_print2(d)
+
+      l= d3.select("#G").selectAll("path")._groups[0]
+     for(i=0;i<180;i++)
+     {
+       
+         d3.select(l[i]).classed("selected",false)
+         d3.select(l[i]).classed("selected1",false)
+       
+     }
+
+     if(currentvis=="confirm")drawCircles(store.done,"blue");
+     else if(currentvis=="death")drawCirclesdeath(store.done,"red")
+     else if(currentvis=="recovered")drawCirclesRecovered(store.done,"red")
+     
+          
+     }
+     
+     
+   }
+
+   //after lasso
+
+   function scrollbar(data)
+   {
+    let k=0
+    flag=true
+    if(store.afterlinelasso.length==187)
+    {
+      console.log(data)
+      if(currentvis=="confirm")store.done.sort((a,b) => b.confirmed - a.confirmed);
+        else if(currentvis=="death") store.done.sort((a,b) => b.deaths - a.deaths);
+        else if(currentvis=="recovered")store.done.sort((a,b) => b.recovered - a.recovered);
+      g=[]
+      for(j of store.afterlinelasso)g.push(j.country.toLowerCase())
+      for(i of g)
+       {
+         k++;
+        if( i==data.toLowerCase()) 
+        {
+          console.log(i.country)
+          console.log(k)
+          flag=false
+          break;
+        }
+       }
+    }
+    else{
+      for(i of store.done)
+       {
+         k++;
+        if( i.country.toLowerCase()==data.toLowerCase())
+        {
+          console.log(i.country)
+          console.log(k)
+          flag=false
+          break;
+        }
+       }
+    }
+      if(flag)k=0
+     store.position=k+k*.9 
+     store.scroll=true
+     clearbar()
+    if(store.afterlinelasso.length==187) drawbar(store.afterlinelasso);
+    else  drawbar(store.done);
+     store.position=0
+     store.scroll=false
+   }
+store.afterlinelasso=[]
+   function afterlasso(d1,d2){
+              
+         console.log(d1,d2)
+        var d3 = new Date(slidedata[0].date).getTime()
+        var str = Math.abs(d1-d3)/86400000
+        var end = Math.abs(d2-d3)/86400000
+        let a = [];
+        
+        str = Math.floor(str)
+        end = Math.floor(end)
+        var j = 0;
+        //console.log(store.time)
+      
+        for( x of store.time){
+          let c=0;
+          let d=0;
+          let r=0;
+          
+             c += x.values[end].confirmed - x.values[str].confirmed
+             d += x.values[end].deaths - x.values[str].deaths
+             r += x.values[end].recovered - x.values[str].recovered
+          
+          a[j] = {
+            "country" : x.values[0].country,
+            "confirmed" : c,
+            "recovered" : r,
+            "deaths" : d,
+            "date" :   x.values[end].date       }
+          j++;
+        }
+        //console.log(a)
+        // sdate = new Date(d1);
+        // sdate.getDate()+ '/' + (sdate.getMonth()+1) + '/' +sdate.getFullYear();
+        // edate = new Date(d2);
+        // edate.getDate()+ '/' + (edate.getMonth()+1) + '/' +edate.getFullYear();
+        // console.log(d1,d2)
+        // console.log(sdate,edate)
+        
+        if(currentvis=="confirm")a = a.sort((a,b)=>b.confirmed-a.confirmed);
+        else if(currentvis=="death")a = a.sort((a,b)=>b.deaths - a.deaths);
+        else if(currentvis=="recovered")a = a.sort((a,b)=>b.recovered -a.recovered)
+        
+
+
+        
+          for(i=0;i<a.length;i++)
+          {
+              
+              b=a[i].country;
+              // a[i].deaths=k[i].deaths;
+              // a[i].recovered=z[i].recovered;
+              if(b=="US"){
+                  b="United States of America"
+              }
+              for (j of store.mapafterlinelasso.features)
+              {
+                  if(j.properties.name==b)
+                  {
+                      j.confirmed=a[i].confirmed;
+                      j.deaths=a[i].deaths;
+                      j.recovered=a[i].recovered;
+                      j.country=a[i].country
+                      break;
+                  }
+                  else {
+                    if(!('country' in j))
+                    {
+                      j.country=""
+                    }
+                  }
+                  
+              }
+          }
+          for (i of store.mapafterlinelasso.features)
+          {
+              if(!('confirmed' in i)){
+                  i.confirmed=0;
+                  i.deaths=0
+                  i.recovered=0
+              }
+          }
+
+          total_case_print(a);
+          total_case_print1(a);
+          total_case_print2(a);
+          
+          clearmap()
+          drawMap(store.mapafterlinelasso)
+
+        clearbar()
+        drawbar(a)
+store.afterlinelasso=a
+if(store.currentselectedcountries.length!=0)
+{
+  bc=0
+  if(currentvis=="confirm")a=a.sort((a,b)=>b.confirmed - a.confirmed);
+  else if(currentvis=="death")a=a.sort((a,b)=>b.deaths - a.deaths);
+  else if(currentvis=="recovered")a=a.sort((a,b)=>b.recovered - a.recovered);
+  for(g=0;g<a.length;g++)
+  {
+    if(store.currentselectedcountries.includes(a[g].country.toLowerCase()))
+    {
+      bc=g
+      console.log(a[g].country)
+      break;
+    }
+  }
+ store.scroll=true
+ store.position=bc+bc*.9
+ clearbar()
+ drawbar(a)
+ store.scroll=false
+ store.position=0
 }
-function display () {
-    var x = parseInt(d3.select(this).attr("x")),
-        nx = x + d3.event.dx,
-        w = parseInt(d3.select(this).attr("width")),
-        f, nf, new_data, rects;
+         drawCircles(store.done,"red")
+     drawCirclesRecovered(store.done,"red")
+     drawCirclesdeath(store.done,"red")
 
-    if ( nx < 0 || nx + w > width ) return;
 
-    d3.select(this).attr("x", nx);
+    rehiglight()
 
-    f = displayed(x);
-    nf = displayed(nx);
 
-    if ( f === nf ) return;
+     recalibrate()
+        
+        
+       
+   }
 
-    new_data = data.slice(nf, nf + numBars);
+   function rehiglight()
+   {
 
-    xscale.domain(new_data.map(function (d) { return d.country; }));
-    diagram.select(".x.axis").call(xAxis);
 
-    rects = bars.selectAll("rect")
-      .data(new_data, function (d) {return d.country; });
 
-    rects.attr("x", function (d) { return xscale(d.country); });
+    let l= d3.selectAll("rect")._groups[0]
+      let ln=d3.selectAll("rect")._groups[0].length-6
+     for(i=0;i<ln;i++)
+     {
+      
+      
+       if(store.currentselectedcountries.includes(l[i].__data__.country) || store.currentselectedcountries.includes(l[i].__data__.country.toLowerCase()))
+       {
+         
+        
+         d3.select(l[i]).classed("selected",true)
+        
 
-    rects.enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function (d) { return xscale(d.country); })
-      .attr("y", function (d) { return yscale(d.confirmed); })
-      .attr("width", xscale.bandwidth())
-      .attr("height", function (d) { return height - yscale(d.confirmed); });
+       }
+       else{
+         d3.select(l[i]).classed("selected",false)
+       }
+     }
 
-    rects.exit().remove();
+   }
+  
+
+  function recalibrate()
+  {
+    let a=[]
+    let b=[]
+    let c=[]
+    for(let i=0;i<store.afterlasso.length;i++)
+    {
+      a.push(store.afterlasso[i].country)
+    }
+    store.afterlasso=[]
+     l= d3.selectAll("rect")._groups[0]
+        ln=d3.selectAll("rect")._groups[0].length-6
+        for(i=0;i<ln;i++)
+     {
+       if(a.includes(l[i].__data__.country)){
+        b.push(l[i].__data__);
+       }
+       c.push(l[i].__data__)
+       if(b.length!=0)store.afterlasso=b;
+       else store.afterlasso=c;
+       
+     }
+     if(store.afterlasso.length!=207)
+     {
+      var uniqueNames = [];
+$.each(store.afterlasso, function(i, el){
+    if($.inArray(el, uniqueNames) === -1) uniqueNames.push(el);
+});
+  store.afterlasso=uniqueNames
+     }
+     
+  }
+
+
+  function clearmap()
+  {
+    d3.select("#G").remove()
+          d3.select("#Map").append("g").attr("id","G")
+  }
+   //end after lasso
+   // after bar lasso
+
+    function afterbarlasso(data){
+      var pdata = []
+      var finald = []
+      let i = 0;
+      for(x of data ){
+        for (d of store.time){
+          
+              if(x.__data__.country == d.key){
+                pdata[i] = d.values;
+                break;
+              }
+         }
+      
+         ++i;
+    }
+    i=0;
+      //console.log(pdata)
+      for( x of pdata[0]){
+        finald[i] = {
+            "confirmed" : x.confirmed,
+            "recovered" : x.recovered,
+            "deaths" : x.deaths,
+            "date" :   x.date 
+        }
+        ++i;
+      }
+
+      for( var k =1; k< pdata.length; ++k){
+        let j=0;
+        for( x of pdata[k]){
+          finald[j].confirmed += x.confirmed;
+          finald[j].recovered += x.recovered;
+          finald[j].deaths += x.deaths
+          ++j;
+        }
+      }
+      
+      drawline(finald)
+    }
+
+
+    function aftermaplasso(data){
+      var pdata = []
+      var finald = []
+      let i = 0;
+      for(x of data ){
+        for (d of store.time){
+          
+              if(x.country == d.key){
+                pdata[i] = d.values;
+                break;
+              }
+         }
+      
+         ++i;
+    }
+    i=0;
+      //console.log(pdata)
+      for( x of pdata[0]){
+        finald[i] = {
+            "confirmed" : x.confirmed,
+            "recovered" : x.recovered,
+            "deaths" : x.deaths,
+            "date" :   x.date 
+        }
+        ++i;
+      }
+
+      for( var k =1; k< pdata.length; ++k){
+        let j=0;
+        for( x of pdata[k]){
+          finald[j].confirmed += x.confirmed;
+          finald[j].recovered += x.recovered;
+          finald[j].deaths += x.deaths
+          ++j;
+        }
+      }
+      drawline(finald)
+    }
+
+   //end bar lasso
+      
+// clear bar
+
+   function clearbar(){
+    document.getElementById("BarChart").innerHTML="";
+   }
+
+   function commandline(a)
+   {
+    var pdata = []
+      var finald = []
+      
+    
+        for(i of store.time)
+        {
+          if(a.includes(i.key.toLowerCase()))
+          {
+            pdata.push(i.values)
+          }
+          
+        }
+
+  
+    i=0;
+      console.log(pdata)
+      for( x of pdata[0]){
+        finald[i] = {
+            "confirmed" : x.confirmed,
+            "recovered" : x.recovered,
+            "deaths" : x.deaths,
+            "date" :   x.date 
+        }
+        ++i;
+      }
+
+      for( var k =1; k< pdata.length; ++k){
+        let j=0;
+        for( x of pdata[k]){
+          finald[j].confirmed += x.confirmed;
+          finald[j].recovered += x.recovered;
+          finald[j].deaths += x.deaths
+          ++j;
+        }
+      }
+      return finald;
+   }
+
+//end
+
+//////pop up/////
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+///end  pop up/////
+
+
+
+//////voice recognition ///////
+
+
+var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
+
+var grammar = '#JSGF V1.0;'
+
+var recognition = new SpeechRecognition();
+var speechRecognitionList = new SpeechGrammarList();
+speechRecognitionList.addFromString(grammar, 1);
+recognition.grammars = speechRecognitionList;
+recognition.lang = 'en-US';
+recognition.interimResults = false;
+
+recognition.onresult = function(event) {
+    var last = event.results.length - 1;
+    var command1 = event.results[last][0].transcript;
+   // message.textContent = 'Voice Input: ' + command + '.';
+   
+
+   let str=command1.toLowerCase()
+   if(str.includes("depth"))
+   {
+     str=str.replace("depth","death")
+   }
+   if(str.includes("conference"))str=str.replace("conference","confirmed")
+   if(str.includes("sylhet"))str=str.replace("sylhet","select")
+   if(str.includes("so"))str=str.replace("so","show")
+
+   
+   
+   if(str.includes("select") && !(/death|recovered|confirmed/).test(str))
+   {
+     
+     str=str.replace(/[ ,]+/g, ",").trim(" ")
+     str=str.replaceAt(6," ");
+    
+     
+   }
+
+   document.querySelector('#command').value=str
+
+   command()
+   
+
 };
 
 
+recognition.onspeechend = function() {
+    recognition.stop();
+    // setTimeout(function(){ recognition.start(); }, 400);
+};
+
+recognition.onerror = function(event) {
+    message.textContent = 'Error occurred in recognition: ' + event.error;
+}        
+
+
+document.querySelector('#button').addEventListener('click', function(){
+  recognition.start();
+})
+
+
+String.prototype.replaceAt=function(index, replacement) {
+    return this.substr(0, index) + replacement+ this.substr(index + replacement.length);
 }
 
-//end bar
+//end of voice recogition
 
 
-// draw line chart
- function drawline(country, olddata)
- {      console.log(olddata);
-        let data = olddata.filter(function(d){
-         for(x of d){
-            return x.country == country;
-         }})[0]
-         console.log(data)
+function slideraftervoice(x1,x2){
+    {
 
-         // draw line here
-
-         let body = d3.select("#body2")
-document.getElementById("body2").innerHTML="";
-	let height = 300;
-	let width = 400;
-
-	function showtool(data, coord){ console.log(data)
-		d3.select("#tooltip")
-			.html("Price: "+data[0]+"<br> Date: "+data[1])
-			.style('top', coord[1]-15+"px")
-			.style("left", coord[0]+15+"px")
-			.style("display", "block")
-			.style("color", "blue")
-			
-	}
-	
-		data.map(d=> {
-            d.date= new Date(d.date)
-            d.confirmed = +d.confirmed
-		})
-		let max = d3.max(data,d=>d.confirmed)
-		let yscale = d3.scaleLinear()
-		.domain([0,max])
-		.range([height,0])
-		body.append("g")
-		.call(d3.axisLeft(yscale))
-
-		let xscale = d3.scaleTime()
-		.domain(d3.extent(data,d=>d.date))
-		.range([0,width])
-		body.append("g")
-		.attr("transform", "translate(0,"+height+")")
-        .call(d3.axisBottom(xscale)
-          .tickFormat(d3.timeFormat("%d%b")))
-	
-		var valueline = d3.line()
-		.x(d => xscale(d.date))
-		.y(d => yscale(d.confirmed))
-        .defined(d => !!d.confirmed)
-       
-
-	
-		/*body.append("path")
-		.datum(data)
-		.attr("d", valueline)
-        .attr("class", "line")*/
-        body
-        .append("path")
-        .datum(data)
-        .attr("fill", "none")
-        .attr("stroke", "red")
-        .attr("stroke-width", 1.5)
-        .attr("d", valueline)
-        .attr("class", "line")
-
-         //draw line end
+  var len = slidedata.length
+  $(function() {
+    $( "#slider-range" ).slider({
+      range: true,
+      min: new Date(slidedata[0].date).getTime() / 1000,
+      max: new Date(slidedata[len-1].date).getTime() / 1000,
+      step: 86400,
+      values: [ new Date(x1).getTime() / 1000, new Date(x2).getTime() / 1000 ],
+      slide: function( event, ui ) { //console.log((new Date(ui.values[ 0 ] *1000) ))
+        var d1 = new Date(ui.values[ 0 ] *1000)
+        var d2 = new Date(ui.values[ 1 ] *1000)
+        var d3 = new Date(slidedata[0].date).getTime()
+        var str = Math.abs(d1-d3)/86400000
+        var end = Math.abs(d2-d3)/86400000
+        afterlasso(d1, d2)
+        if(store.currentselectedcountries.length!=0)
+        {
+          //akane kaj kor//
+          sliderafterbarlasso(str,end,store.time)
+        }
+        else drawline(slidedata.slice(str,end))
+        if(store.currentcommand!=null){
+           command()
+        }
+        $( "#amount" ).val( (new Date(ui.values[ 0 ] *1000).toDateString() ) + " - " + (new Date(ui.values[ 1 ] *1000)).toDateString() );
+      }
+    });
+    $( "#amount" ).val( (new Date($( "#slider-range" ).slider( "values", 0 )*1000).toDateString()) +
+      " - " + (new Date($( "#slider-range" ).slider( "values", 1 )*1000)).toDateString());
+      
+  });
  }
-//end line chart
-
-
-</script>
-</html>
+  }
+      </script>
+  </html>
