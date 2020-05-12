@@ -442,7 +442,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
           </div>
           <div>
               <div> 
-                <svg id="container" height="450px" width="500px"> 
+                <svg id="container" height="480px" width="500px"> 
                   <g id="body2" style="transform: translate(60px,10px);margin-top:50px ;"></g>
               </svg>
               </div>
@@ -3406,7 +3406,6 @@ body.append("g")
       .style("text-anchor", "middle")
       .text("Cumulative Cases"); 
 
-
 let xscale = d3.scaleTime()
 .domain(d3.extent(data,d=>d.date))
 .range([0,width])
@@ -3419,6 +3418,14 @@ body.append("g")
             .attr("dx", "-.8em")
             .attr("dy", ".15em")
             .attr("transform", "rotate(-65)" );
+//level of xaxis
+
+body.append("text")             
+      .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                           (height + 10 + 50) + ")")
+      .style("text-anchor", "middle")
+      .text("Date");
 
 var valueline = d3.line()
 .x(d => xscale(d.date))
