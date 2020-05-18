@@ -310,7 +310,7 @@ div.tooltip1{
 }
 
 .round{
-  width: 30%;
+  width: 40%;
     border-radius: 15px;
     border: 1px #000 solid;
     padding: 5px 5px 5px 25px;
@@ -329,11 +329,11 @@ div.tooltip1{
 #button{
   position: absolute;
   margin-top: 7px;
-  left: 30%;
+  left: 40%;
 }
 
 #mybtn{
-  margin-left: 35%;
+  margin-left: 45%;
   position: absolute;
   color: #2a5599;
 }
@@ -344,7 +344,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
   }
 
 #reset{
-  margin-left: 32%;
+  margin-left: 42%;
   position: absolute;
 }
 
@@ -1953,7 +1953,7 @@ console.log()
           var selectedValue = selectBox.options[selectBox.selectedIndex].value;
          
           store.currentselectedcountries=[];
-          store.currentselectedcountries.push(selectedValue);
+          store.currentselectedcountries.push(selectedValue.toLowerCase());
 
            if(selectedValue!="All" && selectedValue!="selected from searchbox")scrollbar(selectedValue)
         
@@ -2184,10 +2184,22 @@ console.log()
         let cf=0;
         let d;
         if(data.length!=0){
+          if(store.currentselectedcountries.length==0){
           for(i of data)
           {
             cf+=i.confirmed;
       d=i.date;
+          }
+          }
+          else{
+            for(i of data)
+          {
+            if(store.currentselectedcountries.includes(i.country.toLowerCase())){
+            cf+=i.confirmed;
+      d=i.date;
+            }
+          }
+
           }
           d3.select(".tc").html(
 "<span style='font-weight:bold;font-size:1.5em;color:#2a5599'>"+cf+"</span>"+ 
@@ -2217,10 +2229,22 @@ console.log()
         let cf=0;
         let d;
         if(data.length!=0){
+          if(store.currentselectedcountries.length==0){
           for(i of data)
           {
             cf+=i.deaths;
       d=i.date;
+          }
+          }
+          else{
+            for(i of data)
+          {
+            if(store.currentselectedcountries.includes(i.country.toLowerCase())){
+            cf+=i.deaths;
+      d=i.date;
+            }
+          }
+
           }
           d3.select(".tc1").html(
               "<span style='font-weight:bold;font-size:1.5em;color:#cb181d'>"+cf+"</span>"+
@@ -2250,10 +2274,22 @@ console.log()
         let cf=0;
         let d;
         if(data.length!=0){
+          if(store.currentselectedcountries.length==0){
           for(i of data)
           {
             cf+=i.recovered;
       d=i.date;
+          }
+          }
+          else{
+            for(i of data)
+          {
+            if(store.currentselectedcountries.includes(i.country.toLowerCase())){
+            cf+=i.recovered;
+      d=i.date;
+            }
+          }
+
           }
           d3.select(".tc2").html(
               "<span style='font-weight:bold;font-size:1.5em;color:#238b45'>"+cf+"</span>"+
