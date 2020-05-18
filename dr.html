@@ -115,6 +115,15 @@ div.res{
   
 }
 
+@media only screen and (max-width: 580px){
+body{font-size: 13px;}
+.mainView {
+              display: flex;
+              flex-direction: column;
+          }
+
+}
+
 #Map{
   background:#DCDCDC;
   margin-left: 0px;
@@ -3699,14 +3708,19 @@ function lasso(scal, data, xscale){
                 if(a.length){
                 var x1 =xscale.invert(a[0].cx.baseVal.value);
                 var x2 =xscale.invert(a[a.length-1].cx.baseVal.value);
-                afterlasso(x1,x2)
+                if(a.length){
+                  afterlasso(x1,x2)
+                }
+               
                 var formatDate = d3.timeFormat("%d/%b/%y")
                 d3.select(".res").text("Showing Results from "+formatDate(x1)+" to "+formatDate(x2));
                 }
-                if(!a.length){
+                if(!a.length){// ekhane asche
                   clearmap()
                   drawMap(prep(store.geoJSON))
                   clearbar()
+                  x1 = slidedata[0].date
+                  x2 = slidedata[slidedata.length-1].date
                   total_case_print(store.done);
           total_case_print1(store.done);
           total_case_print2(store.done);
@@ -3720,6 +3734,7 @@ function lasso(scal, data, xscale){
                 .attr("r",0);
 
           //console.log(lasso.selectedItems());
+          //changing slider
           slideraftervoice(x1,x2)
           if(store.currentcommand!=null)
           {
@@ -4596,7 +4611,6 @@ store.currenthighlight=''
 store.afterlinelasso=[]
    function afterlasso(d1,d2){
               
-         console.log(d1,d2)
         var d3 = new Date(slidedata[0].date).getTime()
         var str = Math.abs(d1-d3)/86400000
         var end = Math.abs(d2-d3)/86400000
