@@ -94,7 +94,7 @@ div.tc2{
 }
 div.res{
   height: 40px;
-  width: 350px;
+  width: 600px;
   text-align: left;
   color:grey;
   padding: 0 1em;
@@ -598,6 +598,8 @@ body {font-family: Arial, Helvetica, sans-serif;}
         total_case_print1(groupbyCountryDeath(store.death))
         total_case_print2(groupbyCountryRecovered(store.recovered))
         //d3.select(".res").style("background-color","#2a5599");
+        var stdate = slidedata[0].date, endate = slidedata[slidedata.length-1].date; // we are here
+        ResultShow(null,"confirmed",stdate,endate)
         
       
       }
@@ -3703,7 +3705,9 @@ setTimeout(slide,2000)
   /*var d1 = new Date(data[2].date)
   var d2 = new Date(data[0].date)
   Math.abs(d1-d2)/86400000*/
-  //console.log(slidedata[len-1].date)
+  //console.log(slidedata[len-1].date)x1 = slidedata[0].date
+                
+
    
   $(function() {
     $( "#slider-range" ).slider({
@@ -3718,6 +3722,8 @@ setTimeout(slide,2000)
         var d3 = new Date(slidedata[0].date).getTime()
         var str = Math.abs(d1-d3)/86400000
         var end = Math.abs(d2-d3)/86400000
+        stdate = d1
+        endate = d2
         afterlasso(d1, d2)
         if(store.currentselectedcountries.length!=0)
         {
@@ -5058,6 +5064,8 @@ String.prototype.replaceAt=function(index, replacement) {
 function slideraftervoice(x1,x2){
     {
 
+      stdate = x1
+      endate = x2
   var len = slidedata.length
   $(function() {
     $( "#slider-range" ).slider({
@@ -5092,6 +5100,48 @@ function slideraftervoice(x1,x2){
  }
   }
       //new
+
+      // result show function
+
+    function ResultShow(countries,cases, stdate,endate){
+        var cases;
+        // if(currentvis == "confirm"){
+        //     cases = "confirmed case"
+        // }
+        // else if (currentvis == "death"){
+        //    cases == "death case"
+        // }
+        // else{
+        //   cases = "Recovered case"
+        // }
+        var date1 = new Date(stdate);
+        var date2 = new Date(endate)
+        var coutrylist=" ";
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        if(countries == null){
+          document.getElementById("res").textContent = "Showing "+cases+" cases "+" for all Countries from "+date1.getDate()+" of "+months[date1.getMonth()]
+          +" to "+date2.getDate()+" of "+months[date2.getMonth()]+".";
+        }
+        else if(countries.length()<= 5){
+          for( x of countries){
+              coutrylist += x+' ';
+          }
+          document.getElementById("res").textContent = "Showing "+cases+" cases "+" for"+ coutrylist +"from "+date1.getDate()+" of "+months[date1.getMonth()]
+          +" to "+date2.getDate()+" of "+months[date2.getMonth()]+".";
+        }
+        else{
+          coutrylist=" "
+          for(var i=0; i<5; ++i){
+            coutrylist += countries[i]+' '
+          }
+          document.getElementById("res").textContent = "Showing "+cases+" cases "+" for"+ coutrylist +"from "+date1.getDate()+" of "+months[date1.getMonth()]
+          +" to "+date2.getDate()+" of "+months[date2.getMonth()]+".";
+        }
+    }
+
+      //end result show
+
+
       </script>
   </html>
 
