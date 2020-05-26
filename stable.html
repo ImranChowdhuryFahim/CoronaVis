@@ -2226,8 +2226,8 @@ let lassobar;
    //console.log(data)
     lassobar = data;
              
-var margin =  {top: 10, right: 0, bottom: 70, left: 50};
-var marginOverview = {top: 10, right: 0, bottom: 70, left: 50};
+var margin =  {top: 10, right: 0, bottom: 70, left: 55};
+var marginOverview = {top: 10, right: 0, bottom: 70, left: 55};
 var selectorHeight = 15;
 var width = 450 - margin.left - margin.right;
 var height = 380 - margin.top - margin.bottom - selectorHeight;
@@ -2283,6 +2283,13 @@ diagram.append("g")
           .attr("transform", function(d) {
               return "rotate(-90)" 
               });
+diagram.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", -58)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Total Case"); 
 
 diagram.append("g")
      .attr("class", "y axis")
