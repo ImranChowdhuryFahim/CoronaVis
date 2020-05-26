@@ -600,7 +600,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
        groupbytime()
         drawMap(prep(store.geoJSON))
         stackprocess()
-        slidedata = store.sumdate;29
+        slidedata = store.sumdate;
    
         drawline(store.sumdate)
           drawCircles(store.done,"blue")
@@ -2129,8 +2129,8 @@ else{
         
           if(selectedValue=="Death Cases"){
             currentvis="death";
-          document.getElementById("countries").value="All";
-          $("#countries").trigger("chosen:updated");
+          // document.getElementById("countries").value="All";
+          // $("#countries").trigger("chosen:updated");
           d3.select("#G").remove()
           d3.select("#Map").append("g").attr("id","G")
           d3.select("#BarChart").remove()
@@ -2151,8 +2151,8 @@ else{
       
           {
             currentvis="confirmed";
-            document.getElementById("countries").value="All";
-          $("#countries").trigger("chosen:updated");
+          //   document.getElementById("countries").value="All";
+          // $("#countries").trigger("chosen:updated");
             d3.select("#G").remove()
           d3.select("#Map").append("g").attr("id","G")
           d3.select("#BarChart").remove()
@@ -2170,8 +2170,8 @@ else{
           else if(selectedValue=="Recovered Cases")
           {
             currentvis="recovered";
-            document.getElementById("countries").value="All";
-          $("#countries").trigger("chosen:updated");
+          //   document.getElementById("countries").value="All";
+          // $("#countries").trigger("chosen:updated");
             d3.select("#G").remove()
           d3.select("#Map").append("g").attr("id","G")
           d3.select("#BarChart").remove()
@@ -2194,9 +2194,22 @@ else{
   
         if(store.currentselectedcountries.length!=0)drawline(commandline(store.currentselectedcountries));
         call_ShowResult();
-        if(store.currentselectedcountries.length!=0)document.getElementById("countries").value="selected from other interactions"
+        let l=d3.select("#BarChart").selectAll("rect")._groups[0]
+        let ln=d3.select("#BarChart").selectAll("rect")._groups[0].length-2
+        let cn=''
+        
+        for(let i=0;i<ln;i++)
+        {
+          if(store.currentselectedcountries.includes(l[i].__data__.country.toLowerCase()))
+          {
+            cn=l[i].__data__.country.toLowerCase()
+            break
+          }
+        }
+        if(store.currentselectedcountries.length>0)scrollbar(cn)
+        // if(store.currentselectedcountries.length!=0 && document.getElementById("countries").value=="selected from other interactions")document.getElementById("countries").value="selected from other interactions"
 
-        $("#countries").trigger("chosen:updated");
+        // $("#countries").trigger("chosen:updated");
         //kisu kaj korte hobe akane
         if(store.currentcommand!=null)
        {
@@ -3588,8 +3601,7 @@ setTimeout(slide,2000)
         store.currentstartingdate=stdate
         store.currentendigndate=endate
         afterlasso(d1, d2)
-        console.log("index")
-        console.log(str,end)
+        
         if(store.currentselectedcountries.length!=0)
         {
           //akane kaj kor//
@@ -3598,7 +3610,7 @@ setTimeout(slide,2000)
         }
         else{ 
           ResultShow(store.currentselectedcountries,currentvis,stdate,endate);
-          drawline(slidedata.slice(str,end+1))}
+          drawline(slidedata.slice(str,end))}
         if(store.currentcommand!=null){
           document.getElementById("command").innerHTML=store.currentcommand
            command()
@@ -3684,8 +3696,8 @@ store.currenthighlight=''
       if(str.includes("death cases")){
             currentvis="death";
             document.getElementById("options").value="Death Cases"
-          document.getElementById("countries").value="All";
-          $("#countries").trigger("chosen:updated");
+          // document.getElementById("countries").value="All";
+          // $("#countries").trigger("chosen:updated");
           d3.select("#G").remove()
           d3.select("#Map").append("g").attr("id","G")
           d3.select("#BarChart").remove()
@@ -3707,8 +3719,8 @@ store.currenthighlight=''
           {
             currentvis="confirmed";
             document.getElementById("options").value="confirmed Cases"
-            document.getElementById("countries").value="All";
-          $("#countries").trigger("chosen:updated");
+          //   document.getElementById("countries").value="All";
+          // $("#countries").trigger("chosen:updated");
             d3.select("#G").remove()
           d3.select("#Map").append("g").attr("id","G")
           d3.select("#BarChart").remove()
@@ -3727,8 +3739,8 @@ store.currenthighlight=''
           {
             currentvis="recovered";
             document.getElementById("options").value="Recovered Cases"
-            document.getElementById("countries").value="All";
-          $("#countries").trigger("chosen:updated");
+          //   document.getElementById("countries").value="All";
+          // $("#countries").trigger("chosen:updated");
             d3.select("#G").remove()
           d3.select("#Map").append("g").attr("id","G")
           d3.select("#BarChart").remove()
@@ -3751,8 +3763,19 @@ store.currenthighlight=''
   
         if(store.currentselectedcountries.length!=0)drawline(commandline(store.currentselectedcountries));
         call_ShowResult();
-        if(store.currentselectedcountries.length!=0)document.getElementById("countries").value="selected from other interactions"
-        $("#countries").trigger("chosen:updated");
+        let l=d3.select("#BarChart").selectAll("rect")._groups[0]
+        let ln=d3.select("#BarChart").selectAll("rect")._groups[0].length-2
+        let cn=''
+        
+        for(let i=0;i<ln;i++)
+        {
+          if(store.currentselectedcountries.includes(l[i].__data__.country.toLowerCase()))
+          {
+            cn=l[i].__data__.country.toLowerCase()
+            break
+          }
+        }
+        if(store.currentselectedcountries.length>0)scrollbar(cn)
         if(store.currentcommand!=null)
        {
          
@@ -4325,15 +4348,25 @@ store.afterlinelasso=[]
         end = Math.floor(end)
         var j = 0;
         //console.log(store.time)
+        // console.log(str,end)
       
         for( x of store.time){
           let c=0;
           let d=0;
           let r=0;
+
+          if(str==0){
+            c += x.values[end].confirmed
+             d += x.values[end].deaths
+             r += x.values[end].recovered
+
+          }
+          else{
           
              c += x.values[end].confirmed - x.values[str].confirmed
              d += x.values[end].deaths - x.values[str].deaths
              r += x.values[end].recovered - x.values[str].recovered
+          }
           
           a[j] = {
             "country" : x.values[0].country,
@@ -4390,6 +4423,8 @@ store.afterlinelasso=[]
                   i.date=null
               }
           }
+
+          // console.log(a)
 
           total_case_print(a);
           total_case_print1(a);
@@ -5066,4 +5101,3 @@ function slideraftervoice(x1,x2){
 
       </script>
   </html>
-
