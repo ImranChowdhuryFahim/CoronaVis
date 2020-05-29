@@ -3579,9 +3579,9 @@ function lasso(scal, data, xscale){
                   if(currentvis=="confirmed")drawbar(store.done.sort((a,b)=>b.confirmed - a.confirmed));
                   else if(currentvis=="death")drawbar(store.done.sort((a,b)=>b.deaths - a.deaths));
                   else if(currentvis=="recovered")drawbar(store.done.sort((a,b)=>b.recovered - a.recovered));
-                  if(currentvis=="confirmed")drawCircles(store.done.sort((a,b)=>b.confirmed - a.confirmed));
-                  else if(currentvis=="death")drawCirclesdeath(store.done.sort((a,b)=>b.deaths - a.deaths));
-                  else if(currentvis=="recovered")drawCirclesRecovered(store.done.sort((a,b)=>b.recovered - a.recovered));
+                  if(currentvis=="confirmed")drawCircles(store.done,"blue");
+                  else if(currentvis=="death")drawCirclesdeath(store.done,"red")
+                  else if(currentvis=="recovered")drawCirclesRecovered(store.done,"red")
 
                 }
             // Reset the style of the not selected dots
@@ -3716,13 +3716,16 @@ setTimeout(slide,2000)
       }
 
       for( var k =1; k< pdata.length; ++k){
+        
         let j=0;
+        if(pdata[k]!=null){
         for( x of pdata[k]){
           finald[j].confirmed += x.confirmed;
           finald[j].recovered += x.recovered;
           finald[j].deaths += x.deaths
           ++j;
         }
+      }
       }
       drawline(finald)
       // store.time=store.save
@@ -4719,7 +4722,7 @@ $.each(store.afterlasso, function(i, el){
     }
     }
     i=0;
-      //console.log(pdata)
+      
       for( x of pdata[0]){
         finald[i] = {
             "confirmed" : x.confirmed,
@@ -4729,15 +4732,17 @@ $.each(store.afterlasso, function(i, el){
         }
         ++i;
       }
-
+      console.log(pdata.length)
       for( var k =1; k< pdata.length; ++k){
         let j=0;
+        if(pdata[k]!=null){
         for( x of pdata[k]){
           finald[j].confirmed += x.confirmed;
           finald[j].recovered += x.recovered;
           finald[j].deaths += x.deaths
           ++j;
         }
+      }
       }
       drawline(finald)
     }
