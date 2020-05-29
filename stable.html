@@ -62,7 +62,7 @@ input:focus{
            div.tc{
   width: 100px;
   text-align: center;
-  color:#808080;
+  color:#616771;
   width: 100px;
   padding: 0 1em;
   line-height: 1.2;
@@ -73,7 +73,7 @@ input:focus{
 div.tc1{
   width: 100px;
   text-align: center;
-  color:#808080;
+  color:#616771;
   width: 100px;
   padding: 0 1em;
   line-height: 1.2;
@@ -84,7 +84,7 @@ div.tc1{
 div.tc2{
   width: 100px;
   text-align: center;
-  color:#808080;
+  color:#616771;
   width: 100px;
   padding: 0 1em;
   line-height: 1.2;
@@ -93,22 +93,23 @@ div.tc2{
   border-right:1px dotted #BDBDBD;
 }
 div.res{
-  height: 40px;
+  height: 30px;
   width: 600px;
   text-align: left;
-  color:grey;
+  color: #616771;
   padding: 0 1em;
   margin-left: 10px;
   line-height: 1.2;
   font-size: 1em;
   margin-top: 30px;
+  margin-bottom: 0px;
   
 }
 div.res1{
-  height: 40px;
+  height: 30px;
   width: 600px;
   text-align: left;
-  color:grey;
+  color:#616771;
   padding: 0 1em;
   margin-left: 10px;
   line-height: 1.2;
@@ -428,7 +429,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
               <div class="tc2"></div> 
               <div style="border-right:1px dotted #BDBDBD; padding: 0 1em;">
                   <form >
-                      <label>Choose Case:</label>
+                      <label style="color: #616771;">Choose Case:</label>
                     <select id="options" name="cars" onchange="ddl()">
                       <option value="confirmed Cases">confirmed Cases</option>
                       <option value="Death Cases">Death Cases</option>
@@ -439,14 +440,14 @@ body {font-family: Arial, Helvetica, sans-serif;}
                 </div>
                 <div style="border-right:1px dotted #BDBDBD; padding: 0 1em;">
                   <form >
-                      <label>Select Country:</label>
+                      <label style="color: #616771;">Select Country:</label>
                     <select id="countries" class="chosen" name="countries" onchange="myScript()">
                       
                     </select>
                   </form>
                 </div>
                 <div>
-                    <label for="amount">Date range:</label>
+                    <label for="amount" style="color: #616771;">Date range:</label>
                     <input type="text" id="amount" style="border: 0; color: blue; font-weight: bold; background-color: #DCDCDC;" size="30"/>     
                   <div id="slider-range"></div>
                 </div>
@@ -1409,6 +1410,42 @@ else{
               // a[i].recovered=z[i].recovered;
               if(b=="US"){
                   b="United States of America"
+              }
+              else if(b=="Tanzania")
+              {
+                b="United Republic of Tanzania" 
+              }
+              else if(b=="Congo (Kinshasa)")
+              {
+                b="Democratic Republic of the Congo"
+              }
+              else if(b=="Congo (Brazzaville)")
+              {
+                b="Republic of the Congo"
+              }
+              else if(b=="Cote d'Ivoire")
+              {
+                b="Ivory Coast"
+              }
+              else if(b=="Burma")
+              {
+                b="Myanmar"
+              }
+              else if(b=="Korea, South")
+              {
+                b="South Korea"
+              }
+              else if(b=="Taiwan*")
+              {
+                b="Taiwan"
+              }
+              else if(b=="Czechia")
+              {
+                b="Czech Republic"
+              }
+              else if(b=="Serbia")
+              {
+                b="Republic of Serbia"
               }
               for (j of store.geoJSON.features)
               {
@@ -3268,10 +3305,10 @@ body
 .datum(data)
 .attr("fill", "none")
 .attr("stroke", "#2a5599")
-.attr("stroke-width", 3)
+.attr("stroke-width", 3.5)
 .attr("d", valueline)
 .attr("class", "line")
-.classed("selectedL",function (d) { 
+.classed("selectedL",function (d) {  
   if(currentvis == "confirmed"){ return false;}
   else{ return true; }
   
@@ -3346,7 +3383,7 @@ body
 .datum(data)
 .attr("fill", "none")
 .attr("stroke", '#238b45')
-.attr("stroke-width", 3)
+.attr("stroke-width", 3.5)
 .attr("d", valuerc)
 .attr("class", "line")
 .classed("selectedL",function (d) { 
@@ -3378,7 +3415,7 @@ body
 .datum(data)
 .attr("fill", "none")
 .attr("stroke", '#cb181d')
-.attr("stroke-width", 3)
+.attr("stroke-width", 3.5)
 .attr("d", valuedth)
 .attr("class", "line")
 .classed("selectedL",function (d) {
@@ -3852,17 +3889,17 @@ store.currenthighlight=''
               {
                 
                  a=store.afterlasso.sort((a,b) => b.deaths - a.deaths);
-                 d3.select(".res1").text("maximum death cases occured in "+a[0].country+" among the selected countries"); 
+                 d3.select(".res1").text("Maximum death cases occured in "+ capitalizeFirstLetter(a[0].country)+" among the selected countries"); 
               }
               else if(str.includes("recovered"))
               {
                  a=store.afterlasso.sort((a,b) => b.recovered - a.recovered);
-                 d3.select(".res1").text("maximum recovered cases occured in "+a[0].country+" among the selected countries"); 
+                 d3.select(".res1").text("Maximum recovered cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries"); 
               }
               else if(str.includes("confirmed"))
               {
                  a=store.afterlasso.sort((a,b) => b.confirmed - a.confirmed);
-                 d3.select(".res1").text("maximum confirmed cases occured in "+a[0].country+" among the selected countries"); 
+                 d3.select(".res1").text("Maximum confirmed cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries"); 
               }
               
 
@@ -3873,17 +3910,17 @@ store.currenthighlight=''
               if(str.includes("death"))
               {
                  a=store.done.sort((a,b) => b.deaths - a.deaths);
-                 d3.select(".res1").text("maximum death cases occured in "+a[0].country); 
+                 d3.select(".res1").text("Maximum death cases occured in "+capitalizeFirstLetter(a[0].country)); 
               }
               else if(str.includes("recovered"))
               {
                  a=store.done.sort((a,b) => b.recovered - a.recovered);
-                 d3.select(".res1").text("maximum recovered cases occured in "+a[0].country); 
+                 d3.select(".res1").text("Maximum recovered cases occured in "+capitalizeFirstLetter(a[0].country)); 
               }
               else if(str.includes("confirmed"))
               {
                  a=store.done.sort((a,b) => b.confirmed - a.confirmed);
-                 d3.select(".res1").text("maximum confirmed cases occured in "+a[0].country); 
+                 d3.select(".res1").text("Maximum confirmed cases occured in "+capitalizeFirstLetter(a[0].country)); 
               }
               
               
@@ -3899,17 +3936,17 @@ store.currenthighlight=''
               if(str.includes("death"))
               {
                  a=store.afterlasso.sort((a,b) => a.deaths - b.deaths);
-                 d3.select(".res1").text("minimum death cases occured in "+a[0].country+" among the selected countries");
+                 d3.select(".res1").text("Minimum death cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries");
               }
               else if(str.includes("recovered"))
               {
                a=store.afterlasso.sort((a,b) => a.recovered - b.recovered);
-               d3.select(".res1").text("minimum recovered cases occured in "+a[0].country+" among the selected countries");
+               d3.select(".res1").text("Minimum recovered cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries");
               }
               else if(str.includes("confirmed"))
               {
                 a=store.afterlasso.sort((a,b) => a.confirmed - b.confirmed);
-                d3.select(".res1").text("minimum confirmed cases occured in "+a[0].country+" among the selected countries");
+                d3.select(".res1").text("Minimum confirmed cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries");
               }
                
         
@@ -3919,17 +3956,17 @@ store.currenthighlight=''
               if(str.includes("death"))
               {
                 a=store.done.sort((a,b) => a.deaths - b.deaths);
-                d3.select(".res1").text("minimum death cases occured in "+a[0].country);
+                d3.select(".res1").text("Minimum death cases occured in "+capitalizeFirstLetter(a[0].country));
               }
               else if(str.includes("recovered"))
               {
                a=store.done.sort((a,b) => a.recovered - b.recovered);
-               d3.select(".res1").text("minimum recovered cases occured in "+a[0].country);
+               d3.select(".res1").text("Minimum recovered cases occured in "+capitalizeFirstLetter(a[0].country));
               }
               else if(str.includes("confirmed"))
               {
                a=store.done.sort((a,b) => a.confirmed - b.confirmed);
-               d3.select(".res1").text("minimum confiremd cases occured in "+a[0].country);
+               d3.select(".res1").text("Minimum confiremd cases occured in "+capitalizeFirstLetter(a[0].country));
               }
               
             }
@@ -4400,6 +4437,42 @@ store.afterlinelasso=[]
               // a[i].recovered=z[i].recovered;
               if(b=="US"){
                   b="United States of America"
+              }
+              else if(b=="Tanzania")
+              {
+                b="United Republic of Tanzania" 
+              }
+              else if(b=="Congo (Kinshasa)")
+              {
+                b="Democratic Republic of the Congo"
+              }
+              else if(b=="Congo (Brazzaville)")
+              {
+                b="Republic of the Congo"
+              }
+              else if(b=="Cote d'Ivoire")
+              {
+                b="Ivory Coast"
+              }
+              else if(b=="Burma")
+              {
+                b="Myanmar"
+              }
+              else if(b=="Korea, South")
+              {
+                b="South Korea"
+              }
+              else if(b=="Taiwan*")
+              {
+                b="Taiwan"
+              }
+              else if(b=="Czechia")
+              {
+                b="Czech Republic"
+              }
+              else if(b=="Serbia")
+              {
+                b="Republic of Serbia"
               }
               for (j of store.mapafterlinelasso.features)
               {
@@ -4935,9 +5008,9 @@ function slideraftervoice(x1,x2){
           for(var i=0; i<countries.length; ++i){
               if(i==countries.length-1)
               {
-                coutrylist += countries[i]+' ';
+                coutrylist += capitalizeFirstLetter(countries[i])+' ';
               }
-              else coutrylist += countries[i]+',';
+              else coutrylist += capitalizeFirstLetter(countries[i])+',';
           }
           document.getElementById("res").textContent = "Showing "+cases+" cases "+" for"+ coutrylist +"from "+date1.getDate()+" of "+months[date1.getMonth()]
           +" to "+date2.getDate()+" of "+months[date2.getMonth()]+".";
@@ -4947,9 +5020,9 @@ function slideraftervoice(x1,x2){
           for(var i=0; i<5; ++i){
             if(i==4)
               {
-                coutrylist += countries[i]+' ';
+                coutrylist += capitalizeFirstLetter(countries[i])+',... ';
               }
-              else coutrylist += countries[i]+',';
+              else coutrylist += capitalizeFirstLetter(countries[i])+',';
           }
           document.getElementById("res").textContent = "Showing "+cases+" cases "+" for"+ coutrylist +"from "+date1.getDate()+" of "+months[date1.getMonth()]
           +" to "+date2.getDate()+" of "+months[date2.getMonth()]+".";
@@ -5104,6 +5177,10 @@ function slideraftervoice(x1,x2){
      else if(currentvis=="recovered")drawCirclesRecovered(store.done,"red")
      
     }
+
+    function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 
       </script>
