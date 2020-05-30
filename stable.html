@@ -1607,6 +1607,7 @@ else{
         drawbar(store.done)
         }    
         for(let i=0;i<cn.length;i++)cn[i]=cn[i].toLowerCase();
+        cn=cn.filter(v=> v!="");
       store.currentselectedcountries=cn;
       store.afterlasso=d
       
@@ -1753,6 +1754,7 @@ else{
         drawbar(store.done)
         }  
         for(let i=0;i<cn.length;i++)cn[i]=cn[i].toLowerCase();
+        cn=cn.filter(v=> v!="");
       store.currentselectedcountries=cn;
       store.afterlasso=d
       total_case_print(d)
@@ -1891,6 +1893,7 @@ else{
           drawbar(store.done)
         }  
         for(let i=0;i<cn.length;i++)cn[i]=cn[i].toLowerCase();
+        cn=cn.filter(v=> v!="");
       store.currentselectedcountries=cn;
       store.afterlasso=d
       total_case_print(d)
