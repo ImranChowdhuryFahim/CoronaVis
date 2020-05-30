@@ -93,15 +93,15 @@ div.tc2{
   border-right:1px dotted #BDBDBD;
 }
 div.res{
-  height: 30px;
+  height: 40px;
   width: 600px;
   text-align: left;
   color: #616771;
   padding: 0 1em;
   margin-left: 10px;
   line-height: 1.2;
-  font-size: 1em;
-  margin-top: 30px;
+  font-size: 1.2em;
+  margin-top: 40px;
   margin-bottom: 0px;
   
 }
@@ -113,8 +113,10 @@ div.res1{
   padding: 0 1em;
   margin-left: 10px;
   line-height: 1.2;
-  font-size: 1em;
-  margin-top: 0px;
+  font-size: 1.2em;
+  margin-top: 1px;
+  
+
 
 }
 
@@ -329,6 +331,7 @@ div.tooltip1{
     padding: 5px 5px 5px 25px;
     position: absolute;
     height: 30px;
+    font-size: 16px;
     
 
 }
@@ -585,13 +588,15 @@ body {font-family: Arial, Helvetica, sans-serif;}
         
         return data
         
-      })
+      }),
+      d3.json('continent.json')
           ]).then(datasets => {
               
               store.coronadat=datasets[0];
               store.geoJSON = datasets[1];
               store.death=datasets[2];
               store.recovered=datasets[3];
+              store.continent=datasets[4];
               return store;
           })
       }
@@ -613,6 +618,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
         total_case_print2(groupbyCountryRecovered(store.recovered))
         var stdate = slidedata[0].date, endate = slidedata[slidedata.length-1].date; // we are here
         ResultShow(store.currentselectedcountries,currentvis,stdate,endate)
+        groupbycontinet()
         
       
       }
@@ -1526,6 +1532,8 @@ else{
           store.stackbar=l
           return l
       }
+
+      
       
       function drawCircles(countrycircle,clr) {
         let config = getMapConfig(); 
@@ -3738,9 +3746,9 @@ store.currenthighlight=''
    {
      let str=document.getElementById('command').value.toLowerCase()
      document.getElementById('command').value="";
-     if((/^(select|show)/).test(str) && (/death cases|confirmed cases|recovered cases/).test(str))
+     if((/^(select|show)/).test(str) && (/death cases|confirmed cases|recovered cases|fatal cases/).test(str))
      {
-      if(str.includes("death cases")){
+      if(str.includes("death cases") || str.includes("fatal cases")){
             currentvis="death";
             document.getElementById("options").value="Death Cases"
           // document.getElementById("countries").value="All";
@@ -3876,6 +3884,8 @@ store.currenthighlight=''
 
   //    }
   //  }
+
+    
 
 
      else if((/^(find|show)/).test(str) && (/maximum|minimum/).test(str))
@@ -4256,6 +4266,121 @@ store.currenthighlight=''
 
     
       
+    }
+    else if((/^select/).test(str)&&(/asia|north america|south america|africa|oceania|australia|antarctica|europe/).test(str))
+    {
+         if(str.includes("asia"))
+         {
+           let d=[]
+           let cn=[]
+           let l=d3.select("#BarChart").selectAll('rect')._groups[0]
+         let ln=d3.select("#BarChart").selectAll('rect')._groups[0].length-1;
+
+         for(let i=0;i<ln;i++)
+         {
+           if(store.asia.includes(l[i].__data__.country.toLowerCase()))
+           {
+            d3.select(l[i]).classed("selected1",false);
+             d3.select(l[i]).classed("selected",true);
+             cn.push(l[i].__data__.country.toLowerCase())
+             d.push(l[i].__data__)
+           }
+           else{
+            d3.select(l[i]).classed("selected1",false);
+            d3.select(l[i]).classed("selected",false);
+           }
+           
+         }
+         store.currentselectedcountries=cn
+         scrollbar(cn[0])
+
+
+         let l1=d3.select("#G").selectAll("path")._groups[0]
+         let ln1=180
+
+         for(let i=0;i<ln1;i++)
+         {
+           if(store.currentselectedcountries.includes(l1[i].__data__.country.toLowerCase()))
+           {
+            d3.select(l1[i]).classed("selected1",false);
+             d3.select(l1[i]).classed("selected",true);
+             
+           }
+           else{
+            d3.select(l1[i]).classed("selected1",false);
+            d3.select(l1[i]).classed("selected",false);
+           }
+           
+         }
+
+         
+         
+         d=d.filter((v,i)=>d.indexOf(v)==i)
+         
+         store.afterlasso=d
+         total_case_print(d)
+         total_case_print1(d)
+         total_case_print2(d)
+         drawline(commandline(cn))
+         
+         
+         }
+         else if(str.includes("europe"))
+         {
+
+          let d=[]
+           let cn=[]
+           let l=d3.select("#BarChart").selectAll('rect')._groups[0]
+         let ln=d3.select("#BarChart").selectAll('rect')._groups[0].length-1;
+
+         for(let i=0;i<ln;i++)
+         {
+           if(store.europe.includes(l[i].__data__.country.toLowerCase()))
+           {
+            d3.select(l[i]).classed("selected1",false);
+             d3.select(l[i]).classed("selected",true);
+             cn.push(l[i].__data__.country.toLowerCase())
+             d.push(l[i].__data__)
+           }
+           else{
+            d3.select(l[i]).classed("selected1",false);
+            d3.select(l[i]).classed("selected",false);
+           }
+           
+         }
+         store.currentselectedcountries=cn
+         scrollbar(cn[0])
+
+
+         let l1=d3.select("#G").selectAll("path")._groups[0]
+         let ln1=180
+
+         for(let i=0;i<ln1;i++)
+         {
+           if(store.currentselectedcountries.includes(l1[i].__data__.country.toLowerCase()))
+           {
+            d3.select(l1[i]).classed("selected1",false);
+             d3.select(l1[i]).classed("selected",true);
+             
+           }
+           else{
+            d3.select(l1[i]).classed("selected1",false);
+            d3.select(l1[i]).classed("selected",false);
+           }
+           
+         }
+
+         
+         
+         d=d.filter((v,i)=>d.indexOf(v)==i)
+         
+         store.afterlasso=d
+         total_case_print(d)
+         total_case_print1(d)
+         total_case_print2(d)
+         drawline(commandline(cn))
+
+         }
     }
      
      else if((/^select/).test(str)){
@@ -4761,14 +4886,17 @@ $.each(store.afterlasso, function(i, el){
       var finald = []
       
     if(store.currentstartingdate==null && store.currentendigndate==null){
+       let l=[]
         for(i of store.time)
         {
           if(a.includes(i.key.toLowerCase()))
           {
             pdata.push(i.values)
+            l.push(i.key.toLowerCase())
           }
           
         }
+        // console.log(store.asia.filter(t=> !l.includes(t)))
     }
     else{
       var dd = new Date(slidedata[0].date).getTime()
@@ -4787,10 +4915,11 @@ $.each(store.afterlasso, function(i, el){
         }
 
     }
-
+  //  console.log("pdata")
+  //  console.log(pdata)
   
     i=0;
-      console.log(pdata)
+      
       for( x of pdata[0]){
         finald[i] = {
             "confirmed" : x.confirmed,
@@ -4803,12 +4932,14 @@ $.each(store.afterlasso, function(i, el){
 
       for( var k =1; k< pdata.length; ++k){
         let j=0;
+        if(pdata[k]!=null){
         for( x of pdata[k]){
           finald[j].confirmed += x.confirmed;
           finald[j].recovered += x.recovered;
           finald[j].deaths += x.deaths
           ++j;
         }
+      }
       }
       return finald;
    }
@@ -5186,6 +5317,27 @@ function slideraftervoice(x1,x2){
     function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+function groupbycontinet()
+{
+  store.asia=continentgroup("Asia")
+  store.north_america=continentgroup("North America")
+  store.africa=continentgroup("Africa")
+  store.oceania=continentgroup("Oceania")
+  store.south_america=continentgroup("South America")
+  store.europe=continentgroup("Europe")
+  store.antarctica=continentgroup("Antarctica")
+}
+function continentgroup(data)
+{
+  let l=[]
+  for(i of store.continent)
+  {
+       if(i.continent==data)l.push(i.country.toLowerCase())
+  }
+  return l;
+}
+
 
 
       </script>
