@@ -3898,7 +3898,7 @@ store.currenthighlight=''
             if(store.afterlasso.length>0)
             {
               
-              if(str.includes("death"))
+              if(str.includes("death") || str.includes("fatal"))
               {
                 
                  a=store.afterlasso.sort((a,b) => b.deaths - a.deaths);
@@ -3920,7 +3920,7 @@ store.currenthighlight=''
         
             }
             else if(1){
-              if(str.includes("death"))
+              if(str.includes("death") || str.includes("fatal"))
               {
                  a=store.done.sort((a,b) => b.deaths - a.deaths);
                  d3.select(".res1").text("Maximum death cases occured in "+capitalizeFirstLetter(a[0].country)); 
@@ -3946,7 +3946,7 @@ store.currenthighlight=''
             if(store.afterlasso.length>0)
             {
               
-              if(str.includes("death"))
+              if(str.includes("death")|| str.includes("fatal"))
               {
                  a=store.afterlasso.sort((a,b) => a.deaths - b.deaths);
                  d3.select(".res1").text("Minimum death cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries");
@@ -3956,7 +3956,7 @@ store.currenthighlight=''
                a=store.afterlasso.sort((a,b) => a.recovered - b.recovered);
                d3.select(".res1").text("Minimum recovered cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries");
               }
-              else if(str.includes("confirmed"))
+              else if(str.includes("confirmed")|| str.includes("fatal"))
               {
                 a=store.afterlasso.sort((a,b) => a.confirmed - b.confirmed);
                 d3.select(".res1").text("Minimum confirmed cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries");
@@ -3966,7 +3966,7 @@ store.currenthighlight=''
             }
             else if(1)
             {
-              if(str.includes("death"))
+              if(str.includes("death")|| str.includes("fatal"))
               {
                 a=store.done.sort((a,b) => a.deaths - b.deaths);
                 d3.select(".res1").text("Minimum death cases occured in "+capitalizeFirstLetter(a[0].country));
