@@ -1069,6 +1069,26 @@ else{
       d3.select(l[i]).classed("selected",false)
     }
   }
+
+  l=d3.select("#G").selectAll('path')._groups[0]
+  ln=d3.select("#G").selectAll('path')._groups[0].length
+
+  for(let i=0;i<ln;i++)
+  {
+    if(store.currenthighlight.toLowerCase()==l[i].__data__.country.toLowerCase())
+    {
+      if(l[i].__data__.country!="")d3.select(l[i]).classed("selected1",true)
+    }
+    else{
+      d3.select(l[i]).classed("selected1",false)
+    }
+  }
+
+  
+
+
+
+
            
            
             
@@ -3607,7 +3627,7 @@ function lasso(scal, data, xscale){
           if(store.currentcommand!=null)
           {
             
-            document.getElementById("command").innerHTML=store.currentcommand
+            document.getElementById("command").value=store.currentcommand
             command()
             document.getElementById('command').value="";
           }
@@ -3665,11 +3685,12 @@ setTimeout(slide,2000)
         }
         else{ 
           ResultShow(store.currentselectedcountries,currentvis,stdate,endate);
-          drawline(slidedata.slice(str,end))}
+          if(str>0)str=str-1
+          drawline(slidedata.slice(str,end+1))}
         if(store.currentcommand!=null){
-          document.getElementById("command").innerHTML=store.currentcommand
+          document.getElementById("command").value=store.currentcommand
            command()
-           document.getElementById('command').value="";
+          // document.getElementById('command').value="";
         }
         
         $( "#amount" ).val( (new Date(ui.values[ 0 ] *1000).toDateString() ) + " - " + (new Date(ui.values[ 1 ] *1000)).toDateString() );
@@ -3990,30 +4011,31 @@ store.currenthighlight=''
           }
 
          c=a[0].country
-         ii=d3.select("#G").selectAll("circle")._groups[0];
-          for( j=0;j<=180;j++){
-            i=ii[j];
-          if(currentvis=="confirmed"){
-         if(i.__data__.country==c)
-         {
+         store.currenthighlight=a[0].country
+      //    ii=d3.select("#G").selectAll("circle")._groups[0];
+      //     for( j=0;j<=180;j++){
+      //       i=ii[j];
+      //     if(currentvis=="confirmed"){
+      //    if(i.__data__.country==c)
+      //    {
           
-           d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.confirmed))
-             .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed)).transition().duration(1000).attr("r",0).attr("fill","blue")
-         }
-          }
-          else if(currentvis=="death"){
-           if(i.__data__.country==c){
-       d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.deaths))
-             .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths)).transition().duration(1000).attr("r",0).attr("fill","red")
-           }
-          }
-          else if(currentvis=="recovered"){
-           if(i.__data__.country==c){
-          d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.recovered))
-             .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered)).transition().duration(1000).attr("r",).attr("fill","green")
-           }
-          }
-         }  
+      //      d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+      //        .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed)).transition().duration(1000).attr("r",0).attr("fill","blue")
+      //    }
+      //     }
+      //     else if(currentvis=="death"){
+      //      if(i.__data__.country==c){
+      //  d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.deaths))
+      //        .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths)).transition().duration(1000).attr("r",0).attr("fill","red")
+      //      }
+      //     }
+      //     else if(currentvis=="recovered"){
+      //      if(i.__data__.country==c){
+      //     d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.recovered))
+      //        .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered)).transition().duration(1000).attr("r",).attr("fill","green")
+      //      }
+      //     }
+      //    }  
 
           l= d3.selectAll("rect")._groups[0]
           let ln=d3.selectAll("rect")._groups[0].length-6
@@ -4042,7 +4064,7 @@ store.currenthighlight=''
          d3.select(l[i]).classed("selected1",false)
        }
      }
-     store.currenthighlight=a[0].country
+     
      if(currentvis=="confirmed")store.done.sort((a,b) => b.confirmed - a.confirmed);
      else if(currentvis=="death")store.done.sort((a,b) => b.deaths - a.deaths);
      else if(currentvis=="recovered")store.done.sort((a,b) => b.recovered - a.recovered);
@@ -4076,9 +4098,10 @@ store.currenthighlight=''
 
       if(store.currentcommand!=null)
       {
-        document.getElementById('command').innerHTML=store.currentcommand
+        document.getElementById('command').value=store.currentcommand
         str=store.currentcommand
         document.getElementById('command').value="";
+        
         if((/^(find|show)/).test(str) && (/maximum|minimum/).test(str))
     {
       
