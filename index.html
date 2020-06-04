@@ -41,7 +41,7 @@ input:focus{
               margin-left: -8px;
               margin-right: -8px;
               margin-bottom: 0px;
-              width: 100%;
+              width: 160%;
           }
           svg {
               border: solid 1px black;
@@ -331,9 +331,13 @@ div.tooltip1{
     padding: 5px 5px 5px 25px;
     position: absolute;
     height: 30px;
-    font-size: 16px;
+    font-size: 18px;
     
 
+}
+
+input:focus::placeholder {
+  color: transparent;
 }
 
 #search{
@@ -360,7 +364,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
   }
 
 #reset{
-  margin-left: 42%;
+  margin-left: 41%;
   position: absolute;
 }
 
@@ -412,7 +416,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
       <div class="result">
         
         <div>
-        <input type="text" id="command"  placeholder="Enter Command Here" class="round">
+        <input type="text" id="command"  placeholder="Enter Query Here" class="round">
         <i class="fa fa-search" id="search" aria-hidden="true" onclick="command()" ></i>
         <i class="fa fa-microphone"  id="button" aria-hidden="true"></i>
         <!-- <input type="image" id="button" src="image.png" width="20" height="20"> -->
@@ -497,6 +501,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
       store.scroll=false
       store.currentstartingdate=null;
       store.currentendigndate=null;
+      store.currentcontinet=null;
           let x=0
           let y=0
           let k=1
@@ -617,7 +622,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
         total_case_print1(groupbyCountryDeath(store.death))
         total_case_print2(groupbyCountryRecovered(store.recovered))
         var stdate = slidedata[0].date, endate = slidedata[slidedata.length-1].date; // we are here
-        ResultShow(store.currentselectedcountries,currentvis,stdate,endate)
+        ResultShow(store.currentselectedcountries,currentvis,stdate,endate,store.currentcontinet)
         groupbycontinet()
         
       
@@ -762,9 +767,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
                 "</br><b>DEATH CASES: </b>" +
                 d.deaths +
                 "</br><b>RECOVERED CASES: </b>" +
-                d.recovered +
-                  "</br>AS OF " +
-                d.date
+                d.recovered 
               )
               .attr("class","tooltip1")
               .style("left", 790 + "px")
@@ -1610,6 +1613,7 @@ else{
         cn=cn.filter(v=> v!="");
       store.currentselectedcountries=cn;
       store.afterlasso=d
+      store.currentcontinet=null
       
       total_case_print(d)
       total_case_print1(d)
@@ -1757,6 +1761,7 @@ else{
         cn=cn.filter(v=> v!="");
       store.currentselectedcountries=cn;
       store.afterlasso=d
+      store.currentcontinet=null
       total_case_print(d)
       total_case_print1(d)
       total_case_print2(d)
@@ -1896,6 +1901,7 @@ else{
         cn=cn.filter(v=> v!="");
       store.currentselectedcountries=cn;
       store.afterlasso=d
+      store.currentcontinet=null
       total_case_print(d)
       total_case_print1(d)
       total_case_print2(d)
@@ -2405,9 +2411,7 @@ bars.selectAll("rect")
                 "</br><b>Death CASES: </b>" +
                 d.deaths +
                 "</br><b>Recovered CASES: </b>" +
-                d.recovered +
-                  "</br>AS OF " +
-                d.date
+                d.recovered 
               )
               .attr("class","tooltip")
               .style("left", d3.event.clientX + "px")
@@ -2532,6 +2536,7 @@ bars.selectAll("rect")
 
 
       store.afterlasso=d
+      store.currentcontinet=null
 
       call_ShowResult();
       
@@ -2755,9 +2760,7 @@ if(store.scroll){
                 "</br><b>Death CASES: </b>" +
                 d.deaths +
                 "</br><b>Recovered CASES: </b>" +
-                d.recovered +
-                  "</br>AS OF " +
-                d.date
+                d.recovered 
               )
               .attr("class","tooltip")
               .style("left", d3.event.clientX + "px")
@@ -2844,6 +2847,7 @@ if(store.scroll){
       total_case_print2(d)
 
       store.afterlasso=d
+      store.currentcontinet=null
 
       call_ShowResult();
       
@@ -3058,9 +3062,7 @@ function  display () {
                 "</br><b>Death CASES: </b>" +
                 d.deaths +
                 "</br><b>Recovered CASES: </b>" +
-                d.recovered +
-                  "</br>AS OF " +
-                d.date
+                d.recovered 
               )
               .attr("class","tooltip")
               .style("left", d3.event.clientX + "px")
@@ -3148,6 +3150,7 @@ function  display () {
 
 
       store.afterlasso=d
+      store.currentcontinet=null
 
       call_ShowResult();
       
@@ -3602,7 +3605,7 @@ function lasso(scal, data, xscale){
           //console.log(lasso.selectedItems());
           store.currentstartingdate=x1
           store.currentendigndate=x2
-          ResultShow(store.currentselectedcountries,currentvis,x1,x2);
+          ResultShow(store.currentselectedcountries,currentvis,x1,x2,store.currentcontinet);
           slideraftervoice(x1,x2)
           if(store.currentcommand!=null)
           {
@@ -3660,11 +3663,11 @@ setTimeout(slide,2000)
         if(store.currentselectedcountries.length!=0)
         {
           //akane kaj kor//
-          ResultShow(store.currentselectedcountries,currentvis,stdate,endate);
+          ResultShow(store.currentselectedcountries,currentvis,stdate,endate,store.currentcontinet);
           sliderafterbarlasso(str,end,store.time)
         }
         else{ 
-          ResultShow(store.currentselectedcountries,currentvis,stdate,endate);
+          ResultShow(store.currentselectedcountries,currentvis,stdate,endate,store.currentcontinet);
           drawline(slidedata.slice(str,end))}
         if(store.currentcommand!=null){
           document.getElementById("command").value=store.currentcommand
@@ -4067,7 +4070,7 @@ store.currenthighlight=''
         else d.push(i)
       }
    
-     ResultShow(store.currentselectedcountries,currentvis,d[0],d[1]);
+     ResultShow(store.currentselectedcountries,currentvis,d[0],d[1],store.currentcontinet);
      store.currentstartingdate=new Date(d[0])
      store.currentendigndate=new Date(d[1])
    
@@ -4274,122 +4277,42 @@ store.currenthighlight=''
     {
          if(str.includes("asia"))
          {
-           let d=[]
-           let cn=[]
-           let l=d3.select("#BarChart").selectAll('rect')._groups[0]
-         let ln=d3.select("#BarChart").selectAll('rect')._groups[0].length-1;
+          store.currentcontinet="Asia"
+           continent_postprocessing("asia")
 
-         for(let i=0;i<ln;i++)
-         {
-           if(store.asia.includes(l[i].__data__.country.toLowerCase()))
-           {
-            d3.select(l[i]).classed("selected1",false);
-             d3.select(l[i]).classed("selected",true);
-             cn.push(l[i].__data__.country.toLowerCase())
-             d.push(l[i].__data__)
-           }
-           else{
-            d3.select(l[i]).classed("selected1",false);
-            d3.select(l[i]).classed("selected",false);
-           }
-           
-         }
-         store.currentselectedcountries=cn
-         scrollbar(cn[0])
-
-
-         let l1=d3.select("#G").selectAll("path")._groups[0]
-         let ln1=180
-
-         for(let i=0;i<ln1;i++)
-         {
-           if(store.currentselectedcountries.includes(l1[i].__data__.country.toLowerCase()))
-           {
-            d3.select(l1[i]).classed("selected1",false);
-             d3.select(l1[i]).classed("selected",true);
-             
-           }
-           else{
-            d3.select(l1[i]).classed("selected1",false);
-            d3.select(l1[i]).classed("selected",false);
-           }
-           
-         }
-
-         
-         
-         d=d.filter((v,i)=>d.indexOf(v)==i)
-         
-         store.afterlasso=d
-         total_case_print(d)
-         total_case_print1(d)
-         total_case_print2(d)
-         drawline(commandline(cn))
          
          
          }
          else if(str.includes("europe"))
          {
-
-          let d=[]
-           let cn=[]
-           let l=d3.select("#BarChart").selectAll('rect')._groups[0]
-         let ln=d3.select("#BarChart").selectAll('rect')._groups[0].length-1;
-
-         for(let i=0;i<ln;i++)
+          store.currentcontinet="Europe"
+           continent_postprocessing("europe")         
+ 
+         }
+         else if(str.includes("north america"))
          {
-           if(store.europe.includes(l[i].__data__.country.toLowerCase()))
-           {
-            d3.select(l[i]).classed("selected1",false);
-             d3.select(l[i]).classed("selected",true);
-             cn.push(l[i].__data__.country.toLowerCase())
-             d.push(l[i].__data__)
-           }
-           else{
-            d3.select(l[i]).classed("selected1",false);
-            d3.select(l[i]).classed("selected",false);
-           }
-           
+          store.currentcontinet="North America"
+           continent_postprocessing("north_america")
          }
-         store.currentselectedcountries=cn
-         scrollbar(cn[0])
-
-
-         let l1=d3.select("#G").selectAll("path")._groups[0]
-         let ln1=180
-
-         for(let i=0;i<ln1;i++)
+         else if(str.includes("south america"))
          {
-           if(store.currentselectedcountries.includes(l1[i].__data__.country.toLowerCase()))
-           {
-            d3.select(l1[i]).classed("selected1",false);
-             d3.select(l1[i]).classed("selected",true);
-             
-           }
-           else{
-            d3.select(l1[i]).classed("selected1",false);
-            d3.select(l1[i]).classed("selected",false);
-           }
-           
+          store.currentcontinet="South America"
+           continent_postprocessing("south_america") 
          }
-
-         
-         
-         d=d.filter((v,i)=>d.indexOf(v)==i)
-         
-         store.afterlasso=d
-         total_case_print(d)
-         total_case_print1(d)
-         total_case_print2(d)
-         drawline(commandline(cn))
-
+         else if(str.includes("oceania") || str.includes("australia"))
+         {
+          store.currentcontinet="Australia/Oceania"
+           continent_postprocessing("oceania")
          }
+         call_ShowResult()
+         
     }
      
      else if((/^select/).test(str)){
         a=str.split(" ")
         a=a[1]
         a= a.split(",")
+        store.currentcontinet=null
         
         if(a[0].toLowerCase()!="all"){
           dp=''
@@ -4421,7 +4344,7 @@ store.currenthighlight=''
    store.currentselectedcountries=[]
    if(store.currentstartingdate==null && store.currentendigndate==null){
    var stdate = slidedata[0].date, endate = slidedata[slidedata.length-1].date; // we are here
-   ResultShow(store.currentselectedcountries,currentvis,stdate,endate);
+   ResultShow(store.currentselectedcountries,currentvis,stdate,endate,store.currentcontinet);
    drawline(slidedata);
    }
    else{
@@ -4429,7 +4352,7 @@ store.currenthighlight=''
     let ddd = new Date(slidedata[0].date).getTime()
         let s = Math.abs(store.currentstartingdate-ddd)/86400000
         let e = Math.abs(store.currentendigndate-ddd)/86400000
-   ResultShow(store.currentselectedcountries,currentvis,store.currentstartingdate,store.currentendigndate);
+   ResultShow(store.currentselectedcountries,currentvis,store.currentstartingdate,store.currentendigndate,store.currentcontinet);
   drawline(slidedata.slice(s,e));
    }
    document.getElementById("countries").value="All"
@@ -5099,11 +5022,11 @@ function slideraftervoice(x1,x2){
         if(store.currentselectedcountries.length!=0)
         {
           //akane kaj kor//
-          ResultShow(store.currentselectedcountries,currentvis,stdate,endate);
+          ResultShow(store.currentselectedcountries,currentvis,stdate,endate,store.currentcontinet);
           sliderafterbarlasso(str,end,store.time)
         }
         else{ 
-          ResultShow(store.currentselectedcountries,currentvis,stdate,endate);
+          ResultShow(store.currentselectedcountries,currentvis,stdate,endate,store.currentcontinet);
           drawline(slidedata.slice(str,end))}
         if(store.currentcommand!=null){
           document.getElementById('command').value=store.currentcommand;
@@ -5123,7 +5046,7 @@ function slideraftervoice(x1,x2){
 
       // result show function
 
-    function ResultShow(countries,cases, stdate,endate){
+    function ResultShow(countries,cases, stdate,endate,cnt){
         var cases;
         // if(currentvis == "confirmed"){
         //     cases = "confirmed case"
@@ -5139,7 +5062,12 @@ function slideraftervoice(x1,x2){
         var date2 = new Date(endate)
         var coutrylist=" ";
         var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        if(countries.length == 0){
+        if(cnt!=null)
+        {
+          document.getElementById("res").textContent = "Showing "+cases+" cases "+" for all Countries of "+cnt+" from "+date1.getDate()+" of "+months[date1.getMonth()]
+          +" to "+date2.getDate()+" of "+months[date2.getMonth()]+".";
+        }
+       else if(countries.length == 0){
           document.getElementById("res").textContent = "Showing "+cases+" cases "+" for all Countries from "+date1.getDate()+" of "+months[date1.getMonth()]
           +" to "+date2.getDate()+" of "+months[date2.getMonth()]+".";
         }
@@ -5175,11 +5103,11 @@ function slideraftervoice(x1,x2){
       if(store.currentstartingdate==null && store.currentendigndate==null)
       {
         var stdate = slidedata[0].date, endate = slidedata[slidedata.length-1].date; // we are here
-        ResultShow(store.currentselectedcountries,currentvis,stdate,endate)
+        ResultShow(store.currentselectedcountries,currentvis,stdate,endate,store.currentcontinet)
       }
       else{
         afterlasso(store.currentstartingdate,store.currentendigndate)
-        ResultShow(store.currentselectedcountries,currentvis,store.currentstartingdate,store.currentendigndate);
+        ResultShow(store.currentselectedcountries,currentvis,store.currentstartingdate,store.currentendigndate,store.currentcontinet);
 
       }
     }
@@ -5260,6 +5188,7 @@ function slideraftervoice(x1,x2){
        store.afterlinelasso=[]
        store.currentstartingdate=null
        store.currentendigndate=null
+       store.currentcontinet=null
        let bar;
 
        document.getElementById("res1").innerHTML=" ";
@@ -5271,7 +5200,7 @@ function slideraftervoice(x1,x2){
 
 
         var stdate = slidedata[0].date, endate = slidedata[slidedata.length-1].date; // we are here
-        ResultShow(store.currentselectedcountries,currentvis,stdate,endate)
+        ResultShow(store.currentselectedcountries,currentvis,stdate,endate,store.currentcontinet)
 
        store.afterlasso=[]
       slideraftervoice(store.time[0].values[0].date,store.time[0].values[store.time[0].values.length-1].date)
@@ -5339,6 +5268,79 @@ function continentgroup(data)
        if(i.continent==data)l.push(i.country.toLowerCase())
   }
   return l;
+}
+
+function continent_postprocessing(data)
+{
+  let d=[]
+           let cn=[]
+           let l=d3.select("#BarChart").selectAll('rect')._groups[0]
+         let ln=d3.select("#BarChart").selectAll('rect')._groups[0].length-1;
+
+         for(let i=0;i<ln;i++)
+         {
+           if(store[data].includes(l[i].__data__.country.toLowerCase()))
+           {
+            d3.select(l[i]).classed("selected1",false);
+             d3.select(l[i]).classed("selected",true);
+             cn.push(l[i].__data__.country.toLowerCase())
+             d.push(l[i].__data__)
+           }
+           else{
+            d3.select(l[i]).classed("selected1",false);
+            d3.select(l[i]).classed("selected",false);
+           }
+           
+         }
+         cn=cn.filter((v,i)=>cn.indexOf(v)==i)
+         store.currentselectedcountries=cn
+         resort()
+         for(m of store.done)
+         {
+           if(cn.includes(m.country.toLowerCase()))
+           {
+             scrollbar(m.country.toLowerCase())
+             break;
+           }
+
+         }
+         
+
+
+         let l1=d3.select("#G").selectAll("path")._groups[0]
+         let ln1=180
+
+         for(let i=0;i<ln1;i++)
+         {
+           if(store.currentselectedcountries.includes(l1[i].__data__.country.toLowerCase()))
+           {
+            d3.select(l1[i]).classed("selected1",false);
+             d3.select(l1[i]).classed("selected",true);
+             
+           }
+           else{
+            d3.select(l1[i]).classed("selected1",false);
+            d3.select(l1[i]).classed("selected",false);
+           }
+           
+         }
+
+         
+         
+         d=d.filter((v,i)=>d.indexOf(v)==i)
+         
+         store.afterlasso=d
+         total_case_print(d)
+         total_case_print1(d)
+         total_case_print2(d)
+         drawline(commandline(cn))
+
+         if(store.currentcommand!=null)
+         {
+          document.getElementById('command').value=store.currentcommand;
+         command();
+         document.getElementById('command').value="";
+         }
 }
 
 
