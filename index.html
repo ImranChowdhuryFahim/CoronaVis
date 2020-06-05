@@ -8,7 +8,7 @@
   flex:auto;
 }
 .selectedL{
-  opacity: .5;
+  opacity: .3;
 }
 .y_axis path{
   stroke: black;
@@ -491,6 +491,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
   
   </body>
   <script>
+      let testall
       let store={}
       let slidedata;
       store.done=[];
@@ -1650,7 +1651,7 @@ else{
         var s = Math.abs(st-dd)/86400000
         var e = Math.abs(en-dd)/86400000
      if(store.currentstartingdate==null && store.currentendigndate==null)drawline(store.sumdate);
-     else drawline(slidedata.slice(s,e));
+     else drawline(slidedata.slice(s,e+1));
      } 
 
      $("#countries").trigger("chosen:updated");
@@ -1794,7 +1795,7 @@ else{
         var s = Math.abs(st-dd)/86400000
         var e = Math.abs(en-dd)/86400000
      if(store.currentstartingdate==null && store.currentendigndate==null)drawline(store.sumdate);
-     else drawline(slidedata.slice(s,e));
+     else drawline(slidedata.slice(s,e+1));
      } 
 
      $("#countries").trigger("chosen:updated");
@@ -1934,7 +1935,7 @@ else{
         var s = Math.abs(st-dd)/86400000
         var e = Math.abs(en-dd)/86400000
      if(store.currentstartingdate==null && store.currentendigndate==null)drawline(store.sumdate);
-     else drawline(slidedata.slice(s,e));
+     else drawline(slidedata.slice(s,e+1));
      } 
 
      $("#countries").trigger("chosen:updated");
@@ -2028,7 +2029,7 @@ else{
         var s = Math.abs(st-dd)/86400000
         var e = Math.abs(en-dd)/86400000
      if(store.currentstartingdate==null && store.currentendigndate==null)drawline(store.sumdate);
-     else drawline(slidedata.slice(s,e));
+     else drawline(slidedata.slice(s,e+1));
 
          }
          call_ShowResult();
@@ -2564,7 +2565,7 @@ bars.selectAll("rect")
         var s = Math.abs(st-dd)/86400000
         var e = Math.abs(en-dd)/86400000
      if(store.currentstartingdate==null && store.currentendigndate==null)drawline(store.sumdate);
-     else drawline(slidedata.slice(s,e));
+     else drawline(slidedata.slice(s,e+1));
       }
 
        $("#countries").trigger("chosen:updated");
@@ -2874,7 +2875,7 @@ if(store.scroll){
         var s = Math.abs(st-dd)/86400000
         var e = Math.abs(en-dd)/86400000
      if(store.currentstartingdate==null && store.currentendigndate==null)drawline(store.sumdate);
-     else drawline(slidedata.slice(s,e));
+     else drawline(slidedata.slice(s,e+1));
       }
 
        $("#countries").trigger("chosen:updated");
@@ -3177,7 +3178,7 @@ function  display () {
         var s = Math.abs(st-dd)/86400000
         var e = Math.abs(en-dd)/86400000
      if(store.currentstartingdate==null && store.currentendigndate==null)drawline(store.sumdate);
-     else drawline(slidedata.slice(s,e));
+     else drawline(slidedata.slice(s,e+1));
       }
 
        $("#countries").trigger("chosen:updated");
@@ -3311,7 +3312,7 @@ body.append('rect')
     .style("pointer-events", "all")
     .attr('width', width)
     .attr('height', height)
-    .on('mousemove', mousemove);
+    // .on('mousemove', mousemove);
 
 //tool tip
 body
@@ -3319,7 +3320,7 @@ body
 .datum(data)
 .attr("fill", "none")
 .attr("stroke", "#2a5599")
-.attr("stroke-width", 3.5)
+.attr("stroke-width", 5)
 .attr("d", valueline)
 .attr("class", "line")
 .classed("selectedL",function (d) {  
@@ -3328,41 +3329,32 @@ body
   
 
   })//here we
-.on("mouseenter", d=>{
+// .on("mouseenter", d=>{
             
-      showtool(1,[d3.event.clientX -180, d3.event.clientY-30])
-    })
-.on("mouseleave", d=>{
-      d3.select("#tooltip").style('display', 'none')
-    })
-  .on("mousemove", d=>{
-      showtool(1,[d3.event.clientX -180, d3.event.clientY-30])
-    })
+//       showtool(1,[d3.event.clientX -180, d3.event.clientY-30])
+//     })
+// .on("mouseleave", d=>{
+//       d3.select("#tooltip").style('display', 'none')
+//     })
+//   .on("mousemove", d=>{
+//       showtool(1,[d3.event.clientX -180, d3.event.clientY-30])
+//     })
 
 //draw line end 
 
 /// for tooltip
 
 var bisect = d3.bisector(function(d) { return d.date; }).left;
-function mousemove() {
-        // recover coordinate we need
-        var x0 = xscale.invert(d3.mouse(this)[0]);
-        var i = bisect(data, x0, 1);
-        selectedData = data[i]
-        a= selectedData
 
-       
-        
-}
 
-function showtool(check, coord){
+function showtool(check, coord,a){
  var val
  var cas
- if(check == 1){
+ if(check == "confirmed"){
     val = a.confirmed
-    cas = "confirmed: "
+    cas = "Confirmed: "
  }
- else if(check==2){
+ else if(check=="recovered"){
     val = a.recovered
     cas = "Recovered: "
 
@@ -3377,8 +3369,8 @@ function showtool(check, coord){
 
         d3.select("#tooltip")
             .html(cas+val+"<br> Date: "+ formatDate(a.date))
-            .style('top', coord[1]-15+"px")
-            .style("left", coord[0]+15+"px")
+            .style('top', coord[1]+230+"px")
+            .style("left", coord[0]+920+"px")
             .style("display", "block")
             .style("color", "blue")
             
@@ -3396,8 +3388,8 @@ body
 .append("path")
 .datum(data)
 .attr("fill", "none")
-.attr("stroke", '#238b45')
-.attr("stroke-width", 3.5)
+.attr("stroke", '#238b45') 
+.attr("stroke-width", 5)
 .attr("d", valuerc)
 .attr("class", "line")
 .classed("selectedL",function (d) { 
@@ -3406,16 +3398,16 @@ body
   
 
   })
-.on("mouseenter", d=>{
+// .on("mouseenter", d=>{
             
-      showtool(2,[d3.event.clientX -180, d3.event.clientY-30])
-    })
-.on("mouseleave", d=>{
-      d3.select("#tooltip").style('display', 'none')
-    })
-  .on("mousemove", d=>{
-      showtool(2,[d3.event.clientX -180, d3.event.clientY-30])
-    })
+//       showtool(2,[d3.event.clientX -180, d3.event.clientY-30])
+//     })
+// .on("mouseleave", d=>{
+//       d3.select("#tooltip").style('display', 'none')
+//     })
+//   .on("mousemove", d=>{
+//       showtool(2,[d3.event.clientX -180, d3.event.clientY-30])
+//     })
 // end recov
 
 //draw deaths
@@ -3429,7 +3421,7 @@ body
 .datum(data)
 .attr("fill", "none")
 .attr("stroke", '#cb181d')
-.attr("stroke-width", 3.5)
+.attr("stroke-width", 5)
 .attr("d", valuedth)
 .attr("class", "line")
 .classed("selectedL",function (d) {
@@ -3438,16 +3430,16 @@ body
   
 
   })
-.on("mouseenter", d=>{
+// .on("mouseenter", d=>{
             
-      showtool(3,[d3.event.clientX -180, d3.event.clientY-30])
-    })
-.on("mouseleave", d=>{
-      d3.select("#tooltip").style('display', 'none')
-    })
-  .on("mousemove", d=>{
-      showtool(3,[d3.event.clientX -180, d3.event.clientY-30])
-    })
+//       showtool(3,[d3.event.clientX -180, d3.event.clientY-30])
+//     })
+// .on("mouseleave", d=>{
+//       d3.select("#tooltip").style('display', 'none')
+//     })
+//   .on("mousemove", d=>{
+//       showtool(3,[d3.event.clientX -180, d3.event.clientY-30])
+//     })
 //end deaths
 // legend
 var columnHeaders = ["Deaths", "Recovered", "confirmed"];
@@ -3489,8 +3481,11 @@ body.append('g')
       .attr("cx", function (d) { return xscale(d.date); } )
       .attr("cy", function (d) { return yscale(d.confirmed); } )
       .attr("case", "confirmed")
-      .attr("r", 0)
-      .style("fill", "red")//#69b3a2
+      .attr("r", 3)
+      .attr("opacity", .1)
+      .style("fill", "#2a5599")//#69b3a2   
+      .on("mouseover", handleMouseOver)
+      .on("mouseout", handleMouseOut);
       body.append('g')
     .selectAll("dot")
     .data(data)
@@ -3499,8 +3494,11 @@ body.append('g')
       .attr("cx", function (d) { return xscale(d.date); } )
       .attr("cy", function (d) { return yscale(d.recovered); } )
       .attr("case", "recovered")
-      .attr("r", 0)
-      .style("fill", "red")//#69b3a2
+      .attr("r", 3)
+      .attr("opacity", .1)
+      .style("fill", "#238b45")//#69b3a2
+      .on("mouseover", handleMouseOver)
+      .on("mouseout", handleMouseOut);
       body.append('g')
     .selectAll("dot")
     .data(data)
@@ -3509,13 +3507,51 @@ body.append('g')
       .attr("cx", function (d) { return xscale(d.date); } )
       .attr("cy", function (d) { return yscale(d.deaths); } )
       .attr("case", "death")
-      .attr("r", 0)
-      .style("fill", "red")//#69b3a2
+      .attr("r", 3)
+      .attr("opacity", .1)
+      .style("fill", "#cb181d")//#69b3a2
+      .on("mouseover", handleMouseOver)
+      .on("mouseout", handleMouseOut); 
+//circle hover
+function handleMouseOver(d, i) {  // Add interactivity
+
+// Use D3 to select element, change color and size
+d3.select(this)
+  .attr("r", 6)
+  .attr("opacity", 1)
+  .attr("stroke","white")
+  .attr("stroke-width", 3);
+  showtool(this.getAttribute("case"),[this.cx.baseVal.value,this.cy.baseVal.value],this.__data__)
+
+}
+
+function handleMouseOut(d, i) {
+// Use D3 to select element, change color back to normal
+if( this.className.animVal != "selected"){
+  d3.select(this)
+  .attr("r", 3)
+  .attr("opacity", .3)
+  .attr("stroke", "none");
+}
+else{
+  d3.select(this)
+  .attr("r", 3)
+  .attr("stroke", "none");
+}
+
+d3.select("#tooltip").style('display', 'none')
+
+  
+
+}
+
+//end circle hover   
+
 lasso(yscale(1), data, xscale)
 
 
 }
-
+let ifdata = 0;
  
       loadData().then(showData);
   
@@ -3527,7 +3563,8 @@ function lasso(scal, data, xscale){
   // Lasso functions
         var lasso_start = function() {
             lasso.items()
-                .attr("r",0) // reset size
+                .attr("r",3) // reset size
+                .attr("opacity",.3)
                 .classed("not_possible",true)
                 .classed("selected",false);
         };
@@ -3562,14 +3599,16 @@ function lasso(scal, data, xscale){
             // Style the selected dots
             fcircle
                 .classed("selected",true)
-                .attr("r",2.5)
-                .style("fill", "yellow");
+                .attr("r",3)
+                .attr("opacity",1)
+                // .style("fill", "yellow");
                 var lassod = fcircle._groups[0]
                 var bisect = d3.bisector(function(d) { return d.date; }).left;
                 let a = lassod;
                 if(a.length){
                 var x1 =xscale.invert(a[0].cx.baseVal.value);
                 var x2 =xscale.invert(a[a.length-1].cx.baseVal.value);
+                ifdata = 1;
                 afterlasso(x1,x2)
                 var formatDate = d3.timeFormat("%d/%b/%y")
                 d3.select(".res").text("Showing Results from "+formatDate(x1)+" to "+formatDate(x2));
@@ -3600,7 +3639,8 @@ function lasso(scal, data, xscale){
                 }
             // Reset the style of the not selected dots
             lasso.notSelectedItems()
-                .attr("r",0);
+                .attr("r",3)
+                .attr("opacity",.3);
 
           //console.log(lasso.selectedItems());
           store.currentstartingdate=x1
@@ -3688,7 +3728,7 @@ setTimeout(slide,2000)
 
  function sliderafterbarlasso(str,end,dn)
  {
-
+      end++;
   // var d3 = new Date(slidedata[0].date).getTime()
   //       var str = Math.abs(d1-d3)/86400000
   //       var end = Math.abs(d2-d3)/86400000
@@ -4035,7 +4075,7 @@ store.currenthighlight=''
         
        afterlasso(new Date(d[0]) ,new Date(d[1]))
       if(store.currentselectedcountries.length>0)sliderafterbarlasso(suru,ses,store.time)
-      else drawline(slidedata.slice(suru,ses))
+      else drawline(slidedata.slice(suru,ses+1))
       slideraftervoice(d[0],d[1])
 
       if(store.currentcommand!=null)
@@ -4314,7 +4354,7 @@ store.currenthighlight=''
         let s = Math.abs(store.currentstartingdate-ddd)/86400000
         let e = Math.abs(store.currentendigndate-ddd)/86400000
    ResultShow(store.currentselectedcountries,currentvis,store.currentstartingdate,store.currentendigndate,store.currentcontinet);
-  drawline(slidedata.slice(s,e));
+  drawline(slidedata.slice(s,e+1));
    }
    document.getElementById("countries").value="All"
    $("#countries").trigger("chosen:updated");
@@ -4989,7 +5029,7 @@ function slideraftervoice(x1,x2){
         }
         else{ 
           ResultShow(store.currentselectedcountries,currentvis,stdate,endate,store.currentcontinet);
-          drawline(slidedata.slice(str,end))}
+          drawline(slidedata.slice(str,end+1))}
         if(store.currentcommand!=null){
           document.getElementById('command').value=store.currentcommand;
            command()
@@ -5304,8 +5344,6 @@ function continent_postprocessing(data)
          document.getElementById('command').value="";
          }
 }
-
-
 
       </script>
   </html>
