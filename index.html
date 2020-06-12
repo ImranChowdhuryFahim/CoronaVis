@@ -416,7 +416,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
       <div class="result">
         
         <div>
-        <input type="text" id="command"  placeholder="Enter Query Here" class="round">
+        <input type="text" id="command"  placeholder="type 'select us,china'" class="round">
         <i class="fa fa-search" id="search" aria-hidden="true" onclick="command()" ></i>
         <i class="fa fa-microphone"  id="button" aria-hidden="true"></i>
         <!-- <input type="image" id="button" src="image.png" width="20" height="20"> -->
@@ -4310,9 +4310,9 @@ store.currenthighlight=''
     }
      
      else if((/^select/).test(str)){
-        a=str.split(" ")
-        a=a[1]
-        a= a.split(",")
+        
+        a= str.split(",")
+        a[0]=a[0].replace("select ","")
         store.currentcontinet=null
         
         if(a[0].toLowerCase()!="all"){
@@ -4815,8 +4815,10 @@ $.each(store.afterlasso, function(i, el){
       
     if(store.currentstartingdate==null && store.currentendigndate==null){
        let l=[]
+       
         for(i of store.time)
         {
+          
           if(a.includes(i.key.toLowerCase()))
           {
             pdata.push(i.values)
@@ -4844,7 +4846,7 @@ $.each(store.afterlasso, function(i, el){
 
     }
   //  console.log("pdata")
-  //  console.log(pdata)
+   console.log(pdata)
   
     i=0;
       
@@ -4894,6 +4896,7 @@ if (event.keyCode === 13) {
   // Cancel the default action, if needed
   event.preventDefault();
   // Trigger the button element with a click
+  document.getElementById("command").placeholder="Enter query here"
   command()
 }
 });
