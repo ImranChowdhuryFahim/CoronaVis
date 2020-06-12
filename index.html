@@ -207,7 +207,7 @@ label{
 .selected {
   fill : yellow;
   fill-opacity: 1;
-  stroke: black;
+  stroke: rgb(4, 65, 70);
   stroke-width: 1.5;
 }
 
@@ -3320,7 +3320,7 @@ body
 .datum(data)
 .attr("fill", "none")
 .attr("stroke", "#2a5599")
-.attr("stroke-width", 5)
+.attr("stroke-width", 3)
 .attr("d", valueline)
 .attr("class", "line")
 .classed("selectedL",function (d) {  
@@ -3389,7 +3389,7 @@ body
 .datum(data)
 .attr("fill", "none")
 .attr("stroke", '#238b45') 
-.attr("stroke-width", 5)
+.attr("stroke-width", 3)
 .attr("d", valuerc)
 .attr("class", "line")
 .classed("selectedL",function (d) { 
@@ -3421,7 +3421,7 @@ body
 .datum(data)
 .attr("fill", "none")
 .attr("stroke", '#cb181d')
-.attr("stroke-width", 5)
+.attr("stroke-width", 3)
 .attr("d", valuedth)
 .attr("class", "line")
 .classed("selectedL",function (d) {
@@ -3482,7 +3482,7 @@ body.append('g')
       .attr("cy", function (d) { return yscale(d.confirmed); } )
       .attr("case", "confirmed")
       .attr("r", 3)
-      .attr("opacity", .1)
+      .attr("opacity", .05)
       .style("fill", "#2a5599")//#69b3a2   
       .on("mouseover", handleMouseOver)
       .on("mouseout", handleMouseOut);
@@ -3495,7 +3495,7 @@ body.append('g')
       .attr("cy", function (d) { return yscale(d.recovered); } )
       .attr("case", "recovered")
       .attr("r", 3)
-      .attr("opacity", .1)
+      .attr("opacity", .05)
       .style("fill", "#238b45")//#69b3a2
       .on("mouseover", handleMouseOver)
       .on("mouseout", handleMouseOut);
@@ -3508,7 +3508,7 @@ body.append('g')
       .attr("cy", function (d) { return yscale(d.deaths); } )
       .attr("case", "death")
       .attr("r", 3)
-      .attr("opacity", .1)
+      .attr("opacity", .05)
       .style("fill", "#cb181d")//#69b3a2
       .on("mouseover", handleMouseOver)
       .on("mouseout", handleMouseOut); 
@@ -3530,7 +3530,7 @@ function handleMouseOut(d, i) {
 if( this.className.animVal != "selected"){
   d3.select(this)
   .attr("r", 3)
-  .attr("opacity", .3)
+  .attr("opacity", .05)
   .attr("stroke", "none");
 }
 else{
@@ -3564,7 +3564,7 @@ function lasso(scal, data, xscale){
         var lasso_start = function() {
             lasso.items()
                 .attr("r",3) // reset size
-                .attr("opacity",.3)
+                .attr("opacity",.05)
                 .classed("not_possible",true)
                 .classed("selected",false);
         };
@@ -3640,7 +3640,7 @@ function lasso(scal, data, xscale){
             // Reset the style of the not selected dots
             lasso.notSelectedItems()
                 .attr("r",3)
-                .attr("opacity",.3);
+                .attr("opacity",.05);
 
           //console.log(lasso.selectedItems());
           store.currentstartingdate=x1
@@ -4704,7 +4704,7 @@ $.each(store.afterlasso, function(i, el){
         for (d of store.time){
           
               if(x.__data__.country == d.key){
-                pdata[i] = d.values.slice(s,e);
+                pdata[i] = d.values.slice(s,e+1);
                 break;
               }
          }
@@ -4734,7 +4734,7 @@ $.each(store.afterlasso, function(i, el){
           ++j;
         }
       }
-      
+   
       drawline(finald)
     }
 
@@ -4766,7 +4766,7 @@ $.each(store.afterlasso, function(i, el){
         for (d of store.time){
           
               if(x.country == d.key){
-                pdata[i] = d.values.slice(s,e);
+                pdata[i] = d.values.slice(s,e+1);
                 break;
               }
          }
@@ -4785,7 +4785,7 @@ $.each(store.afterlasso, function(i, el){
         }
         ++i;
       }
-      console.log(pdata.length)
+      
       for( var k =1; k< pdata.length; ++k){
         let j=0;
         if(pdata[k]!=null){
@@ -4797,6 +4797,7 @@ $.each(store.afterlasso, function(i, el){
         }
       }
       }
+     
       drawline(finald)
     }
 
