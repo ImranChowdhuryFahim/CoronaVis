@@ -4835,7 +4835,7 @@ $.each(store.afterlasso, function(i, el){
         let en=new Date(store.currentendigndate)
         var s = Math.abs(st-dd)/86400000
         var e = Math.abs(en-dd)/86400000
-        
+        e=e+1
         for(i of store.time)
         {
           if(a.includes(i.key.toLowerCase()))
