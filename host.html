@@ -3946,7 +3946,7 @@
 
        if((/^(find|show)/).test(str) || (/maximum|minimum|highest|lowest/).test(str))
       {
-        
+        chk=false
         let a=[]
         store.currentcommand=str;
         if(str.includes("maximum")|| str.includes("highest"))
@@ -3956,17 +3956,20 @@
                 
                 if(str.includes("death") || str.includes("fatal"))
                 {
-                  
+
+                  chk=true
                    a=store.afterlasso.sort((a,b) => b.deaths - a.deaths);
                    d3.select(".res1").html("Maximum death cases occured in "+ "<span style='font-weight:bold;'>" + capitalizeFirstLetter(a[0].country) +"</span>"+" among the selected countries"); 
                 }
                 else if(str.includes("recovered") || str.includes("healing"))
                 {
+                  chk=true
                    a=store.afterlasso.sort((a,b) => b.recovered - a.recovered);
                    d3.select(".res1").html("Maximum recovered cases occured in "+ "<span style='font-weight:bold;'>" + capitalizeFirstLetter(a[0].country) +"</span>"+" among the selected countries"); 
                 }
                 else if(str.includes("confirmed"))
                 {
+                  chk=true
                    a=store.afterlasso.sort((a,b) => b.confirmed - a.confirmed);
                    d3.select(".res1").html("Maximum confirmed cases occured in "+ "<span style='font-weight:bold;'>" + capitalizeFirstLetter(a[0].country) +"</span>"+" among the selected countries"); 
                 }
@@ -3978,16 +3981,19 @@
               else if(1){
                 if(str.includes("death") || str.includes("fatal"))
                 {
+                  chk=true
                    a=store.done.sort((a,b) => b.deaths - a.deaths);
                    d3.select(".res1").html("Maximum death cases occured in "+ "<span style='font-weight:bold;'>" + capitalizeFirstLetter(a[0].country) +"</span>"); 
                 }
                 else if(str.includes("recovered") || str.includes("healing"))
                 {
+                  chk=true
                    a=store.done.sort((a,b) => b.recovered - a.recovered);
                    d3.select(".res1").html("Maximum recovered cases occured in "+ "<span style='font-weight:bold;'>" + capitalizeFirstLetter(a[0].country) +"</span>"); 
                 }
                 else if(str.includes("confirmed"))
                 {
+                  chk=true
                    a=store.done.sort((a,b) => b.confirmed - a.confirmed);
                    d3.select(".res1").html("Maximum confirmed cases occured in "+ "<span style='font-weight:bold;'>" + capitalizeFirstLetter(a[0].country) +"</span>"); 
                 }
@@ -4004,16 +4010,19 @@
                 
                 if(str.includes("death")|| str.includes("fatal"))
                 {
+                  chk=true
                    a=store.afterlasso.sort((a,b) => a.deaths - b.deaths);
                    d3.select(".res1").html("Minimum death cases occured in "+ "<span style='font-weight:bold;'>" + capitalizeFirstLetter(a[0].country) +"</span>"+" among the selected countries");
                 }
                 else if(str.includes("recovered") || str.includes("healing"))
                 {
+                  chk=true
                  a=store.afterlasso.sort((a,b) => a.recovered - b.recovered);
                  d3.select(".res1").html("Minimum recovered cases occured in "+ "<span style='font-weight:bold;'>" + capitalizeFirstLetter(a[0].country) +"</span>"+" among the selected countries");
                 }
                 else if(str.includes("confirmed"))
                 {
+                  chk=true
                   a=store.afterlasso.sort((a,b) => a.confirmed - b.confirmed);
                   d3.select(".res1").html("Minimum confirmed cases occured in "+ "<span style='font-weight:bold;'>" + capitalizeFirstLetter(a[0].country) +"</span>"+" among the selected countries");
                 }
@@ -4024,16 +4033,19 @@
               {
                 if(str.includes("death")|| str.includes("fatal"))
                 {
+                  chk=true
                   a=store.done.sort((a,b) => a.deaths - b.deaths);
                   d3.select(".res1").html("Minimum death cases occured in "+ "<span style='font-weight:bold;'>" + capitalizeFirstLetter(a[0].country) +"</span>");
                 }
                 else if(str.includes("recovered") || str.includes("healing"))
                 {
+                  chk=true
                  a=store.done.sort((a,b) => a.recovered - b.recovered);
                  d3.select(".res1").html("Minimum recovered cases occured in "+ "<span style='font-weight:bold;'>" + capitalizeFirstLetter(a[0].country) +"</span>");
                 }
                 else if(str.includes("confirmed"))
                 {
+                  chk=true
                  a=store.done.sort((a,b) => a.confirmed - b.confirmed);
                  d3.select(".res1").html("Minimum confiremd cases occured in "+ "<span style='font-weight:bold;'>" + capitalizeFirstLetter(a[0].country) +"</span>");
                 }
@@ -4041,6 +4053,7 @@
               }
               
             }
+            if(!chk)call_error("max_min")
   
            c=a[0].country
            ii=d3.select("#G").selectAll("circle")._groups[0];
@@ -4247,7 +4260,7 @@
           // document.getElementById('command').value="";
           if((/^(find|show)/).test(str) || (/maximum|minimum/).test(str))
       {
-        chk=false
+        
         let a=[]
         store.currentcommand=str;
         if(str.includes("maximum"))
@@ -4436,9 +4449,17 @@
       
         
       }
-      else if(((/^select/).test(str)&&(/asia|north america|south america|africa|oceania|antarctica|europe/).test(str)) || (/asia|north america|south america|africa|oceania|antarctica|europe/).test(str))
+      else if(((/^select/).test(str)&&(/asia|north america|south america|africa|oceania|antarctica|europe/).test(str) && !str.includes("south africa")) || ((/asia|north america|south america|africa|oceania|antarctica|europe/).test(str) && !str.includes("south africa")))
       {
-        
+        let cntnt=["asia","north america","south america","africa","oceania","antarctica","europe"]
+        let c=0;
+        for(i of cntnt)
+        {
+            if(str.indexOf(i)>=0)c+=1;
+            if(c>=2)break;
+        }
+        if(c>1)call_error("continent")
+        else{
            if(str.includes("asia"))
            {
             store.currentcontinet="Asia"
@@ -4482,6 +4503,7 @@
            command();
            document.getElementById('command').value=temp;
          }
+        }
            
       }
        
@@ -5594,6 +5616,17 @@
 
 function call_error(str)
 {
+  if(str=="max_min")
+  {
+    d3.select(".res").html("<span style='color:red;'>"+"Please mention the case. Ex: 'maximum death cases'"+"</span>")
+  d3.select(".res1").html("")
+  }
+  else if(str=="continent")
+  {
+    d3.select(".res").html("<span style='color:red;'>"+"Multiple continents can't be selected at a time"+"</span>")
+  d3.select(".res1").html("")
+  }
+  else{
   ck=true
   for(i of store.lowercountries)
   {
@@ -5609,6 +5642,7 @@ function call_error(str)
   else{
     d3.select(".res").html("<span style='color:red;'>"+"Invalid Query.To select countries using voice command use 'select' keyword.Ex: 'select uk us uae china india'"+"</span>")
   d3.select(".res1").html("")
+  }
   }
 }
         </script>
