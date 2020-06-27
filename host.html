@@ -24,11 +24,8 @@
       outline: none;
          }
   #tooltip{
-      border: solid 2px black;
-      padding: 5px;
-      position: absolute;
-      display: none;
-      background-color: whitesmoke;
+      font:calibri;
+      background: whitesmoke;
   }
             body {
                 font-family: Helvetica, Arial, sans-serif;
@@ -3487,11 +3484,14 @@
     
   
           d3.select("#tooltip")
-              .html(cas+val+"<br> Date: "+ formatDate(a.date))
-              .style('top', coord[1]+230+"px")
-              .style("left", coord[0]+920+"px")
+              .html("<b>"+cas+"</b>"+val+"<br> <b>Date:</b> "+ formatDate(a.date))
+              .style('top', coord[1]+150+"px")
+              .style("left", coord[0]+850+"px")
               .style("display", "block")
-              .style("color", "blue")
+              .style("color", "black")
+              .attr("class", "tooltip")
+              .transition()
+                .duration(500)
               
       }
        
@@ -3743,7 +3743,7 @@
                   x2 = new Date(store.currentendigndate)}
                   else {
                     x1=slidedata[0].date;
-                    x2=slidedata[slidedata.length -1].date;
+                    x2=slidedata[slidedata.length-1].date;
                   }
 
                   let lne=d3.select("#container").selectAll("circle")._groups[0]
@@ -5238,7 +5238,7 @@
            document.getElementById('command').value=store.currentcommand;
            command();
            document.getElementById('command').value=temp;
-          }
+          }console.log(new Date(ui.values[ 1 ] *1000).toDateString())
           $( "#amount" ).val( (new Date(ui.values[ 0 ] *1000).toDateString() ) + " - " + (new Date(ui.values[ 1 ] *1000)).toDateString() );
         }
       });
@@ -5247,6 +5247,7 @@
         
     });
    }
+   
     }
         //new
   
