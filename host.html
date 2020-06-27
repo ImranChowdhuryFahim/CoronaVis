@@ -4247,7 +4247,7 @@
           // document.getElementById('command').value="";
           if((/^(find|show)/).test(str) || (/maximum|minimum/).test(str))
       {
-        
+        chk=false
         let a=[]
         store.currentcommand=str;
         if(str.includes("maximum"))
@@ -4499,10 +4499,12 @@
           a[0]=a[0].replace("select ","")
           store.currentcontinet=null
           
+          
           for(let i=0;i<a.length;i++)
           {
             a[i]=a[i].trim()
             if(a[i]=="uk")a[i]="united kingdom"
+            if(a[i]=="uae")a[i]="united arab emirates"
           }
           // console.log(a)
           
@@ -4569,6 +4571,9 @@
      call_ShowResult();
         // drawline(commandline(a))
         highlight_show_top_result_call_command();
+   }
+   else {
+     call_error(str)
    }
    }
   
@@ -5151,17 +5156,26 @@
      
   
      let str=command1.toLowerCase()
+     
+     
      if(str.includes("depth"))
      {
        str=str.replace("depth","death")
      }
+     if(str.includes("showuth america"))str="south america"
+    //  if(str.includes("showuth"))str=str.replace("showuth","south")
      if(str.includes("conference"))str=str.replace("conference","confirmed")
      if(str.includes("sylhet"))str=str.replace("sylhet","select")
      if(str.includes("so"))str=str.replace("so","show")
-  
-     
-     
-     if(str.includes("select") && !(/death|recovered|confirmed/).test(str))
+     if(str.includes("showuth"))str=str.replace("showuth","south")
+     if(str.includes("osmania"))str=str.replace("osmania","oceania")
+     if(str.includes("o showniya"))str=str.replace("o showniya","oceania")
+     if(str.includes("usnea"))str=str.replace("usnea","oceania")
+     if(str.includes("united kingdom"))str=str.replace("united kingdom","uk")
+     if(str.includes("united states of america"))str=str.replace("united states of america","us")
+     if(str.includes("united arab emirates"))str=str.replace("united arab emirates","uae")
+
+     if(str.includes("select") && !(/death|recovered|confirmed|healing|fatal/).test(str))
      {
        
        str=str.replace(/[ ,]+/g, ",").trim(" ")
@@ -5169,7 +5183,25 @@
       
        
      }
-  
+     let j;
+     if(!str.includes("select")){
+     for(i of store.lowercountries)
+     {
+       j=i;
+       if(i=="united kingdom")j="uk"
+       if(i=="united arab emirates")j="uae"
+
+       if(str.indexOf(j)>=0)
+       {
+        str=str.replace(/[ ,]+/g, ",").trim(" ")
+         break;
+       }
+       
+     }
+     
+     }
+     if(str.includes("saudi,arabia"))str=str.replace("saudi,arabia","saudi arabia")
+     
      document.querySelector('#command').value=str
   
      command()
@@ -5557,6 +5589,26 @@
         str = str.replace(/(\d)(?=(\d{3})+$)/g, '$1,');
     }
     return str
+}
+
+function call_error(str)
+{
+  ck=true
+  for(i of store.lowercountries)
+  {
+    if(str.indexOf(i)>=0)
+    {
+      ck=false
+      break
+    }
+  }
+  if(ck){
+  d3.select(".res").html("<span style='color:red;'>"+"Invalid Query"+"</span>")
+  d3.select(".res1").html("")}
+  else{
+    d3.select(".res").html("<span style='color:red;'>"+"Invalid Query.To select countries using voice command use 'select' keyword.Ex: 'select uk us uae china india'"+"</span>")
+  d3.select(".res1").html("")
+  }
 }
         </script>
     </html>
