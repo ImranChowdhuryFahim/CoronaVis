@@ -4054,6 +4054,7 @@
               
             }
             if(!chk)call_error("max_min")
+            else call_ShowResult()
   
            c=a[0].country
            ii=d3.select("#G").selectAll("circle")._groups[0];
@@ -4228,6 +4229,7 @@
       else if((/from/).test(str) && (/to/).test(str))
       {
   
+
         
         let d=[]
         a=str;
@@ -4236,7 +4238,18 @@
           if(i=="from" || i=="to")continue
           else d.push(i)
         }
-     
+
+        let t1=new Date(d[0])
+        let t2=new Date(d[1])
+        let ct1=new Date(store.intialstart)
+        let ct2=new Date(store.intialend)
+
+
+        if(!(t1.getTime()>=ct1.getTime() && t2.getTime()<=ct2.getTime()))
+        {
+          call_error("date")
+        }
+     else{
        ResultShow(store.currentselectedcountries,currentvis,d[0],d[1],store.currentcontinet);
        store.currentstartingdate=new Date(d[0])
        store.currentendigndate=new Date(d[1])
@@ -4421,6 +4434,7 @@
   
       }
         }
+     }
   
       //  for (i=0;i<d3.select("#container").selectAll('circle')._groups[0].length -1 ;i++)
       //  {
@@ -5620,6 +5634,12 @@ function call_error(str)
   {
     d3.select(".res").html("<span style='color:red;'>"+"Please mention the case. Ex: 'maximum death cases'"+"</span>")
   d3.select(".res1").html("")
+  }
+  else if(str=="date")
+  {
+    d3.select(".res").html("<span style='color:red;'>"+"Please choose a date range between "+store.intialstart+" to "+store.intialend+ " and enter the date in the format 'MM/DD/YY'"+". Ex: 'from 1/22/20 to 4/1/20'"+"</span>")
+  d3.select(".res1").html("")
+
   }
   else if(str=="continent")
   {
