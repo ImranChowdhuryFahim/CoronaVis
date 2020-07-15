@@ -3956,71 +3956,72 @@
       //  document.getElementById('command').value="";
 
 
-//     if(((/in/).test(str)&& (/maximum|minimum|highest|lowest/).test(str))|| ((/in/).test(str)&& (/maximum|minimum|highest|lowest/).test(str) && (/from/).test(str) && (/to/).test(str)))
-//     {
-//       let indexof_in=str.indexOf('in')
-//       let indexof_mx_mn=(str.indexOf('mininmum')==-1)? (((str.indexOf("lowest")==-1)?((str.indexOf("maximum")==-1)?str.indexOf("highest"):str.indexOf("maximum")):(str.indexOf("lowest")))) : (str.indexOf('mininmum'))
-//      if(str.includes('minimum'))indexof_mx_mn=str.indexOf('minimum')
-//       let indexOf_from_to=str.indexOf('from');
+    if(((/ in /).test(str)&& (/maximum|minimum|highest|lowest/).test(str))|| ((/ in /).test(str)&& (/maximum|minimum|highest|lowest/).test(str) && (/from/).test(str) && (/to/).test(str)))
+    {
+      console.log(str)
+      let indexof_in=str.indexOf('in')
+      let indexof_mx_mn=(str.indexOf('mininmum')==-1)? (((str.indexOf("lowest")==-1)?((str.indexOf("maximum")==-1)?str.indexOf("highest"):str.indexOf("maximum")):(str.indexOf("lowest")))) : (str.indexOf('mininmum'))
+     if(str.includes('minimum'))indexof_mx_mn=str.indexOf('minimum')
+      let indexOf_from_to=str.indexOf('from');
 
       
-//       let n=str.length
-//       console.log(indexOf_from_to,indexof_mx_mn,indexof_in)
-//       x=new PriorityQueue()
-//       x.push(indexOf_from_to,indexof_mx_mn,indexof_in,n)
-//       ls=[]
-//       while (!x.isEmpty()) {
-//   ls.push(x.pop())
-// }
+      let n=str.length
+      console.log(indexOf_from_to,indexof_mx_mn,indexof_in)
+      x=new PriorityQueue()
+      x.push(indexOf_from_to,indexof_mx_mn,indexof_in,n)
+      ls=[]
+      while (!x.isEmpty()) {
+  ls.push(x.pop())
+}
 
   
   
 
-//    if(indexOf_from_to==-1)
-//    {
-//      ls.pop()
-//      ls.reverse()
+   if(indexOf_from_to==-1)
+   {
+     ls.pop()
+     ls.reverse()
      
-//      let slice1=str.slice(indexof_in,ls[ls.indexOf(indexof_in)+1])
-//      let slice2=str.slice(indexof_mx_mn,ls[ls.indexOf(indexof_mx_mn)+1]);
+     let slice1=str.slice(indexof_in,ls[ls.indexOf(indexof_in)+1])
+     let slice2=str.slice(indexof_mx_mn,ls[ls.indexOf(indexof_mx_mn)+1]);
 
-//      if(((/^select/).test(slice1)&&(/asia|north america|south america|africa|oceania|antarctica|europe/).test(slice1) && !slice1.includes("south africa")) || ((/asia|north america|south america|africa|oceania|antarctica|europe/).test(slice1) && !slice1.includes("south africa")))
-//       {
+     if(((/^select/).test(slice1)&&(/asia|north america|south america|africa|oceania|antarctica|europe/).test(slice1) && !slice1.includes("south africa")) || ((/asia|north america|south america|africa|oceania|antarctica|europe/).test(slice1) && !slice1.includes("south africa")))
+      {
         
-//            select_continent(slice1.replace('in',''));
-//       }
-//      else if((/^select/).test(slice1) || 1){
+           select_continent(slice1.replace('in',''));
+      }
+     else if((/^select/).test(slice1) || 1){
          
-//          select_countries(slice1.replace('in',''));
+         select_countries(slice1.replace('in',''));
        
-//           }
-//       find_max_min(slice2);
+          }
+      find_max_min(slice2);
 
      
      
      
 
-//    }
-//    else{
-//      ls.reverse()
-//      let slice1=str.slice(indexof_in,ls[ls.indexOf(indexof_in)+1])
-//      let slice2=str.slice(indexof_mx_mn,ls[ls.indexOf(indexof_mx_mn)+1]);
-//      let slice3=str.slice(indexOf_from_to,ls[ls.indexOf(indexOf_from_to)+1]);
-//      if(((/^select/).test(slice1)&&(/asia|north america|south america|africa|oceania|antarctica|europe/).test(slice1) && !slice1.includes("south africa")) || ((/asia|north america|south america|africa|oceania|antarctica|europe/).test(slice1) && !slice1.includes("south africa")))
-//       {
+   }
+   else{
+     ls.reverse()
+     let slice1=str.slice(indexof_in,ls[ls.indexOf(indexof_in)+1])
+     let slice2=str.slice(indexof_mx_mn,ls[ls.indexOf(indexof_mx_mn)+1]);
+     let slice3=str.slice(indexOf_from_to,ls[ls.indexOf(indexOf_from_to)+1]);
+     if(((/^select/).test(slice1)&&(/asia|north america|south america|africa|oceania|antarctica|europe/).test(slice1) && !slice1.includes("south africa")) || ((/asia|north america|south america|africa|oceania|antarctica|europe/).test(slice1) && !slice1.includes("south africa")))
+      {
         
-//            select_continent(slice1.replace('in',''));
-//       }
-//      else if((/^select/).test(slice1) || 1){
+           select_continent(slice1.replace('in',''));
+      }
+     else if((/^select/).test(slice1) || 1){
          
-//          select_countries(slice1.replace('in',''));
+         select_countries(slice1.replace('in',''));
        
-//           }
-//       find_max_min(slice2);
-//       from_to(slice3);
+          }
+      find_max_min(slice2);
+      from_to(slice3);
      
 
-//    }
+   }
 
       
     //   ole.log(x.sort())
@@ -4028,7 +4029,7 @@
       
       
      
-    //}
+    }
 
       if((/^(find|show)/).test(str) || (/maximum|minimum|highest|lowest/).test(str))
       {
