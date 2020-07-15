@@ -41,7 +41,7 @@ input:focus{
               margin-left: -8px;
               margin-right: -8px;
               margin-bottom: 0px;
-              width: 100%;
+              width: 160%;
           }
           svg {
               border: solid 1px black;
@@ -360,7 +360,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
   }
 
 #reset{
-  margin-left: 42%;
+  margin-left: 41%;
   position: absolute;
 }
 
@@ -497,6 +497,8 @@ body {font-family: Arial, Helvetica, sans-serif;}
       store.scroll=false
       store.currentstartingdate=null;
       store.currentendigndate=null;
+      store.msg="";
+      let msg=false;
           let x=0
           let y=0
           let k=1
@@ -3676,6 +3678,7 @@ setTimeout(slide,2000)
         store.currentstartingdate=stdate
         store.currentendigndate=endate
         afterlasso(d1, d2)
+        console.log(str,end)
         
         if(store.currentselectedcountries.length!=0)
         {
@@ -3917,6 +3920,7 @@ store.currenthighlight=''
       
       let a=[]
       store.currentcommand=str;
+      store.msg=""
       if(str.includes("maximum"))
           {
             if(store.afterlasso.length>0)
@@ -3926,17 +3930,20 @@ store.currenthighlight=''
               {
                 
                  a=store.afterlasso.sort((a,b) => b.deaths - a.deaths);
-                 d3.select(".res1").text("Maximum death cases occured in "+ capitalizeFirstLetter(a[0].country)+" among the selected countries"); 
+                 store.msg  = "Maximum death cases occured in "+ capitalizeFirstLetter(a[0].country)+" among the selected countries";
+                 msg=true
               }
               else if(str.includes("recovered"))
               {
                  a=store.afterlasso.sort((a,b) => b.recovered - a.recovered);
-                 d3.select(".res1").text("Maximum recovered cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries"); 
+                 store.msg="Maximum recovered cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries";
+                 msg=true 
               }
               else if(str.includes("confirmed"))
               {
                  a=store.afterlasso.sort((a,b) => b.confirmed - a.confirmed);
-                 d3.select(".res1").text("Maximum confirmed cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries"); 
+                 store.msg="Maximum confirmed cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries"; 
+                 msg=true
               }
               
 
@@ -3947,17 +3954,20 @@ store.currenthighlight=''
               if(str.includes("death") || str.includes("fatal"))
               {
                  a=store.done.sort((a,b) => b.deaths - a.deaths);
-                 d3.select(".res1").text("Maximum death cases occured in "+capitalizeFirstLetter(a[0].country)); 
+                 store.msg="Maximum death cases occured in "+capitalizeFirstLetter(a[0].country); 
+                 msg=true
               }
               else if(str.includes("recovered"))
               {
                  a=store.done.sort((a,b) => b.recovered - a.recovered);
-                 d3.select(".res1").text("Maximum recovered cases occured in "+capitalizeFirstLetter(a[0].country)); 
+                 store.msg="Maximum recovered cases occured in "+capitalizeFirstLetter(a[0].country); 
+                 msg=true
               }
               else if(str.includes("confirmed"))
               {
                  a=store.done.sort((a,b) => b.confirmed - a.confirmed);
-                 d3.select(".res1").text("Maximum confirmed cases occured in "+capitalizeFirstLetter(a[0].country)); 
+                 store.msg="Maximum confirmed cases occured in "+capitalizeFirstLetter(a[0].country); 
+                 msg=true
               }
               
               
@@ -3973,17 +3983,20 @@ store.currenthighlight=''
               if(str.includes("death")|| str.includes("fatal"))
               {
                  a=store.afterlasso.sort((a,b) => a.deaths - b.deaths);
-                 d3.select(".res1").text("Minimum death cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries");
+                 dstore.msg="Minimum death cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries";
+                 msg=true
               }
               else if(str.includes("recovered"))
               {
                a=store.afterlasso.sort((a,b) => a.recovered - b.recovered);
-               d3.select(".res1").text("Minimum recovered cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries");
+               store.msg="Minimum recovered cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries";
+               msg=true
               }
               else if(str.includes("confirmed")|| str.includes("fatal"))
               {
                 a=store.afterlasso.sort((a,b) => a.confirmed - b.confirmed);
-                d3.select(".res1").text("Minimum confirmed cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries");
+                store.msg="Minimum confirmed cases occured in "+capitalizeFirstLetter(a[0].country)+" among the selected countries";
+                msg=true
               }
                
         
@@ -3993,49 +4006,54 @@ store.currenthighlight=''
               if(str.includes("death")|| str.includes("fatal"))
               {
                 a=store.done.sort((a,b) => a.deaths - b.deaths);
-                d3.select(".res1").text("Minimum death cases occured in "+capitalizeFirstLetter(a[0].country));
+                store.msg="Minimum death cases occured in "+capitalizeFirstLetter(a[0].country);
+                msg=true
               }
               else if(str.includes("recovered"))
               {
                a=store.done.sort((a,b) => a.recovered - b.recovered);
-               d3.select(".res1").text("Minimum recovered cases occured in "+capitalizeFirstLetter(a[0].country));
+               store.msg="Minimum recovered cases occured in "+capitalizeFirstLetter(a[0].country);
+               msg=true
               }
               else if(str.includes("confirmed"))
               {
                a=store.done.sort((a,b) => a.confirmed - b.confirmed);
-               d3.select(".res1").text("Minimum confiremd cases occured in "+capitalizeFirstLetter(a[0].country));
+               store.msg="Minimum confiremd cases occured in "+capitalizeFirstLetter(a[0].country);
+               msg=true
               }
               
             }
             
           }
+          call_ShowResult();
+
 
          c=a[0].country
          store.currenthighlight=a[0].country
-      //    ii=d3.select("#G").selectAll("circle")._groups[0];
-      //     for( j=0;j<=180;j++){
-      //       i=ii[j];
-      //     if(currentvis=="confirmed"){
-      //    if(i.__data__.country==c)
-      //    {
+         ii=d3.select("#G").selectAll("circle")._groups[0];
+          for( j=0;j<=180;j++){
+            i=ii[j];
+          if(currentvis=="confirmed"){
+         if(i.__data__.country==c)
+         {
           
-      //      d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.confirmed))
-      //        .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed)).transition().duration(1000).attr("r",0).attr("fill","blue")
-      //    }
-      //     }
-      //     else if(currentvis=="death"){
-      //      if(i.__data__.country==c){
-      //  d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.deaths))
-      //        .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths)).transition().duration(1000).attr("r",0).attr("fill","red")
-      //      }
-      //     }
-      //     else if(currentvis=="recovered"){
-      //      if(i.__data__.country==c){
-      //     d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.recovered))
-      //        .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered)).transition().duration(1000).attr("r",).attr("fill","green")
-      //      }
-      //     }
-      //    }  
+           d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.confirmed))
+             .transition().duration(1000).attr("r",radius(i.__data__.confirmed)+15).transition().duration(1000).attr("r",radius(i.__data__.confirmed)).transition().duration(1000).attr("r",0).attr("fill","blue")
+         }
+          }
+          else if(currentvis=="death"){
+           if(i.__data__.country==c){
+       d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.deaths))
+             .transition().duration(1000).attr("r",radius(i.__data__.deaths)+10).transition().duration(1000).attr("r",radius(i.__data__.deaths)).transition().duration(1000).attr("r",0).attr("fill","red")
+           }
+          }
+          else if(currentvis=="recovered"){
+           if(i.__data__.country==c){
+          d3.select(i).transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).attr("fill","red").transition().duration(1000).attr("r",radius(i.__data__.recovered))
+             .transition().duration(1000).attr("r",radius(i.__data__.recovered)+10).transition().duration(1000).attr("r",radius(i.__data__.recovered)).transition().duration(1000).attr("r",).attr("fill","green")
+           }
+          }
+         }  
 
           l= d3.selectAll("rect")._groups[0]
           let ln=d3.selectAll("rect")._groups[0].length-6
@@ -4070,8 +4088,7 @@ store.currenthighlight=''
      else if(currentvis=="recovered")store.done.sort((a,b) => b.recovered - a.recovered);
 
                
-
-
+    
 
     }
 
@@ -4478,7 +4495,7 @@ store.currenthighlight=''
 
      else if((/clear|cls|clear all/).test(str))
      {
-        cls(); 
+        cls();
      }
      
      
@@ -4740,7 +4757,7 @@ if(store.currentselectedcountries.length!=0)
     let c=[]
     for(let i=0;i<store.afterlasso.length;i++)
     {
-      a.push(store.afterlasso[i].country)
+      if(store.afterlasso[i]!=null)a.push(store.afterlasso[i].country)
     }
     store.afterlasso=[]
      l= d3.selectAll("rect")._groups[0]
@@ -5161,10 +5178,13 @@ function slideraftervoice(x1,x2){
         var date1 = new Date(stdate);
         var date2 = new Date(endate)
         var coutrylist=" ";
+        var m=""
         var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         if(countries.length == 0){
-          document.getElementById("res").textContent = "Showing "+cases+" cases "+" for all Countries from "+date1.getDate()+" of "+months[date1.getMonth()]
+          m = "Showing "+cases+" cases "+" for all Countries from "+date1.getDate()+" of "+months[date1.getMonth()]
           +" to "+date2.getDate()+" of "+months[date2.getMonth()]+".";
+          if(msg)m=m+"\n"+store.msg
+          document.getElementById("res").textContent = m;
         }
         else if(countries.length<= 5){
           for(var i=0; i<countries.length; ++i){
@@ -5174,8 +5194,10 @@ function slideraftervoice(x1,x2){
               }
               else coutrylist += capitalizeFirstLetter(countries[i])+',';
           }
-          document.getElementById("res").textContent = "Showing "+cases+" cases "+" for"+ coutrylist +"from "+date1.getDate()+" of "+months[date1.getMonth()]
+          m = "Showing "+cases+" cases "+" for"+ coutrylist +"from "+date1.getDate()+" of "+months[date1.getMonth()]
           +" to "+date2.getDate()+" of "+months[date2.getMonth()]+".";
+          if(msg)m=m+"\n"+store.msg
+          document.getElementById("res").textContent = m
         }
         else{
           coutrylist=" "
@@ -5186,8 +5208,10 @@ function slideraftervoice(x1,x2){
               }
               else coutrylist += capitalizeFirstLetter(countries[i])+',';
           }
-          document.getElementById("res").textContent = "Showing "+cases+" cases "+" for"+ coutrylist +"from "+date1.getDate()+" of "+months[date1.getMonth()]
+          m = "Showing "+cases+" cases "+" for"+ coutrylist +"from "+date1.getDate()+" of "+months[date1.getMonth()]
           +" to "+date2.getDate()+" of "+months[date2.getMonth()]+".";
+          if(msg)m=m+"\n"+store.msg
+          document.getElementById("res").textContent = m
         }
     }
 
@@ -5272,6 +5296,7 @@ function slideraftervoice(x1,x2){
 
     function cls()
     {
+      document.getElementById("command").value=""
       currentvis="confirmed";
                   document.getElementById("options").value="confirmed Cases"
       document.getElementById("countries").value="All"
@@ -5283,6 +5308,7 @@ function slideraftervoice(x1,x2){
        store.afterlinelasso=[]
        store.currentstartingdate=null
        store.currentendigndate=null
+       msg=false
        let bar;
 
        document.getElementById("res1").innerHTML=" ";
