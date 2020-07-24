@@ -366,6 +366,8 @@
     margin-left: 41%;
     position: absolute;
   }
+
+  
   
         </style>
         <script src="./d3-lasso.min.js"></script>
@@ -436,7 +438,7 @@
                 <div style="border-right:1px dotted #BDBDBD; padding: 0 1em;">
                     <form >
                         <label style="color: #616771;">Choose Case:</label>
-                      <select id="options" name="cars" onchange="ddl()">
+                      <select id="options" name="cars" class="chosen" style="width: 140px;" onchange="ddl()">
                         <option value="confirmed Cases">confirmed Cases</option>
                         <option value="Death Cases">Death Cases</option>
                         <option value="Recovered Cases">Recovered Cases</option>
@@ -3958,7 +3960,6 @@
 
     if(((/ in /).test(str)&& (/maximum|minimum|highest|lowest/).test(str))|| ((/ in /).test(str)&& (/maximum|minimum|highest|lowest/).test(str) && (/from/).test(str) && (/to/).test(str)))
     {
-      console.log(str)
       let indexof_in=str.indexOf('in')
       let indexof_mx_mn=(str.indexOf('mininmum')==-1)? (((str.indexOf("lowest")==-1)?((str.indexOf("maximum")==-1)?str.indexOf("highest"):str.indexOf("maximum")):(str.indexOf("lowest")))) : (str.indexOf('mininmum'))
      if(str.includes('minimum'))indexof_mx_mn=str.indexOf('minimum')
@@ -4024,14 +4025,14 @@
    }
 
       
-    //   ole.log(x.sort())
-    // cons
+      ole.log(x.sort())
+    cons
       
       
      
     }
 
-      if((/^(find|show)/).test(str) || (/maximum|minimum|highest|lowest/).test(str))
+     else if((/^(find|show)/).test(str) || (/maximum|minimum|highest|lowest/).test(str))
       {
         
          find_max_min(str);               
@@ -4619,7 +4620,7 @@
   }
   ///end  pop up/////
   
-  
+  //dd
   
   //////voice recognition ///////
   
@@ -5533,6 +5534,7 @@ function show_cases(str){
   if(str.includes("death cases") || str.includes("fatal cases")){
               currentvis="death";
               document.getElementById("options").value="Death Cases"
+              $("#options").trigger("chosen:updated");
             // document.getElementById("countries").value="All";
             // $("#countries").trigger("chosen:updated");
             d3.select("#G").remove()
@@ -5556,6 +5558,7 @@ function show_cases(str){
             {
               currentvis="confirmed";
               document.getElementById("options").value="confirmed Cases"
+              $("#options").trigger("chosen:updated");
             //   document.getElementById("countries").value="All";
             // $("#countries").trigger("chosen:updated");
               d3.select("#G").remove()
@@ -5576,6 +5579,7 @@ function show_cases(str){
             {
               currentvis="recovered";
               document.getElementById("options").value="Recovered Cases"
+              $("#options").trigger("chosen:updated");
             //   document.getElementById("countries").value="All";
             // $("#countries").trigger("chosen:updated");
               d3.select("#G").remove()
